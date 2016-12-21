@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta content="text/html; charset=us-ascii" http-equiv="content-type"/>
+        <title>EC-GoogleContainerEngine Plugin</title>
+    </head>
+    <style>
+    table, th, td {
+        border: 1px solid black;
+    }
+    p.important {
+    color: BLUE;
+    }
+    </style>
+    <body>
+        <div class="help">
+            <h1>EC-AzureContainerService</h1>
+            <p>Plugin version 1.0.0</p>
+            <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade"/>
+			<h3>Overview</h3>
+			<p>EC-AzureContainerService plugin integrates with the Google Container Engine to run Docker containers on the Azure Cloud Platform.
+			</p>
+	</body>
+</html>	
