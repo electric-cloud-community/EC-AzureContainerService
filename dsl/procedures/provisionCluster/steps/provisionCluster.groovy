@@ -1,9 +1,6 @@
 @Grab('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1' )
-@Grab(group='com.google.api-client', module='google-api-client', version='1.22.0')
 @Grab('com.microsoft.azure:adal4j:1.1.3')
 @Grab('com.jcraft:jsch:0.1.54')
-@Grab('com.squareup.okhttp3:okhttp:3.5.0')
-@Grab('io.fabric8:kubernetes-client:1.4.27')
 
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
@@ -21,6 +18,7 @@ import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 
 import com.jcraft.jsch.Channel
+import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
@@ -37,19 +35,6 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.FileOutputStream
-
-import io.fabric8.kubernetes.client.Config
-import io.fabric8.kubernetes.client.internal.KubeConfigUtils
-import io.fabric8.kubernetes.api.model.AuthInfo
-import io.fabric8.kubernetes.api.model.Cluster
-import io.fabric8.kubernetes.api.model.Context
-import io.fabric8.kubernetes.client.DefaultKubernetesClient
-
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-import okhttp3.ResponseBody
 
 import java.io.File
 import java.nio.file.Files
@@ -169,7 +154,6 @@ public class AzureClient extends BaseClient {
                                       ]]
                                   ]
                               ]
-
                 ]
 
         ]
@@ -191,11 +175,16 @@ public class AzureClient extends BaseClient {
 
     }
 
-    def copyKubeConfigFile(String hostName, String username, String privateKey, String destFilepath){
+    def copyFileFromRemoteServer(String hostName, String username, String privateKey, String remoteFilePath, String localDropPath){
         ChannelSftp channel = null
         Session session = null
         InputStream inputStream  = null
         OutputStream outputStream = null
+        // Validation before we proceed, may be abstract in a separate method later
+        if(hostName == null){ 
+            println "#### Something wrong"
+        }
+
         try{
           JSch jsch = new JSch()
           jsch.addIdentity(privateKey)
@@ -204,9 +193,8 @@ public class AzureClient extends BaseClient {
           session.connect()
           channel = (ChannelSftp)session.openChannel("sftp");
           channel.connect();
-          File localFile = new File(destFilepath);
-          inputStream = channel.get("/home/${username}/.kube/config");
-          outputStream = new FileOutputStream(localFile)
+          inputStream = channel.get(remoteFilePath);
+          outputStream = new FileOutputStream(localDropPath)
           int read = 0;
           byte[] bytes = new byte[1024];
 
@@ -224,53 +212,35 @@ public class AzureClient extends BaseClient {
 
     }
 
-    Config getKubeConfig(String filePath) {
-        Config config = new Config()
-        //Logger DEBUG "Trying to configure client from Kubernetes config..."
-          File kubeConfigFile = new File(filePath);
-          boolean kubeConfigFileExists = Files.isRegularFile(kubeConfigFile.toPath());
-          if (kubeConfigFileExists) {
-            //Logger DEBUG "Found for Kubernetes config at: [${kubeConfigFile.getPath()}]."
-            try {
-              io.fabric8.kubernetes.api.model.Config kubeConfig = KubeConfigUtils.parseConfig(kubeConfigFile);
-              Context currentContext = KubeConfigUtils.getCurrentContext(kubeConfig);
-              Cluster currentCluster = KubeConfigUtils.getCluster(kubeConfig, currentContext);
-              if (currentCluster != null) {
-                config.setMasterUrl(currentCluster.getServer());
-                config.setNamespace(currentContext.getNamespace());
-                config.setTrustCerts(currentCluster.getInsecureSkipTlsVerify() != null && currentCluster.getInsecureSkipTlsVerify());
-                config.setCaCertFile(absolutify(kubeConfigFile, currentCluster.getCertificateAuthority()));
-                config.setCaCertData(currentCluster.getCertificateAuthorityData());
-                AuthInfo currentAuthInfo = KubeConfigUtils.getUserAuthInfo(kubeConfig, currentContext);
-                if (currentAuthInfo != null) {
-                  config.setClientCertFile(absolutify(kubeConfigFile, currentAuthInfo.getClientCertificate()));
-                  config.setClientCertData(currentAuthInfo.getClientCertificateData());
-                  config.setClientKeyFile(absolutify(kubeConfigFile, currentAuthInfo.getClientKey()));
-                  config.setClientKeyData(currentAuthInfo.getClientKeyData());
-                  config.setOauthToken(currentAuthInfo.getToken());
-                  config.setUsername(currentAuthInfo.getUsername());
-                  config.setPassword(currentAuthInfo.getPassword());
+    def execRemoteKubectl(String hostName, String username, String privateKey, String command){
+        Channel channel = null
+        Session session = null
+        int returnCode = 1
 
-                  config.getErrorMessages().put(401, "Unauthorized! Token may have expired! Please log-in again.");
-                  config.getErrorMessages().put(403, "Forbidden! User "+currentContext.getUser()+ " doesn't have permission.");
-                }
-              }
-            } catch (IOException e) {
-              //Logger ERROR "Could not load Kubernetes config file from ${kubeConfigFile.getPath()}"
-            }
-          } else {
-            //Logger DEBUG "Did not find Kubernetes config at: [${kubeConfigFile.getPath()}]. Ignoring."
+        try{
+              JSch jsch = new JSch()
+              jsch.addIdentity(privateKey)
+              session = jsch.getSession(username, hostName)
+              session.setConfig("StrictHostKeyChecking", "no")
+              session.connect()
+              channel = session.openChannel("exec")
+              ((ChannelExec)channel).setCommand(command)
+              channel.connect()
+              returnCode = channel.getExitStatus()
+          } catch(Exception ex){
+              ex.printStackTrace()
+
+          } finally {
+              channel.disconnect()
+              session.disconnect() 
           }
-          return config
-      }
+          returnCode
+    }
 
-    String absolutify(File relativeTo, String filename) {
-        if (filename == null) {
-          return null
-        }
-    } 
+    def retrieveFromYaml(String yamlPath, String parameter){
 
 
+    }
 
     Object getProject(String projectId, String accessToken) {
       // TBD
@@ -1102,36 +1072,39 @@ if(deployedAcs.status == 200){
                           secret: "${pluginConfig.password}",
                           masterCount: 1,
                           masterFqdn: "ecloud",
-                          masterDnsPrefix: "kmaster",
+                          masterDnsPrefix: "k-master",
                           agentPoolName: "agentPool",
                           agentPoolCount: 3,
                           agentPoolVmsize: "Standard_D2",
-                          agentPoolDnsPrefix: "kagent",
+                          agentPoolDnsPrefix: "k-agent",
                           adminUsername: "ecloudadmin",
                           publicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXQRP64gIXqH6OrAKm7527/xafW7BDUDyvydMxoUHJjecfKKOxxzb0tb/cLN3ByeK30b4pfq71IxwxSHMMQCKMLWxFKfEj6tIVbaNA4ANFEPUKeFdMDyn3SjsO6ohG4N3SyRc3TMhADkmu/K5H7JoJPR/EDBwE0kV/E1jQS5urnx2Odau1Vs3I4UUP6eBlS2sgUnyo0FVgWm7te0f/JMGxemLPV/qp8GwGFRD+DKAt7JgE49L/hqcghf3JEayEP/32MmV1dvpgZ1i/srHTX0yHw/DmH+ZmSNxMYaYsRVyVtL1jFG1xczml1MC20oG6EJRSSm+IJ4Q7c41rkVrhsyFF vishalb@Vishals-MacBook-Pro.local"
                       )
+println acsPayLoad
       response = az.doHttpPut(az.AZURE_ENDPOINT, 
                                "/subscriptions/${pluginConfig.subscription_id}/resourcegroups/${resource_grp_name}/providers/Microsoft.ContainerService/containerServices/${acs_name}",
                                token,
                                acsPayLoad,
                                false,                       
                                az.APIV_2016_09_30)
+
   }
+
+def tempSvcAccFile = "/tmp/def_serviceAcc"
+def tempSecretFile = "/tmp/def_secret"
+def svcAccName = "default"
 def masterFqdn = az.getMasterFqdn(pluginConfig.subscription_id, resource_grp_name, acs_name, token)
-az.copyKubeConfigFile(masterFqdn, "ecloudadmin", "~/.ssh/id_rsa_ecloud" , "/tmp/config")
+def svcAccStatusCode = az.execRemoteKubectl(masterFqdn, "ecloudadmin", "~/.ssh/id_rsa_ecloud", "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile}" )
+az.copyFileFromRemoteServer(masterFqdn, "ecloudadmin", "~/.ssh/id_rsa_ecloud" , tempSvcAccFile, tempSvcAccFile)
+def svcAccFile = new File(tempSvcAccFile)
+def svcAccJson = new JsonSlurper().parseText(svcAccFile.text)
+def secretName =  svcAccJson.secrets.name[0]
 
-OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
-httpClientBuilder.followRedirects(true);
-httpClientBuilder.followSslRedirects(true);
+def secretStatusCode = az.execRemoteKubectl(masterFqdn, "ecloudadmin", "~/.ssh/id_rsa_ecloud", "kubectl get secret ${secretName} -o json > ${tempSecretFile}" )
+az.copyFileFromRemoteServer(masterFqdn, "ecloudadmin", "~/.ssh/id_rsa_ecloud" , tempSecretFile , tempSecretFile)
+def secretFile = new File(tempSecretFile)
+def secretJson = new JsonSlurper().parseText(secretFile.text)
+println secretJson.data.token
 
-Config config = az.getKubeConfig("/tmp/config")
-config.setTrustCerts(true)
-
-DefaultKubernetesClient baseClient = new DefaultKubernetesClient(config)
-OkHttpClient client = baseClient.getHttpClient()
-Request request = new Request.Builder().url("https://kmaster.westus.cloudapp.azure.com/api/v1").build()
-
-Response response = client.newCall(request).execute()
-println response.body().string()
 
 // -- Driver script end -- //
