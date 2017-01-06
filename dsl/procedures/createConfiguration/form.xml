@@ -1,0 +1,78 @@
+<!--
+
+     Copyright 2016 Electric Cloud, Inc.
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+
+-->
+<editor>
+    <formElement>
+        <type>entry</type>
+        <label>Configuration:</label>
+        <property>config</property>
+        <required>1</required>
+        <documentation>Unique name for the plugin configuration.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Description:</label>
+        <property>desc</property>
+        <required>0</required>
+        <documentation>Description for the plugin configuration.</documentation>
+    </formElement>
+    <formElement>
+        <type>credential</type>
+        <label>Service Account:</label>
+        <property>credential</property>
+        <required>1</required>
+        <userNameLabel>Name:</userNameLabel>
+        <passwordLabel>Service Account Key (in JSON format):</passwordLabel>
+        <credentialType>key</credentialType>
+        <documentation>Provide the contents of the JSON file that was generated when you created a private key for the service account in the Google Cloud Platform Console. The service account identified by the key pair in the JSON will be used for accessing Google APIs for managing containers and clusters.</documentation>
+        <attachedAsParameterToStep>createAndAttachCredential,testConnection</attachedAsParameterToStep>
+    </formElement>
+    <formElement>
+        <type>checkbox</type>
+        <label>Test Connection?</label>
+        <property>testConnection</property>
+        <checkedValue>1</checkedValue>
+        <uncheckedValue>0</uncheckedValue>
+        <initiallyChecked>1</initiallyChecked>
+        <documentation>Test that the given service account details can be used to successfully connect to the Google Cloud Platform.</documentation>
+        <required>0</required>
+    </formElement>
+    <formElement>
+        <type>select</type>
+        <label>Log Level:</label>
+        <property>logLevel</property>
+        <value>2</value>
+        <option>
+            <name>Debug</name>
+            <value>1</value>
+        </option>
+        <option>
+            <name>Info</name>
+            <value>2</value>
+        </option>
+        <option>
+            <name>Warning</name>
+            <value>3</value>
+        </option>
+        <option>
+            <name>Error</name>
+            <value>4</value>
+        </option>
+        <documentation>Log level to use for logging output. Error=4, Warning=3, Info=2, Debug=1.</documentation>
+        <required>0</required>
+    </formElement>
+</editor>

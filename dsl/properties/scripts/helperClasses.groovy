@@ -1,6 +1,6 @@
 @Grab('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1' )
-@Grab(group='com.google.api-client', module='google-api-client', version='1.22.0')
 @Grab('com.microsoft.azure:adal4j:1.1.3')
+@Grab('com.jcraft:jsch:0.1.54')
 
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
@@ -17,12 +17,27 @@ import groovy.json.JsonSlurper
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 
+import com.jcraft.jsch.Channel
+import com.jcraft.jsch.ChannelExec
+import com.jcraft.jsch.ChannelSftp
+import com.jcraft.jsch.JSch
+import com.jcraft.jsch.Session
+
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.Method.DELETE
 import static groovyx.net.http.Method.GET
 import static groovyx.net.http.Method.POST
 import static groovyx.net.http.Method.PUT
 import static groovyx.net.http.Method.HEAD
+
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.FileOutputStream
+
+import java.io.File
+import java.nio.file.Files
 
 import static Logger.*
 
@@ -139,12 +154,91 @@ public class AzureClient extends BaseClient {
                                       ]]
                                   ]
                               ]
-
                 ]
 
         ]
         def json = new JsonBuilder(containerService)
         return json.toPrettyString()
+
+    }
+
+    String getMasterFqdn(String subscription_id, String rgName, String acsName, String accessToken){
+        if (OFFLINE) return
+
+        def existingAcs = doHttpGet(AZURE_ENDPOINT,
+                          "/subscriptions/${subscription_id}/resourceGroups/${rgName}/providers/Microsoft.ContainerService/containerServices/${acsName}",
+                          accessToken,
+                          false,
+                          APIV_2016_09_30)
+
+        return existingAcs.data.properties.masterProfile.fqdn
+
+    }
+
+    def copyFileFromRemoteServer(String hostName, String username, String privateKey, String remoteFilePath, String localDropPath){
+        ChannelSftp channel = null
+        Session session = null
+        InputStream inputStream  = null
+        OutputStream outputStream = null
+        // Validation before we proceed, may be abstract in a separate method later
+        if(hostName == null){ 
+            println "#### Something wrong"
+        }
+
+        try{
+          JSch jsch = new JSch()
+          jsch.addIdentity(privateKey)
+          session = jsch.getSession(username, hostName)
+          session.setConfig("StrictHostKeyChecking", "no")
+          session.connect()
+          channel = (ChannelSftp)session.openChannel("sftp");
+          channel.connect();
+          inputStream = channel.get(remoteFilePath);
+          outputStream = new FileOutputStream(localDropPath)
+          int read = 0;
+          byte[] bytes = new byte[1024];
+
+          while ((read = inputStream.read(bytes)) != -1) {
+            outputStream.write(bytes, 0, read);
+          }          
+        } catch(Exception exc){
+            exc.printStackTrace()
+        } finally {
+          channel.disconnect()
+          session.disconnect() 
+          inputStream.close()
+          outputStream.close()         
+        }
+
+    }
+
+    def execRemoteKubectl(String hostName, String username, String privateKey, String command){
+        Channel channel = null
+        Session session = null
+        int returnCode = 1
+
+        try{
+              JSch jsch = new JSch()
+              jsch.addIdentity(privateKey)
+              session = jsch.getSession(username, hostName)
+              session.setConfig("StrictHostKeyChecking", "no")
+              session.connect()
+              channel = session.openChannel("exec")
+              ((ChannelExec)channel).setCommand(command)
+              channel.connect()
+              returnCode = channel.getExitStatus()
+          } catch(Exception ex){
+              ex.printStackTrace()
+
+          } finally {
+              channel.disconnect()
+              session.disconnect() 
+          }
+          returnCode
+    }
+
+    def retrieveFromYaml(String yamlPath, String parameter){
+
 
     }
 
