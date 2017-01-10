@@ -77,13 +77,6 @@
     </formElement>
     <formElement>
         <type>entry</type>
-        <label>Master DNS Prefix:</label>
-        <property>masterDnsPrefix</property>
-        <required>1</required>
-        <documentation>The DNS prefix to be used to create the FQDN of the master</documentation>
-    </formElement>    
-    <formElement>
-        <type>entry</type>
         <label>Master FQDN:</label>
         <property>masterFqdn</property>
         <required>1</required>

@@ -86,6 +86,29 @@ public class AzureClient extends BaseClient {
         return 'Bearer ' + authResult.getAccessToken()
     }
 
+    String retrieveOrchestratorAccessToken(def pluginConfig, 
+                                           String resourceGroupName, 
+                                           String clusterName,
+                                           String token,
+                                           String masterFqdn,
+                                           String adminUsername){
+        def tempSvcAccFile = "/tmp/def_serviceAcc"
+        def tempSecretFile = "/tmp/def_secret"
+        def svcAccName = "default"
+        def masterFqdn = getMasterFqdn(pluginConfig.subscriptionId, resourceGroupName, clusterName, token)
+        def svcAccStatusCode = execRemoteKubectl(masterFqdn, adminUsername, "~/.ssh/id_rsa_ecloud", "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile}" )
+        copyFileFromRemoteServer(masterFqdn, adminUsername, "~/.ssh/id_rsa_ecloud" , tempSvcAccFile, tempSvcAccFile)
+        def svcAccFile = new File(tempSvcAccFile)
+        def svcAccJson = new JsonSlurper().parseText(svcAccFile.text)
+        def secretName =  svcAccJson.secrets.name[0]
+
+        def secretStatusCode = execRemoteKubectl(masterFqdn, adminUsername, "~/.ssh/id_rsa_ecloud", "kubectl get secret ${secretName} -o json > ${tempSecretFile}" )
+        copyFileFromRemoteServer(masterFqdn, adminUsername, "~/.ssh/id_rsa_ecloud" , tempSecretFile , tempSecretFile)
+        def secretFile = new File(tempSecretFile)
+        def secretJson = new JsonSlurper().parseText(secretFile.text)
+        secretJson.data.token
+    }
+
     Object getOrCreateResourceGroup(String rgName, String subscription_id, String accessToken){
       
       def api_version = ["api-version": "2016-09-01"]

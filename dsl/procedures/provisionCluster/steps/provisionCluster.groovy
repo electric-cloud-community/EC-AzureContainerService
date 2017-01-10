@@ -20,6 +20,7 @@ def agentPoolVmsize = '$[agentPoolVmsize]'
 def agentPoolDnsPrefix = '$[agentPoolDnsPrefix]'
 
 //Input Parameters needed if running outside of Flow environment
+/*
 def adminUsername = 'ecloudadmin'
 def resourceGroupName = "eccontainer-test"
 def clusterName = "ec-kube-test"
@@ -38,6 +39,7 @@ def agentPoolName = 'agentPool'
 def agentPoolCount = 3
 def agentPoolVmsize = 'Standard_D2'
 def agentPoolDnsPrefix = 'k-agent'
+*/
 // End of input paraneters given for script
 
 
@@ -47,7 +49,7 @@ EFClient efClient = new EFClient()
 
 AzureClient az = new AzureClient()
 def token = az.retrieveAccessToken(pluginConfig)
-println token
+
 az.getOrCreateResourceGroup(resourceGroupName, pluginConfig.subscriptionId ,token)
 
 def deployedAcs = az.getAcs(pluginConfig.subscriptionId, resourceGroupName, clusterName, token)
@@ -83,21 +85,6 @@ println acsPayLoad
 
   }
 
-def tempSvcAccFile = "/tmp/def_serviceAcc"
-def tempSecretFile = "/tmp/def_secret"
-def svcAccName = "default"
-def masterFqdn = az.getMasterFqdn(pluginConfig.subscriptionId, resourceGroupName, clusterName, token)
-def svcAccStatusCode = az.execRemoteKubectl(masterFqdn, "ecloudadmin", "~/.ssh/id_rsa_ecloud", "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile}" )
-az.copyFileFromRemoteServer(masterFqdn, "ecloudadmin", "~/.ssh/id_rsa_ecloud" , tempSvcAccFile, tempSvcAccFile)
-def svcAccFile = new File(tempSvcAccFile)
-def svcAccJson = new JsonSlurper().parseText(svcAccFile.text)
-def secretName =  svcAccJson.secrets.name[0]
-
-def secretStatusCode = az.execRemoteKubectl(masterFqdn, "ecloudadmin", "~/.ssh/id_rsa_ecloud", "kubectl get secret ${secretName} -o json > ${tempSecretFile}" )
-az.copyFileFromRemoteServer(masterFqdn, "ecloudadmin", "~/.ssh/id_rsa_ecloud" , tempSecretFile , tempSecretFile)
-def secretFile = new File(tempSecretFile)
-def secretJson = new JsonSlurper().parseText(secretFile.text)
-println secretJson.data.token
 
 
 // -- Driver script end -- //
