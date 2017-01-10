@@ -237,15 +237,6 @@ public class AzureClient extends BaseClient {
           returnCode
     }
 
-    def retrieveFromYaml(String yamlPath, String parameter){
-
-
-    }
-
-    Object getProject(String projectId, String accessToken) {
-      // TBD
-    }
-
     /**
      * Retrieves the cluster from Azure and returns null if not found
      *
@@ -254,7 +245,7 @@ public class AzureClient extends BaseClient {
       // TBD
     }
 
-    Object getNodePool(String projectId, String zone, String clusterName,String nodePoolName, String accessToken ){
+    Object getAgentPool(String projectId, String zone, String clusterName,String nodePoolName, String accessToken ){
       // TBD
     }
 

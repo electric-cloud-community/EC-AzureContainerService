@@ -31,14 +31,35 @@
         <documentation>Description for the plugin configuration.</documentation>
     </formElement>
     <formElement>
+        <type>entry</type>
+        <label>Tenant ID:</label>
+        <property>tenantId</property>
+        <required>1</required>
+        <documentation>Tenant ID of the Azure Account</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Subscription ID:</label>
+        <property>subscriptionId</property>
+        <required>1</required>
+        <documentation>Subscription ID of the Azure Account</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Client ID:</label>
+        <property>clientId</property>
+        <required>1</required>
+        <documentation>Client ID of the service principal</documentation>
+    </formElement>
+    <formElement>
         <type>credential</type>
-        <label>Service Account:</label>
-        <property>credential</property>
+        <label>Service Principal Password:</label>
+        <property>password</property>
         <required>1</required>
         <userNameLabel>Name:</userNameLabel>
-        <passwordLabel>Service Account Key (in JSON format):</passwordLabel>
+        <passwordLabel>password:</passwordLabel>
         <credentialType>key</credentialType>
-        <documentation>Provide the contents of the JSON file that was generated when you created a private key for the service account in the Google Cloud Platform Console. The service account identified by the key pair in the JSON will be used for accessing Google APIs for managing containers and clusters.</documentation>
+        <documentation>The password of the Service principal created in Azure.</documentation>
         <attachedAsParameterToStep>createAndAttachCredential,testConnection</attachedAsParameterToStep>
     </formElement>
     <formElement>
@@ -48,7 +69,7 @@
         <checkedValue>1</checkedValue>
         <uncheckedValue>0</uncheckedValue>
         <initiallyChecked>1</initiallyChecked>
-        <documentation>Test that the given service account details can be used to successfully connect to the Google Cloud Platform.</documentation>
+        <documentation>Test that the given service account details can be used to successfully connect to the cluster in Azure Container Service.</documentation>
         <required>0</required>
     </formElement>
     <formElement>

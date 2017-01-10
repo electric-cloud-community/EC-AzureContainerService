@@ -21,7 +21,7 @@
         <label>Configuration:</label>
         <property>config</property>
         <required>1</required>
-        <documentation>The name of an existing configuration which holds all the connection information for Google Container Engine.</documentation>
+        <documentation>The name of an existing configuration which holds all the connection information for Azure Container Service.</documentation>
     </formElement> 
     <formElement>
         <type>entry</type>
@@ -31,18 +31,19 @@
         <documentation>The name of the cluster that needs to be provisioned.</documentation>
     </formElement>
     <formElement>
-        <type>textarea</type>
-        <label>Description:</label>
-        <property>clusterDescription</property>
-        <required>0</required>
-        <documentation>Description of the cluster that needs to be provisioned. The cluster description is set at creation time only and cannot be updated so this parameter will be ignored if the cluster already exists.</documentation>
+        <type>entry</type>
+        <label>Resource Group Name:</label>
+        <property>resourceGroupName</property>
+        <required>1</required>
+        <documentation>All cluster resources will be created under this resource group name.</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
-        <label>Google Cloud Platform Project ID:</label>
-        <property>clusterProjectID</property>
-        <required>1</required>
-        <documentation>The Project ID for the Google Cloud Platform project that the cluster belongs to. If the cluster does not exist in the project identified by the Project ID, then it will be created in this project.</documentation>
+        <label>Orchestrator Type:</label>
+        <property>orchestratorType</property>
+        <required>0</required>
+        <value>kubernetes</value>
+        <documentation>The orchestrator to use for provisioning cluster. Can be one of Kubernetes, Swarm, DCOS, Custom etc</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
@@ -53,94 +54,67 @@
     </formElement>
     <formElement>
         <type>entry</type>
-        <label>Node Pool Name:</label>
-        <property>nodePoolName</property>
-        <required>1</required>
-        <value>default-pool</value>
-        <documentation>The node pool to be created or updated.</documentation>
-    </formElement>
-    <formElement>
-        <type>entry</type>
-        <label>Initial Node Pool Size:</label>
-        <property>nodePoolSize</property>
-        <required>1</required>
-        <value>3</value>
-        <documentation>The number of nodes to be created in each of the cluster's zones. Defaults to 3.</documentation>
-    </formElement>
-    <formElement>
-        <type>checkbox</type>
-        <label>Enable Autoscaling for Node Pool?</label>
-        <property>enableAutoscaling</property>
+        <label>Admin User Name:</label>
+        <property>adminUsername</property>
         <required>0</required>
-        <checkedValue>true</checkedValue>
-        <uncheckedValue>false</uncheckedValue>
-        <initiallyChecked>0</initiallyChecked>
-        <documentation>Whether to enable autoscaling for the node pool.</documentation>
+        <value>admin</value>
+        <documentation>The name of Administrator user for Windows VMs</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
-        <label>Minimum Node Pool Size:</label>
-        <property>minNodeCount</property>
-        <required>0</required>
-        <documentation>Minimum number of nodes in the NodePool. Must be &gt;= 1 and &lt;= 'Maximum Node Pool Size'. Applicable if Autoscaling is enabled.</documentation>
-    </formElement>
-    <formElement>
-        <type>entry</type>
-        <label>Maximum Node Pool Size:</label>
-        <property>maxNodeCount</property>
-        <required>0</required>
-        <documentation>Maximum number of nodes in the NodePool. Must be &gt;= 'Minimum Node Pool Size'. Applicable if Autoscaling is enabled.</documentation>
-    </formElement>
-    <formElement>
-        <type>entry</type>
-        <label>Machine Type:</label>
-        <property>machineType</property>
+        <label>Number Of Master VMs:</label>
+        <property>masterCount</property>
         <required>1</required>
-        <documentation>The type of machine to use for nodes.</documentation>
+        <value>1</value>
+        <documentation>The number of masters to be created in the cluster. Values allowed are 1, 3 or 5 and defaultd to 1</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
-        <label>Image Type:</label>
-        <property>imageType</property>
+        <label>Master DNS Prefix:</label>
+        <property>masterDnsPrefix</property>
         <required>1</required>
-        <documentation>Image Type specifies the base OS that the nodes in the cluster will run on.</documentation>
+        <documentation>The DNS prefix to be used to create the FQDN of the master</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
-        <label>Disk Size:</label>
-        <property>diskSize</property>
+        <label>Master DNS Prefix:</label>
+        <property>masterDnsPrefix</property>
         <required>1</required>
-        <value>100</value>
-        <documentation>Size in GB for node VM boot disks. Defaults to 100 GB.</documentation>
-    </formElement>
+        <documentation>The DNS prefix to be used to create the FQDN of the master</documentation>
+    </formElement>    
     <formElement>
         <type>entry</type>
-        <label>Additional Zones:</label>
-        <property>additionalZones</property>
-        <required>0</required>
-        <documentation>The set of additional zones in which the specified node footprint should be replicated. All zones must be in the same region as the cluster's primary zone. If additional-zones is not specified, all nodes will be in the cluster's primary zone.</documentation>
-    </formElement>
-    <formElement>
-        <type>entry</type>
-        <label>Network:</label>
-        <property>network</property>
+        <label>Master FQDN:</label>
+        <property>masterFqdn</property>
         <required>1</required>
-        <value>default</value>
-        <documentation>The Compute Engine Network that the cluster will connect to. Google Container Engine will use this network when creating routes and firewalls for the clusters. Defaults to the 'default' network.</documentation>
+        <documentation>FQDN of the master</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
-        <label>Subnetwork:</label>
-        <property>subnetwork</property>
-        <required>0</required>
-        <documentation>The name of the Google Compute Engine subnetwork to which the cluster is connected.</documentation>
+        <label>Agent Pool Name:</label>
+        <property>agentPoolName</property>
+        <required>1</required>
+        <documentation>The name of agent pool in which agents will be created</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
-        <label>Wait time (in minutes):</label>
-        <property>clusterWaitime</property>
-        <required>0</required>
-        <value>5</value>
-        <documentation>Number of minutes to wait for cluster creation or update operation to complete. Defaults to 5 minutes.</documentation>
+        <label>Agent Pool Count:</label>
+        <property>agentPoolCount</property>
+        <required>1</required>
+        <documentation>Number of agents that should be created in the pool</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Agent Pool VM Size:</label>
+        <property>agentPoolVmsize</property>
+        <required>1</required>
+        <documentation>Size of the Agent VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Agent DNS Prefix:</label>
+        <property>agentPoolDnsPrefix</property>
+        <required>1</required>
+        <documentation>DNS prefix to be used to create the FQDN of agent pool</documentation>
     </formElement>
 </editor>

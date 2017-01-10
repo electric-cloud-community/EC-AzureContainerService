@@ -2,7 +2,7 @@ $[/myProject/scripts/helperClasses]
 
 def pluginProjectName = '$[/myProject/projectName]'
 // Input parameters
-def projectId = '$[clusterProjectID]'
+def resourceGroupName = '$[resourceGroupName]'
 def clusterName = '$[clusterName]'
 def masterZone = '$[masterZone]'
 def configName = '$[config]'
@@ -10,16 +10,12 @@ def configName = '$[config]'
 EFClient efClient = new EFClient()
 def pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
 
-KubernetesClient client = new KubernetesClient()
-String accessToken = client.retrieveAccessToken (pluginConfig)
+AzureClient client = new AzureClient()
+String accessToken = client.retrieveAccessToken(pluginConfig)
 
-def clusterDetails = client.getCluster(projectId, masterZone, clusterName, accessToken)
+def masterFqdn = client.getMasterFqdn(pluginConfig.subscriptionId, resourceGroupName, clusterName, token)
 
-if(!clusterDetails){
-    client.handleError("Cluster '$clusterName' not found in project '$projectId' and zone '$masterZone'")
-}
-
-def clusterEndPoint = "https://${clusterDetails.endpoint}"
+def clusterEndPoint = "https://${masterFqdn}"
 
 efClient.logger WARNING, "Deleting all services, and deployments in the cluster '$clusterName'!"
 def serviceList = client.doHttpGet(clusterEndPoint,
