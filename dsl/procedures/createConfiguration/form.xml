@@ -45,23 +45,44 @@
         <documentation>Subscription ID of the Azure Account</documentation>
     </formElement>
     <formElement>
-        <type>entry</type>
-        <label>Client ID:</label>
-        <property>clientId</property>
-        <required>1</required>
-        <documentation>Client ID of the service principal</documentation>
-    </formElement>
-    <formElement>
         <type>credential</type>
-        <label>Service Principal Password:</label>
-        <property>password</property>
+        <label>Service Principal Details:</label>
+        <property>credential</property>
         <required>1</required>
-        <userNameLabel>Name:</userNameLabel>
-        <passwordLabel>password:</passwordLabel>
+        <userNameLabel>Client ID:</userNameLabel>
+        <passwordLabel>Azure Secret Key:</passwordLabel>
         <credentialType>key</credentialType>
-        <documentation>The password of the Service principal created in Azure.</documentation>
+        <documentation>The Client ID and the Key of the Service principal created in Azure.</documentation>
         <attachedAsParameterToStep>createAndAttachCredential,testConnection</attachedAsParameterToStep>
     </formElement>
+
+    <formElement>
+        <type>textarea</type>
+        <label>Public Key:</label>
+        <property>publicKey</property>
+        <required>0</required>
+        <documentation>The public key from keypair</documentation>
+    </formElement>    
+    <formElement>
+        <type>textarea</type>
+        <label>Private Key:</label>
+        <property>privateKey</property>
+        <required>0</required>
+        <documentation>The private key from keypair</documentation>
+    </formElement>
+<!--
+    <formElement>
+        <type>credential</type>
+        <label>Keypair details:</label>
+        <property>keypair</property>
+        <required>1</required>
+        <userNameLabel>Public Key:</userNameLabel>
+        <passwordLabel>Private Key:</passwordLabel>
+        <credentialType>key</credentialType>
+        <documentation>The public and private key that should be used for cluster creation and communication.</documentation>
+        <attachedAsParameterToStep>createAndAttachCredential,testConnection</attachedAsParameterToStep>
+    </formElement>    
+-->
     <formElement>
         <type>checkbox</type>
         <label>Test Connection?</label>

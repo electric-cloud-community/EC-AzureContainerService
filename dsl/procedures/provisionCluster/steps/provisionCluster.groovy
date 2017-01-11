@@ -25,7 +25,6 @@ def adminUsername = 'ecloudadmin'
 def resourceGroupName = "eccontainer-test"
 def clusterName = "ec-kube-test"
 def orchestratorType = "kubernetes"
-def publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXQRP64gIXqH6OrAKm7527/xafW7BDUDyvydMxoUHJjecfKKOxxzb0tb/cLN3ByeK30b4pfq71IxwxSHMMQCKMLWxFKfEj6tIVbaNA4ANFEPUKeFdMDyn3SjsO6ohG4N3SyRc3TMhADkmu/K5H7JoJPR/EDBwE0kV/E1jQS5urnx2Odau1Vs3I4UUP6eBlS2sgUnyo0FVgWm7te0f/JMGxemLPV/qp8GwGFRD+DKAt7JgE49L/hqcghf3JEayEP/32MmV1dvpgZ1i/srHTX0yHw/DmH+ZmSNxMYaYsRVyVtL1jFG1xczml1MC20oG6EJRSSm+IJ4Q7c41rkVrhsyFF vishalb@Vishals-MacBook-Pro.local"
 def pluginConfig = [ tenantId: "7b4b14e5-87f8-4f09-9c83-f91d9b8a49fd",
                 clientId: "aea53f55-c6b3-484b-bef9-2a2cf972c6af",
                 password: "1/sJBFs9Rj65pv9ya40OxyWx4JGcQEazYEZdTLlFOqw=",
@@ -45,7 +44,9 @@ def agentPoolDnsPrefix = 'k-agent'
 
 // -- Driver script logic to provision cluster -- //
 EFClient efClient = new EFClient()
-//def pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
+def pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
+
+println pluginConfig
 
 AzureClient az = new AzureClient()
 def token = az.retrieveAccessToken(pluginConfig)
@@ -63,8 +64,8 @@ if(deployedAcs.status == 200){
       def acsPayLoad = az.buildContainerServicePayload(
                           location: zone, 
                           orchestratorType: orchestratorType,
-                          clientId: "${pluginConfig.clientId}",
-                          secret: "${pluginConfig.password}",
+                          clientId: "${pluginConfig.credential.userName}",
+                          secret: "${pluginConfig.credential.password}",
                           masterCount: masterCount,
                           masterFqdn: masterFqdn,
                           masterDnsPrefix: masterDnsPrefix,
@@ -75,7 +76,7 @@ if(deployedAcs.status == 200){
                           adminUsername: adminUsername,
                           publicKey: "${pluginConfig.publicKey}"
                       )
-println acsPayLoad
+      println "#### Payload to ACS Service = "+acsPayLoad
       response = az.doHttpPut(az.AZURE_ENDPOINT, 
                                "/subscriptions/${pluginConfig.subscriptionId}/resourcegroups/${resourceGroupName}/providers/Microsoft.ContainerService/containerServices/${clusterName}",
                                token,

@@ -45,7 +45,7 @@ sub main {
     $ec->abortOnError(1);
 
     my $xpath = $ec->retrieveArtifactVersions({
-        artifactVersionName => 'com.electriccloud:EC-GoogleContainerEngine-Grapes:1.0.0'
+        artifactVersionName => 'com.electriccloud:EC-AzureContainerService-Grapes:1.0.0'
     });
 
     # copy to the grape directory ourselves instead of letting

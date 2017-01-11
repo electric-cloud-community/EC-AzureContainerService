@@ -66,6 +66,8 @@ public class AzureClient extends BaseClient {
         AuthenticationResult authResult = null;
         ExecutorService service = null;
 
+        String
+
         try {
             service = Executors.newFixedThreadPool(1);
             String url = AUTH_ENDPOINT + pluginConfig.tenantId + "/oauth2/authorize";

@@ -18,6 +18,6 @@ zip -r ./EC-AzureContainerService.zip dsl/ META-INF/ pages/ lib/ htdocs/
 if [ $DEPLOY -eq 1 ]; then
   echo "Installing plugin ..."
   ectool --server localhost login admin changeme
-  ectool installPlugin ./out/EC-GoogleContainerEngine.jar --force 1
-  ectool promotePlugin EC-GoogleContainerEngine-1.0.0.6
+  ectool installPlugin ./out/EC-AzureContainerService.jar --force 1
+  ectool promotePlugin EC-AzureContainerService-1.0.0.0
 fi  
