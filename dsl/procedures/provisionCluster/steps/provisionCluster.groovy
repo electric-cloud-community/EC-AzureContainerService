@@ -83,9 +83,8 @@ if(deployedAcs.status == 200){
                                acsPayLoad,
                                false,                       
                                az.APIV_2016_09_30)
+      //TBD - Polling for cluster creation logic and updating the VM logic to be added
 
   }
-
-
 
 // -- Driver script end -- //

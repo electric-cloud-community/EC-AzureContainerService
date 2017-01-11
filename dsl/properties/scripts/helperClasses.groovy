@@ -1,3 +1,4 @@
+@Grab(group='net.sf.json-lib', module='json-lib', version='2.3', classifier = 'jdk15') 
 @Grab('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1' )
 @Grab('com.microsoft.azure:adal4j:1.1.3')
 @Grab('com.jcraft:jsch:0.1.54')
@@ -66,15 +67,15 @@ public class AzureClient extends BaseClient {
         AuthenticationResult authResult = null;
         ExecutorService service = null;
 
-        String
-
+        println "VBIYANI pluginConfig="+ pluginConfig
+        println "VBIYANIEND"
         try {
             service = Executors.newFixedThreadPool(1);
             String url = AUTH_ENDPOINT + pluginConfig.tenantId + "/oauth2/authorize";
             authContext = new AuthenticationContext(url,
                                                     false,
                                                     service);
-                ClientCredential clientCred = new ClientCredential( pluginConfig.clientId, pluginConfig.password);
+                ClientCredential clientCred = new ClientCredential( pluginConfig.credential.userName, pluginConfig.credential.password);
                 Future<AuthenticationResult>  future = authContext.acquireToken(
                                                                 AZURE_ENDPOINT+"/",
                                                                 clientCred,
@@ -91,8 +92,7 @@ public class AzureClient extends BaseClient {
     String retrieveOrchestratorAccessToken(def pluginConfig, 
                                            String resourceGroupName, 
                                            String clusterName,
-                                           String token,
-                                           String masterFqdn,
+                                           String token,                                      
                                            String adminUsername){
         def tempSvcAccFile = "/tmp/def_serviceAcc"
         def tempSecretFile = "/tmp/def_secret"

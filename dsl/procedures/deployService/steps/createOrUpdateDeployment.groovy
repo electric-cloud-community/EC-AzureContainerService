@@ -33,7 +33,7 @@ def pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, plugin
 
 AzureClient az = new AzureClient()
 String azAccessToken = az.retrieveAccessToken(pluginConfig)
-//
+
 String accessToken = az.retrieveOrchestratorAccessToken()
 
 def serviceDetails = efClient.getServiceDeploymentDetails(

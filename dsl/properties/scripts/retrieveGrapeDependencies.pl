@@ -21,7 +21,7 @@ retrieveGrapeDependencies.pl
 =head1 DESCRIPTION
 
 
-Retrieves artifacts published as artifact EC-GoogleContainerEngine-Grapes
+Retrieves artifacts published as artifact EC-AzureContainerService-Grapes
 to the grape root directory configured with ec-groovy.
 
 =head1 METHODS
