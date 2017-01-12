@@ -15,7 +15,7 @@ def pluginDir = getProperty("/projects/$pluginName/pluginDir").value
 def pluginCategory = 'Container Management'
 project pluginName, {
 	
-	description = 'Integrates with the Google Container Engine to run Docker containers on the Google Cloud Platform.'
+	description = 'Integrates with the Azure Container Service to run Docker containers on the Google Cloud Platform.'
 	ec_visibility = 'pickListOnly'
 
 	loadPluginProperties(pluginDir, pluginName)
@@ -23,7 +23,7 @@ project pluginName, {
 
 	//register container service plugin metadata
 	property 'ec_container_service_plugin', {
-		displayName = 'Google Container Engine'
+		displayName = 'Azure Container Service'
 		hasConfiguration = 1
 		configurationLocation = 'ec_plugin_cfgs'
 		property 'operations', {

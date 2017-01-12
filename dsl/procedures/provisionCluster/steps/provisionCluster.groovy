@@ -46,8 +46,6 @@ def agentPoolDnsPrefix = 'k-agent'
 EFClient efClient = new EFClient()
 def pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
 
-println pluginConfig
-
 AzureClient az = new AzureClient()
 def token = az.retrieveAccessToken(pluginConfig)
 
@@ -76,7 +74,6 @@ if(deployedAcs.status == 200){
                           adminUsername: adminUsername,
                           publicKey: "${pluginConfig.publicKey}"
                       )
-      println "#### Payload to ACS Service = "+acsPayLoad
       response = az.doHttpPut(az.AZURE_ENDPOINT, 
                                "/subscriptions/${pluginConfig.subscriptionId}/resourcegroups/${resourceGroupName}/providers/Microsoft.ContainerService/containerServices/${clusterName}",
                                token,

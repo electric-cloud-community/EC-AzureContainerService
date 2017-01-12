@@ -55,7 +55,6 @@
         <documentation>The Client ID and the Key of the Service principal created in Azure.</documentation>
         <attachedAsParameterToStep>createAndAttachCredential,testConnection</attachedAsParameterToStep>
     </formElement>
-
     <formElement>
         <type>textarea</type>
         <label>Public Key:</label>

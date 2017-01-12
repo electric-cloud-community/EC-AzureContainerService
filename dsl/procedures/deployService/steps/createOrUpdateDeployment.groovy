@@ -23,18 +23,25 @@ def clusterParameters = efClient.getProvisionClusterParameters(
         environmentName)
 
 def configName = clusterParameters.config
-def clusterEndpoint = clusterParameters.clusterURL
+println "VBIYANI clusterParameters="+clusterParameters
 
 def pluginProjectName = '$[/myProject/projectName]'
 
 def pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
 
-
-
 AzureClient az = new AzureClient()
-String azAccessToken = az.retrieveAccessToken(pluginConfig)
 
-String accessToken = az.retrieveOrchestratorAccessToken()
+String azAccessToken = az.retrieveAccessToken(pluginConfig)
+String masterFqdn = az.getMasterFqdn(pluginConfig.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
+
+String accessToken = az.retrieveOrchestratorAccessToken(pluginConfig,
+                                                        clusterParameters.resourceGroupName,
+                                                        clusterParameters.clusterName,
+                                                        azAccessToken,
+                                                        clusterParameters.adminUsername,
+                                                        masterFqdn)
+
+println "KubeAccessToken="+accessToken
 
 def serviceDetails = efClient.getServiceDeploymentDetails(
         serviceName,
@@ -45,7 +52,7 @@ def serviceDetails = efClient.getServiceDeploymentDetails(
         clusterOrEnvProjectName,
         environmentName)
 
-// This should work as it is without any modification
+String clusterEndPoint = "https://${masterFqdn}"
+KubernetesClient client = new KubernetesClient()
 client.createOrUpdateService(clusterEndPoint, serviceDetails, accessToken)
-
 client.createOrUpdateDeployment(clusterEndPoint, serviceDetails, accessToken)

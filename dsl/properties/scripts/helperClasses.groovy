@@ -25,6 +25,7 @@ import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
 
 import static groovyx.net.http.ContentType.JSON
+import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.Method.DELETE
 import static groovyx.net.http.Method.GET
 import static groovyx.net.http.Method.POST
@@ -67,8 +68,6 @@ public class AzureClient extends BaseClient {
         AuthenticationResult authResult = null;
         ExecutorService service = null;
 
-        println "VBIYANI pluginConfig="+ pluginConfig
-        println "VBIYANIEND"
         try {
             service = Executors.newFixedThreadPool(1);
             String url = AUTH_ENDPOINT + pluginConfig.tenantId + "/oauth2/authorize";
@@ -93,11 +92,11 @@ public class AzureClient extends BaseClient {
                                            String resourceGroupName, 
                                            String clusterName,
                                            String token,                                      
-                                           String adminUsername){
+                                           String adminUsername,
+                                           String masterFqdn){
         def tempSvcAccFile = "/tmp/def_serviceAcc"
         def tempSecretFile = "/tmp/def_secret"
         def svcAccName = "default"
-        def masterFqdn = getMasterFqdn(pluginConfig.subscriptionId, resourceGroupName, clusterName, token)
         def svcAccStatusCode = execRemoteKubectl(masterFqdn, adminUsername, "~/.ssh/id_rsa_ecloud", "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile}" )
         copyFileFromRemoteServer(masterFqdn, adminUsername, "~/.ssh/id_rsa_ecloud" , tempSvcAccFile, tempSvcAccFile)
         def svcAccFile = new File(tempSvcAccFile)
@@ -108,7 +107,8 @@ public class AzureClient extends BaseClient {
         copyFileFromRemoteServer(masterFqdn, adminUsername, "~/.ssh/id_rsa_ecloud" , tempSecretFile , tempSecretFile)
         def secretFile = new File(tempSecretFile)
         def secretJson = new JsonSlurper().parseText(secretFile.text)
-        secretJson.data.token
+        String encodedToken = secretJson.data.token
+        'Bearer '+new String(encodedToken.decodeBase64())
     }
 
     Object getOrCreateResourceGroup(String rgName, String subscription_id, String accessToken){
@@ -207,7 +207,7 @@ public class AzureClient extends BaseClient {
         OutputStream outputStream = null
         // Validation before we proceed, may be abstract in a separate method later
         if(hostName == null){ 
-            println "#### Something wrong"
+            println "#### Something wrong" // TBD
         }
 
         try{
@@ -343,12 +343,12 @@ public class KubernetesClient extends AzureClient {
 
         def response = doHttpGet(clusterEndPoint,
                 "/apis/extensions/v1beta1/namespaces/default/deployments/${formatName(deploymentName)}",
-                accessToken, /*failOnErrorCode*/ false)
+                accessToken, /*failOnErrorCode*/ false, null)
         response.status == 200 ? response.data : null
     }
 
     /**
-     * Retrieves the Service instance from GCE Kubernetes cluster.
+     * Retrieves the Service instance from Kubernetes cluster.
      * Returns null if no Service instance by the given name is found.
      */
     def getService(String clusterEndPoint, String serviceName, String accessToken) {
@@ -357,17 +357,26 @@ public class KubernetesClient extends AzureClient {
 
         def response = doHttpGet(clusterEndPoint,
                 "/api/v1/namespaces/default/services/$serviceName",
-                accessToken, /*failOnErrorCode*/ false)
+                accessToken, /*failOnErrorCode*/ false, null) 
+/*
+          def response = doHttpRequestMethod(GET,
+                                clusterEndPoint,
+                                "/api/v1/namespaces/default/services/$serviceName",
+                                ['Authorization' : accessToken],
+                                false,
+                                null,
+                                null)
+*/
+        println "VBIYANI GetService Response="+response
+
         response.status == 200 ? response.data : null
     }
 
     def createOrUpdateService(String clusterEndPoint, def serviceDetails, String accessToken) {
-
         String serviceName = formatName(serviceDetails.serviceName)
         def deployedService = getService(clusterEndPoint, serviceName, accessToken)
 
         def serviceDefinition = buildServicePayload(serviceDetails, deployedService)
-
         if (OFFLINE) return
 
         if(deployedService){
@@ -377,7 +386,8 @@ public class KubernetesClient extends AzureClient {
                     "/api/v1/namespaces/default/services/$serviceName",
                     ['Authorization' : accessToken],
                     /*failOnErrorCode*/ true,
-                    serviceDefinition)
+                    serviceDefinition,
+                    null)
 
         } else {
             logger INFO, "Creating service $serviceName"
@@ -386,7 +396,8 @@ public class KubernetesClient extends AzureClient {
                     '/api/v1/namespaces/default/services',
                     ['Authorization' : accessToken],
                     /*failOnErrorCode*/ true,
-                    serviceDefinition)
+                    serviceDefinition,
+                    null)
         }
     }
 
@@ -488,7 +499,6 @@ def createOrUpdateSecret(def secretName, def username, def password, def repoBas
     }
 
     def createOrUpdateDeployment(String clusterEndPoint, def serviceDetails, String accessToken) {
-
         // Use the same name as the service name to create a Deployment in Kubernetes
         // that will drive the deployment of the service pods.
         def imagePullSecrets = []
@@ -530,7 +540,8 @@ def createOrUpdateSecret(def secretName, def username, def password, def repoBas
                     "/apis/extensions/v1beta1/namespaces/default/deployments/$deploymentName",
                     ['Authorization' : accessToken],
                     /*failOnErrorCode*/ true,
-                    deployment)
+                    deployment,
+                    null)
 
         } else {
             logger INFO, "Creating deployment $deploymentName"
@@ -539,7 +550,8 @@ def createOrUpdateSecret(def secretName, def username, def password, def repoBas
                     '/apis/extensions/v1beta1/namespaces/default/deployments',
                     ['Authorization' : accessToken],
                     /*failOnErrorCode*/ true,
-                    deployment)
+                    deployment,
+                    null)
         }
 
     }
@@ -953,12 +965,62 @@ public class BaseClient {
                  data      : json]
             }
 
-            response.failure = { resp, reader ->
+            response.failure = { resp, json ->
                 if (failOnErrorCode) {
-                    logger ERROR, "Error details: $reader"
+                    logger ERROR, "Error details: $json"
                     handleError("Request failed with $resp.statusLine")
                 } else {
-                    logger INFO, "Response: $reader"
+                    logger INFO, "Response: $json"
+                }
+
+                [statusLine: resp.statusLine,
+                 status: resp.status]
+            }
+        }
+    }
+
+    Object doHttpRequestMethod(Method method, String requestUrl,
+                         String requestUri, def requestHeaders,
+                         boolean failOnErrorCode = true,
+                         Object requestBody = null,
+                         def queryArgs = null) {
+
+        logger DEBUG, "requestUrl: $requestUrl"
+        logger DEBUG, "method: $method"
+        logger DEBUG, "URI: $requestUri"
+        logger DEBUG, "Header: $requestHeaders"
+        if (queryArgs) {
+            logger DEBUG, "queryArgs: '$queryArgs'"
+        }
+        logger DEBUG, "URL: '$requestUrl$requestUri'"
+        if (requestBody) logger DEBUG, "Payload: $requestBody"
+
+        def http = new HTTPBuilder(requestUrl)
+        http.ignoreSSLIssues()
+
+        http.request(method, TEXT) {
+            if (requestUri) {
+                uri.path = requestUri
+            }
+            if (queryArgs) {
+                uri.query = queryArgs
+            }
+            headers = requestHeaders
+            body = requestBody
+
+            response.success = { resp, json ->
+                logger DEBUG, "request was successful $resp.statusLine.statusCode $json"
+                [statusLine: resp.statusLine,
+                 status: resp.status,
+                 data      : json]
+            }
+
+            response.failure = { resp, json ->
+                if (failOnErrorCode) {
+                    logger ERROR, "Error details: $json"
+                    handleError("Request failed with $resp.statusLine")
+                } else {
+                    logger INFO, "Response: $json"
                 }
 
                 [statusLine: resp.statusLine,
