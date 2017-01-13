@@ -15,7 +15,7 @@ def pluginDir = getProperty("/projects/$pluginName/pluginDir").value
 def pluginCategory = 'Container Management'
 project pluginName, {
 	
-	description = 'Integrates with the Azure Container Service to run Docker containers on the Google Cloud Platform.'
+	description = 'Integrates with the Azure Container Service to run Docker containers on the Windows Azure.'
 	ec_visibility = 'pickListOnly'
 
 	loadPluginProperties(pluginDir, pluginName)

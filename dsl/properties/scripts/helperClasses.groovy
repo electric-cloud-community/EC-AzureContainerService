@@ -952,7 +952,7 @@ public class EFClient extends BaseClient {
 public class BaseClient {
 
     //Meant for use during development if there is no internet access
-    //in which case Google/GCE API calls will become no-ops.
+    //in which case Azure Container Service calls will become no-ops.
     final boolean OFFLINE = false
 
     Object doHttpRequest(Method method, String requestUrl,

@@ -1,7 +1,7 @@
 import java.io.File
 
 procedure 'CreateConfiguration',
-        description: 'Creates a configuration for Google Container Engine', {
+        description: 'Creates a configuration for Azure Container Service', {
 
     step 'setup',
           command: new File(pluginDir, 'dsl/properties/scripts/retrieveGrapeDependencies.pl').text,
