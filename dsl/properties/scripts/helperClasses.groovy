@@ -85,6 +85,7 @@ public class AzureClient extends BaseClient {
         } finally {
             service.shutdown();
         }
+        println "AzureToken="+authResult.getAccessToken()
         return 'Bearer ' + authResult.getAccessToken()
     }
 
@@ -275,7 +276,42 @@ public class AzureClient extends BaseClient {
     }
 
     def pollTillCompletion(String operationUrl, String accessToken, int timeInSeconds, String pollingMsg) {
-      // TBD
+        def elapsedTime = 0;
+        def response
+        
+        while (elapsedTime <= timeInSeconds) {
+            println "While loop!!"
+            def before = System.currentTimeMillis()
+            Thread.sleep(10*1000)
+
+            def responseObject = doHttpGet(AZURE_ENDPOINT,
+                    operationUrl,
+                    accessToken,
+                    /*failOnErrorCode*/ true,
+                    APIV_2016_09_30)
+            println "response DEF = "+responseObject
+            response = new JsonBuilder(responseObject.data)
+            println "JSON Status Check RESPONSE = "+response
+
+            if (response.properties.provisioningState == 'Succeeded') {
+                break
+            }
+            def progress = (response?.properties.provisioningState)?:''
+            logger INFO, "$pollingMsg\nElapsedTime: $elapsedTime seconds"
+            if (progress) {
+                logger INFO, "Progress: $progress"
+            }
+
+            def now = System.currentTimeMillis()
+            elapsedTime = elapsedTime + (now - before)/1000
+        }
+        println "While Loop Done"
+        def details = response?:reponse.data?:''
+
+        if (response?.properties.provisioningState?.data != 'Succeeded') {
+            String status = response.properties.provisioningState
+            handleError("Operation failed to complete in $timeInSeconds seconds. Status= $status.\n$details")
+        }
     }
 
     Object doHttpHead(String requestUrl, String requestUri, String accessToken, boolean failOnErrorCode = true, Map queryArgs){
@@ -293,7 +329,7 @@ public class AzureClient extends BaseClient {
         doHttpRequest(GET,
                 requestUrl,
                 requestUri,
-                ['Authorization' : accessToken],
+                ['Authorization' : accessToken, 'Content-Type': 'application/json'],
                 failOnErrorCode,
                 null,
                 queryArgs)
@@ -358,16 +394,6 @@ public class KubernetesClient extends AzureClient {
         def response = doHttpGet(clusterEndPoint,
                 "/api/v1/namespaces/default/services/$serviceName",
                 accessToken, /*failOnErrorCode*/ false, null) 
-/*
-          def response = doHttpRequestMethod(GET,
-                                clusterEndPoint,
-                                "/api/v1/namespaces/default/services/$serviceName",
-                                ['Authorization' : accessToken],
-                                false,
-                                null,
-                                null)
-*/
-        println "VBIYANI GetService Response="+response
 
         response.status == 200 ? response.data : null
     }
@@ -965,12 +991,12 @@ public class BaseClient {
                  data      : json]
             }
 
-            response.failure = { resp, json ->
+            response.failure = { resp, reader ->
                 if (failOnErrorCode) {
-                    logger ERROR, "Error details: $json"
+                    logger ERROR, "Error details: $reader"
                     handleError("Request failed with $resp.statusLine")
                 } else {
-                    logger INFO, "Response: $json"
+                    logger INFO, "Response: $reader"
                 }
 
                 [statusLine: resp.statusLine,
@@ -979,55 +1005,6 @@ public class BaseClient {
         }
     }
 
-    Object doHttpRequestMethod(Method method, String requestUrl,
-                         String requestUri, def requestHeaders,
-                         boolean failOnErrorCode = true,
-                         Object requestBody = null,
-                         def queryArgs = null) {
-
-        logger DEBUG, "requestUrl: $requestUrl"
-        logger DEBUG, "method: $method"
-        logger DEBUG, "URI: $requestUri"
-        logger DEBUG, "Header: $requestHeaders"
-        if (queryArgs) {
-            logger DEBUG, "queryArgs: '$queryArgs'"
-        }
-        logger DEBUG, "URL: '$requestUrl$requestUri'"
-        if (requestBody) logger DEBUG, "Payload: $requestBody"
-
-        def http = new HTTPBuilder(requestUrl)
-        http.ignoreSSLIssues()
-
-        http.request(method, TEXT) {
-            if (requestUri) {
-                uri.path = requestUri
-            }
-            if (queryArgs) {
-                uri.query = queryArgs
-            }
-            headers = requestHeaders
-            body = requestBody
-
-            response.success = { resp, json ->
-                logger DEBUG, "request was successful $resp.statusLine.statusCode $json"
-                [statusLine: resp.statusLine,
-                 status: resp.status,
-                 data      : json]
-            }
-
-            response.failure = { resp, json ->
-                if (failOnErrorCode) {
-                    logger ERROR, "Error details: $json"
-                    handleError("Request failed with $resp.statusLine")
-                } else {
-                    logger INFO, "Response: $json"
-                }
-
-                [statusLine: resp.statusLine,
-                 status: resp.status]
-            }
-        }
-    }
 
     def mergeObjs(def dest, def src) {
         //Converting both object instances to a map structure

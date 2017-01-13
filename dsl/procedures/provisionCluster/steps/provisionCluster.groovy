@@ -18,6 +18,7 @@ def agentPoolName = '$[agentPoolName]'
 def agentPoolCount = '$[agentPoolCount]'
 def agentPoolVmsize = '$[agentPoolVmsize]'
 def agentPoolDnsPrefix = '$[agentPoolDnsPrefix]'
+def clusterWaitime =  '$[clusterWaitime]' //TODO Retrieve from cluster properties
 
 //Input Parameters needed if running outside of Flow environment
 /*
@@ -45,9 +46,17 @@ def agentPoolDnsPrefix = 'k-agent'
 // -- Driver script logic to provision cluster -- //
 EFClient efClient = new EFClient()
 def pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
+println "pluginConfig="+pluginConfig
 
 AzureClient az = new AzureClient()
+
+int clusterWaitimeInt = (clusterWaitime?:'5').isInteger() ? clusterWaitime.toInteger() : 0
+if (clusterWaitimeInt <= 1) {
+    client.handleError("'$clusterWaitime' invalid as parameter value for 'clusterWaitime'. Parameter value must be >= 1.")
+}
+
 def token = az.retrieveAccessToken(pluginConfig)
+
 
 az.getOrCreateResourceGroup(resourceGroupName, pluginConfig.subscriptionId ,token)
 
@@ -57,6 +66,7 @@ def deployedAcs = az.getAcs(pluginConfig.subscriptionId, resourceGroupName, clus
 // So checking the status is a MUST
 if(deployedAcs.status == 200){
       println "The ACS with name ${clusterName} exists already, updating changes"
+      //TODO The updating of existing cluste to be done
   } else {
       println "The ACS with name ${clusterName} does not exist, creating new one"
       def acsPayLoad = az.buildContainerServicePayload(
@@ -74,14 +84,30 @@ if(deployedAcs.status == 200){
                           adminUsername: adminUsername,
                           publicKey: "${pluginConfig.publicKey}"
                       )
-      response = az.doHttpPut(az.AZURE_ENDPOINT, 
+      def response = az.doHttpPut(az.AZURE_ENDPOINT, 
                                "/subscriptions/${pluginConfig.subscriptionId}/resourcegroups/${resourceGroupName}/providers/Microsoft.ContainerService/containerServices/${clusterName}",
                                token,
                                acsPayLoad,
                                false,                       
                                az.APIV_2016_09_30)
-      //TBD - Polling for cluster creation logic and updating the VM logic to be added
+      println "VBIYANI response="+response
 
+      if(response.status >= 400){
+            if(response.status == 409){
+              client.handleError("A conflict has occured while creating cluster ${clusterName} in resource group ${resourceGroupName}")
+            } else {
+              client.handleError("A error has occured while creating cluster ${clusterName} in resource group ${resourceGroupName}. Cause:${response}")
+            }
+
+      }
+      if(response.data.properties.provisioningState == "Creating"){
+            println "Entering PollTillCompletion"
+            az.pollTillCompletion("/subscriptions/${pluginConfig.subscriptionId}/resourcegroups/${resourceGroupName}/providers/Microsoft.ContainerService/containerServices/${clusterName}",
+                                  token,
+                                  /*timeInSeconds*/ clusterWaitimeInt*60, 
+                                  "Waiting for cluster creation to complete...")
+      }
+      efClient.logger INFO, "Container cluster creation complete"
   }
 
 // -- Driver script end -- //
