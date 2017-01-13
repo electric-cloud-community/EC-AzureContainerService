@@ -278,9 +278,9 @@ public class AzureClient extends BaseClient {
     def pollTillCompletion(String operationUrl, String accessToken, int timeInSeconds, String pollingMsg) {
         def elapsedTime = 0;
         def response
+        String provisioningState = ""
         
         while (elapsedTime <= timeInSeconds) {
-            println "While loop!!"
             def before = System.currentTimeMillis()
             Thread.sleep(10*1000)
 
@@ -289,28 +289,27 @@ public class AzureClient extends BaseClient {
                     accessToken,
                     /*failOnErrorCode*/ true,
                     APIV_2016_09_30)
-            println "response DEF = "+responseObject
-            response = new JsonBuilder(responseObject.data)
-            println "JSON Status Check RESPONSE = "+response
+            response = responseObject.data
+            provisioningState = (response.properties.provisioningState)
 
-            if (response.properties.provisioningState == 'Succeeded') {
+            if (provisioningState == 'Succeeded'){
                 break
             }
-            def progress = (response?.properties.provisioningState)?:''
+            if (provisioningState == 'Failed'){
+                break
+            }
+
             logger INFO, "$pollingMsg\nElapsedTime: $elapsedTime seconds"
-            if (progress) {
-                logger INFO, "Progress: $progress"
+            if (provisioningState) {
+                logger INFO, "Progress: $provisioningState"
             }
 
             def now = System.currentTimeMillis()
             elapsedTime = elapsedTime + (now - before)/1000
         }
-        println "While Loop Done"
-        def details = response?:reponse.data?:''
 
-        if (response?.properties.provisioningState?.data != 'Succeeded') {
-            String status = response.properties.provisioningState
-            handleError("Operation failed to complete in $timeInSeconds seconds. Status= $status.\n$details")
+        if (provisioningState != 'Succeeded') {
+            handleError("Operation failed to complete in $timeInSeconds seconds. Status= $provisioningState.\n$response")
         }
     }
 
