@@ -17,7 +17,7 @@
             <p>Plugin version 1.0.0</p>
             <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade"/>
 			<h3>Overview</h3>
-			<p>EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using one of orchestrors i.e. Kubernetes, DCOS, Swarm or a custom.
+			<p>EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using one of orchestrors i.e. Kubernetes, DCOS, Swarm or a custom. This current version has support for Kubernetes orchestator engine.
 			</p>
             <p class="important">Please note that some of names given in Flow UI will be modified to comply with the naming conventions of Kubernetes. Specifically characters such as "space , _ " will be converted to "-". Such parameters are marked with a asterisk (*)  in procedure details</p>
             <h1>Contents</h1>
@@ -161,14 +161,58 @@
                         <tr>
                             <td>Agent DNS Prefix</td>
                             <td>DNS prefix to be used to create the FQDN of agent pool</td>
+                        </tr>
+                        <tr>
+                            <td >Wait time (in minutes)</td>
+                            <td>Number of minutes to wait for cluster creation or update operation to complete. Defaults to 5 minutes.</td>
                         </tr>                                                 
                         <!-- TODO other params -->
                     </tbody>
                 </table>
             </div>  
-
-
-
+            <div id="DeployService">
+                <h2>Deploy service</h2>
+                <p>This procedure deploys a service and application to a already provisioned cluster</p>
+                <h3>Depoy Service Parameters</h3>
+                <table class="grid">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="required">Service Name *</td>
+                            <td>The name of the service in Deploy that encapsulates the service to be deployed on the Google container cluster.</td>
+                        </tr>
+                        <tr>
+                            <td class="required">Service Projet Name *</td>
+                            <td>The name of the project that the service belongs to. In case of an application-level service it also owns the application.</td>
+                        </tr>
+                        <tr>
+                            <td class="required">Application Name *</td>
+                            <td>The name of the application that the service belongs to. Not applicable for a top-level service.</td>
+                        </tr>
+                        <tr>
+                            <td class="required">Application Revision ID</td>
+                            <td>Revision Id of the application version that the service belongs to.</td>
+                        </tr>  
+                        <tr>
+                            <td class="required">Cluster name *</td>
+                            <td>The name of the cluster in Deploy that encapsulates the Google container cluster on which the service is to be deployed.</td>
+                        </tr>                        
+                        <tr>
+                            <td class="required">Cluster or environment project name</td>
+                            <td>The name of the project that the cluster belongs to if it is a top-level project cluster. Or the name of the project that the environment belongs to if it is an environment-scoped cluster.</td>
+                        </tr>
+                        <tr>
+                            <td class="required">Environment Name</td>
+                            <td>The name of the environment that the cluster belongs to. Not applicable for a top-level project cluster.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 	</body>
 </html>	
