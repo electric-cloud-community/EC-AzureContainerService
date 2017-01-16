@@ -22,8 +22,7 @@ def clusterParameters = efClient.getProvisionClusterParameters(
         clusterOrEnvProjectName,
         environmentName)
 
-println "clusterParameters="+clusterParameters
-
+def configName = clusterParameters.config
 def pluginProjectName = '$[/myProject/projectName]'
 
 def pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
