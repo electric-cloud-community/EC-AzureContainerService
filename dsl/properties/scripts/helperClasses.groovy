@@ -263,18 +263,6 @@ public class AzureClient extends BaseClient {
           returnCode
     }
 
-    /**
-     * Retrieves the cluster from Azure and returns null if not found
-     *
-     */
-    Object getCluster(String projectId, String zone, String clusterName, String accessToken ){
-      // TBD
-    }
-
-    Object getAgentPool(String projectId, String zone, String clusterName,String nodePoolName, String accessToken ){
-      // TBD
-    }
-
     def pollTillCompletion(String operationUrl, String accessToken, int timeInSeconds, String pollingMsg) {
         def elapsedTime = 0;
         def response

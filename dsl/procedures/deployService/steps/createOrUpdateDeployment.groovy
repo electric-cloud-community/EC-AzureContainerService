@@ -22,8 +22,7 @@ def clusterParameters = efClient.getProvisionClusterParameters(
         clusterOrEnvProjectName,
         environmentName)
 
-def configName = clusterParameters.config
-println "VBIYANI clusterParameters="+clusterParameters
+println "clusterParameters="+clusterParameters
 
 def pluginProjectName = '$[/myProject/projectName]'
 

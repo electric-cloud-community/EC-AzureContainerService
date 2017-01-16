@@ -112,7 +112,7 @@
                     <tbody>
                         <tr>
                             <td class="required">Configuration</td>
-                            <td>The name of an existing configuration which holds all the connection information for Google Container Engine.</td>
+                            <td>The name of an existing configuration which holds all the connection information for Azure Container Engine.</td>
                         </tr>
                         <tr>
                             <td class="required">Container Cluster Name *</td>

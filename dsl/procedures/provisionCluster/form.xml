@@ -58,7 +58,7 @@
         <property>adminUsername</property>
         <required>0</required>
         <value>admin</value>
-        <documentation>The name of Administrator user for Windows VMs</documentation>
+        <documentation>The name of Administrator user for VMs</documentation>
     </formElement>
     <formElement>
         <type>entry</type>

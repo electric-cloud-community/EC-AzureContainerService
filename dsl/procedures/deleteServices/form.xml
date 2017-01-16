@@ -25,6 +25,13 @@
     </formElement> 
     <formElement>
         <type>entry</type>
+        <label>Resource Group Name:</label>
+        <property>resourceGroupName</property>
+        <required>1</required>
+        <documentation>All cluster resources will be created under this resource group name.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
         <label>Container Cluster Name:</label>
         <property>clusterName</property>
         <required>1</required>
@@ -32,16 +39,10 @@
     </formElement>
     <formElement>
         <type>entry</type>
-        <label>Google Cloud Platform Project ID:</label>
-        <property>clusterProjectID</property>
-        <required>1</required>
-        <documentation>The Project ID for the Azure Container Service project that the cluster belongs to.</documentation>
-    </formElement>
-    <formElement>
-        <type>entry</type>
-        <label>Master Zone:</label>
-        <property>masterZone</property>
-        <required>1</required>
-        <documentation>The primary zone for the cluster.</documentation>
+        <label>Admin User Name:</label>
+        <property>adminUsername</property>
+        <required>0</required>
+        <value>admin</value>
+        <documentation>The name of Administrator user for VMs</documentation>
     </formElement>
 </editor>
