@@ -98,14 +98,22 @@ public class AzureClient extends BaseClient {
         def tempSvcAccFile = "/tmp/def_serviceAcc"
         def tempSecretFile = "/tmp/def_secret"
         def svcAccName = "default"
-        def svcAccStatusCode = execRemoteKubectl(masterFqdn, adminUsername, "~/.ssh/id_rsa_ecloud", "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile}" )
-        copyFileFromRemoteServer(masterFqdn, adminUsername, "~/.ssh/id_rsa_ecloud" , tempSvcAccFile, tempSvcAccFile)
+        String passphrase = ""
+        String publicKey = pluginConfig.publicKey
+        String privateKey = pluginConfig.privateKey
+        println "publicKey="+publicKey
+        println "Before privateKey="+privateKey
+        //privateKey = '''ENTER_PRIVATE_KEY_HERE_FOR_TEST'''
+        println "After privateKey="+privateKey
+        def svcAccStatusCode = execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile}" )
+        
+        copyFileFromRemoteServer(masterFqdn, adminUsername, privateKey, publicKey , passphrase, tempSvcAccFile, tempSvcAccFile)
         def svcAccFile = new File(tempSvcAccFile)
         def svcAccJson = new JsonSlurper().parseText(svcAccFile.text)
         def secretName =  svcAccJson.secrets.name[0]
 
-        def secretStatusCode = execRemoteKubectl(masterFqdn, adminUsername, "~/.ssh/id_rsa_ecloud", "kubectl get secret ${secretName} -o json > ${tempSecretFile}" )
-        copyFileFromRemoteServer(masterFqdn, adminUsername, "~/.ssh/id_rsa_ecloud" , tempSecretFile , tempSecretFile)
+        def secretStatusCode = execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get secret ${secretName} -o json > ${tempSecretFile}" )
+        copyFileFromRemoteServer(masterFqdn, adminUsername, privateKey, publicKey, passphrase, tempSecretFile , tempSecretFile)
         def secretFile = new File(tempSecretFile)
         def secretJson = new JsonSlurper().parseText(secretFile.text)
         String encodedToken = secretJson.data.token
@@ -201,7 +209,7 @@ public class AzureClient extends BaseClient {
 
     }
 
-    def copyFileFromRemoteServer(String hostName, String username, String privateKey, String remoteFilePath, String localDropPath){
+    def copyFileFromRemoteServer(String hostName, String username, String privateKey, String publicKey, String passphrase, String remoteFilePath, String localDropPath){
         ChannelSftp channel = null
         Session session = null
         InputStream inputStream  = null
@@ -213,7 +221,10 @@ public class AzureClient extends BaseClient {
 
         try{
           JSch jsch = new JSch()
-          jsch.addIdentity(privateKey)
+          jsch.addIdentity("ecloudKey",
+                           privateKey.getBytes(),
+                           publicKey.getBytes(),
+                           passphrase.getBytes())
           session = jsch.getSession(username, hostName)
           session.setConfig("StrictHostKeyChecking", "no")
           session.connect()
@@ -238,14 +249,17 @@ public class AzureClient extends BaseClient {
 
     }
 
-    def execRemoteKubectl(String hostName, String username, String privateKey, String command){
+    def execRemoteKubectl(String hostName, String username, String privateKey, String publicKey, String passphrase, String command){
         Channel channel = null
         Session session = null
         int returnCode = 1
 
         try{
               JSch jsch = new JSch()
-              jsch.addIdentity(privateKey)
+              jsch.addIdentity("ecloudKey",
+                           privateKey.getBytes(),
+                           publicKey.getBytes(),
+                           passphrase.getBytes())
               session = jsch.getSession(username, hostName)
               session.setConfig("StrictHostKeyChecking", "no")
               session.connect()
