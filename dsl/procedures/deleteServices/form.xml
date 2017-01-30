@@ -45,4 +45,11 @@
         <value>admin</value>
         <documentation>The name of Administrator user for VMs</documentation>
     </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Namespace name:</label>
+        <property>namespace</property>
+        <required>1</required>
+        <documentation>The name of the namespace on which cleanup procedure should be performed.</documentation>
+    </formElement> 
 </editor>

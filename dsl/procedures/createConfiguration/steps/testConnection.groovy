@@ -1,4 +1,4 @@
-$[/myProject/scripts/helperClasses]
+$[/myProject/scripts/preamble]
 
 EFClient efClient = new EFClient()
 def actualParams = efClient.getActualParameters()

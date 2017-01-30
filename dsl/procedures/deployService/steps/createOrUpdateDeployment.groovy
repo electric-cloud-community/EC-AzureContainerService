@@ -1,4 +1,4 @@
-$[/myProject/scripts/helperClasses]
+$[/myProject/scripts/preamble]
 
 //// Input parameters
 String serviceName = '$[serviceName]'
@@ -13,6 +13,10 @@ if (!clusterOrEnvProjectName) {
 String environmentName = '$[environmentName]'
 String applicationRevisionId = '$[applicationRevisionId]'
 
+String resultsPropertySheet = '$[resultsPropertySheet]'
+if (!resultsPropertySheet) {
+    resultsPropertySheet = '/myParent/parent'
+}
 //// -- Driverl script logic to provision cluster -- //
 
 EFClient efClient = new EFClient()
@@ -23,34 +27,34 @@ def clusterParameters = efClient.getProvisionClusterParameters(
         environmentName)
 
 def configName = clusterParameters.config
+String namespace= clusterParameters.namespace
 def pluginProjectName = '$[/myProject/projectName]'
 
 def pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
 
-AzureClient az = new AzureClient()
+AzureClient client = new AzureClient()
 
-String azAccessToken = az.retrieveAccessToken(pluginConfig)
-String masterFqdn = az.getMasterFqdn(pluginConfig.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
+String azAccessToken = client.retrieveAccessToken(pluginConfig)
+String masterFqdn = client.getMasterFqdn(pluginConfig.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
+String clusterEndPoint = "https://${masterFqdn}"
 
-String accessToken = az.retrieveOrchestratorAccessToken(pluginConfig,
+String accessToken = client.retrieveOrchestratorAccessToken(pluginConfig,
                                                         clusterParameters.resourceGroupName,
                                                         clusterParameters.clusterName,
                                                         azAccessToken,
                                                         clusterParameters.adminUsername,
                                                         masterFqdn)
 
-println "KubeAccessToken="+accessToken
-
-def serviceDetails = efClient.getServiceDeploymentDetails(
+client.deployService(
+        efClient,
+        accessToken,
+        clusterEndPoint,
+        namespace,
         serviceName,
         serviceProjectName,
         applicationName,
         applicationRevisionId,
         clusterName,
         clusterOrEnvProjectName,
-        environmentName)
-
-String clusterEndPoint = "https://${masterFqdn}"
-KubernetesClient client = new KubernetesClient()
-client.createOrUpdateService(clusterEndPoint, serviceDetails, accessToken)
-client.createOrUpdateDeployment(clusterEndPoint, serviceDetails, accessToken)
+        environmentName,
+        resultsPropertySheet)

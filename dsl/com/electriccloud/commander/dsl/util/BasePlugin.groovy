@@ -99,7 +99,7 @@ abstract class BasePlugin extends DslDelegatingScript {
 		}
 	}
 
-	def loadProcedures(String pluginDir, String pluginKey, String pluginName, pluginCategory) {
+	def loadProcedures(String pluginDir, String pluginKey, String pluginName, String pluginCategory) {
 
 		// Loop over the sub-directories in the procedures directory
 		// and evaluate procedures if a procedure.dsl file exists
@@ -107,9 +107,9 @@ abstract class BasePlugin extends DslDelegatingScript {
 		File procsDir = new File(pluginDir, 'dsl/procedures')
 		procsDir.eachDir { 
 			
-			File procDslFile = new File(it, 'procedure.dsl')
-			println "Processing procedure DSL file ${procDslFile.absolutePath}"
-			if (procDslFile.exists()) {
+            File procDslFile = getProcedureDSLFile(it)
+			if (procDslFile?.exists()) {
+				println "Processing procedure DSL file ${procDslFile.absolutePath}"
 				def proc = loadProcedure(pluginDir, pluginKey, pluginName, procDslFile.absolutePath)
 				
 				//create formal parameters using form.xml
@@ -126,7 +126,21 @@ abstract class BasePlugin extends DslDelegatingScript {
 		// plugin boiler-plate
 		setupCustomEditorData(pluginKey, pluginName, pluginCategory)
 	}
-	
+
+    def getProcedureDSLFile(File procedureDir) {
+
+		if (procedureDir.name.toLowerCase().endsWith('_ignore')) {
+			return null
+		}
+		
+		File procDSLFile = new File(procedureDir, 'procedure.dsl')
+		if(procDSLFile.exists()) {
+			return procDSLFile
+		} else {
+			return new File(procedureDir, 'procedure.groovy')
+		}
+	}
+
 	def loadProcedure(String pluginDir, String pluginKey, String pluginName, String dslFile) {
 		return evalInlineDsl(dslFile, [pluginKey: pluginKey, pluginName: pluginName, pluginDir: pluginDir])
 	}
@@ -149,9 +163,8 @@ abstract class BasePlugin extends DslDelegatingScript {
 		procedure proc.procedureName, {
 				
 			ec_parameterForm = formXml.text
-			//TODO: Update help link in form.xml
 			formElements.formElement.each { formElement ->
-				formalParameter formElement.property,
+				formalParameter "$formElement.property",
 					defaultValue: formElement.value,
 					required: formElement.required,
 					description: formElement.description,
@@ -171,7 +184,7 @@ abstract class BasePlugin extends DslDelegatingScript {
 				//setup custom editor data for each parameter
 				property 'ec_customEditorData', procedureName: proc.procedureName, {
 					property 'parameters', {
-                       property formElement.property, {
+                       property "$formElement.property", {
 							formType = 'standard'
 						    println "Form element $formElement.property, type: '${formElement.type.toString()}'"
 							if ('checkbox' == formElement.type.toString()) {

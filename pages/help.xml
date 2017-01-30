@@ -1,7 +1,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta content="text/html; charset=us-ascii" http-equiv="content-type"/>
-        <title>EC-GoogleContainerEngine Plugin</title>
+        <title>EC-AzureContainerService Plugin</title>
+        <link rel="stylesheet" href="../../plugins/@PLUGIN_NAME@/pluginhelp.css" type="text/css" media="screen"/>
     </head>
     <style>
     table, th, td {
@@ -213,6 +214,17 @@
                     </tbody>
                 </table>
             </div>
+            <h1 id="releaseNotes">Release Notes</h1>
+            <h3>EC-AzureContainerService 1.0.1</h3>
+            <ul>
+                <li>Refactored the Kubernetes API client code and added a dependency to EC-Kubernetes plugin.
+                <p>This plugin version now requires EC-Kubernetes plugin version 1.0.0.6 or higher to be installed.</p>
+                </li>
+            </ul>
+            <h3>EC-AzureContainerService 1.0.0</h3>
+            <ul>
+                <li>First release.</li>
+            </ul>
         </div>
 	</body>
 </html>	
