@@ -1,0 +1,48 @@
+<!--
+
+     Copyright 2016 Electric Cloud, Inc.
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+
+-->
+<editor>
+    <formElement>
+        <type>entry</type>
+        <label>Configuration:</label>
+        <property>config</property>
+        <required>1</required>
+        <documentation>The name of an existing configuration which holds all the connection information for Azure Container Service.</documentation>
+    </formElement> 
+    <formElement>
+        <type>entry</type>
+        <label>Resource Group Name:</label>
+        <property>resourceGroupName</property>
+        <required>1</required>
+        <documentation>All cluster resources will be created under this resource group name.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Container Cluster Name:</label>
+        <property>clusterName</property>
+        <required>1</required>
+        <documentation>The name of the cluster whose services and deployments need to be deleted.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Admin User Name:</label>
+        <property>adminUsername</property>
+        <required>0</required>
+        <value>admin</value>
+        <documentation>The name of Administrator user for VMs</documentation>
+    </formElement>
+</editor>
