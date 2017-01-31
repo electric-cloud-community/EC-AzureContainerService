@@ -117,12 +117,4 @@
         <required>1</required>
         <documentation>Timeout for cluster creation. If the cluster does not get created in this amount of time, the procedure fails.</documentation>
     </formElement>
-    <formElement>
-        <type>entry</type>
-        <label>Namespace Name:</label>
-        <property>namespace</property>
-        <required>0</required>
-        <value>default</value>
-        <documentation>The name of Kubernetes namespace to which the services and deployments should be deployed.</documentation>
-    </formElement>
 </editor>

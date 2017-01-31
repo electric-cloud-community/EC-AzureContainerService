@@ -12,6 +12,7 @@ if (!clusterOrEnvProjectName) {
 }
 String environmentName = '$[environmentName]'
 String applicationRevisionId = '$[applicationRevisionId]'
+String namespace = '$[namespace]'
 
 String resultsPropertySheet = '$[resultsPropertySheet]'
 if (!resultsPropertySheet) {
@@ -27,7 +28,6 @@ def clusterParameters = efClient.getProvisionClusterParameters(
         environmentName)
 
 def configName = clusterParameters.config
-String namespace= clusterParameters.namespace
 def pluginProjectName = '$[/myProject/projectName]'
 
 def pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
