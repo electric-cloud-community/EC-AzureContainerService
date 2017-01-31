@@ -12,7 +12,6 @@ if (!clusterOrEnvProjectName) {
 }
 String environmentName = '$[environmentName]'
 String applicationRevisionId = '$[applicationRevisionId]'
-String namespace = '$[namespace]'
 
 String resultsPropertySheet = '$[resultsPropertySheet]'
 if (!resultsPropertySheet) {
@@ -37,7 +36,7 @@ AzureClient client = new AzureClient()
 String azAccessToken = client.retrieveAccessToken(pluginConfig)
 String masterFqdn = client.getMasterFqdn(pluginConfig.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
 String clusterEndPoint = "https://${masterFqdn}"
-
+String namespace = client.getServiceParameter(serviceDetails, 'namespace', 'default')
 String accessToken = client.retrieveOrchestratorAccessToken(pluginConfig,
                                                         clusterParameters.resourceGroupName,
                                                         clusterParameters.clusterName,
