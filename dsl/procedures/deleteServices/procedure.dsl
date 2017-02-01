@@ -6,15 +6,19 @@ procedure 'Cleanup Cluster - Experimental',
     // don't add a step picker for this procedure since it is experimental and meant for demo/testing purposes only.
     property 'standardStepPicker', value: false
 
-	step 'setup',
-    	  command: new File(pluginDir, 'dsl/properties/scripts/retrieveGrapeDependencies.pl').text,
-    	  errorHandling: 'failProcedure',
-    	  exclusiveMode: 'none',
-    	  postProcessor: 'postp',
-    	  releaseMode: 'none',
-    	  shell: 'ec-perl',
-    	  timeLimitUnits: 'minutes'
+    step 'setup',
+      subproject: '/plugins/EC-Kubernetes/project',
+      subprocedure: 'Setup',
+      command: null,
+      errorHandling: 'failProcedure',
+      exclusiveMode: 'none',
+      postProcessor: 'postp',
+      releaseMode: 'none',
+      timeLimitUnits: 'minutes', {
 
+        actualParameter 'additionalArtifactVersion', 'com.electriccloud:EC-AzureContainerService-Grapes:1.0.0'
+    }
+    
 	step 'cleanup',
 	  command: new File(pluginDir, 'dsl/procedures/deleteServices/steps/deleteServices.groovy').text,
 	  errorHandling: 'failProcedure',
