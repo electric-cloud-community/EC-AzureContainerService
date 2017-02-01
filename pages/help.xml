@@ -215,15 +215,9 @@
                 </table>
             </div>
             <h1 id="releaseNotes">Release Notes</h1>
-            <h3>EC-AzureContainerService 1.0.1</h3>
-            <ul>
-                <li>Refactored the Kubernetes API client code and added a dependency to EC-Kubernetes plugin.
-                <p>This plugin version now requires EC-Kubernetes plugin version 1.0.0.6 or higher to be installed.</p>
-                </li>
-            </ul>
             <h3>EC-AzureContainerService 1.0.0</h3>
             <ul>
-                <li>First release.</li>
+                <li>First release. This plugin requires EC-Kubernetes plugin version 1.0.0.6 or higher to be installed.</li>
             </ul>
         </div>
 	</body>
