@@ -36,13 +36,22 @@ AzureClient client = new AzureClient()
 String azAccessToken = client.retrieveAccessToken(pluginConfig)
 String masterFqdn = client.getMasterFqdn(pluginConfig.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
 String clusterEndPoint = "https://${masterFqdn}"
-String namespace = client.getServiceParameter(serviceDetails, 'namespace', 'default')
 String accessToken = client.retrieveOrchestratorAccessToken(pluginConfig,
                                                         clusterParameters.resourceGroupName,
                                                         clusterParameters.clusterName,
                                                         azAccessToken,
                                                         clusterParameters.adminUsername,
                                                         masterFqdn)
+
+def serviceDetails = efClient.getServiceDeploymentDetails(
+                serviceName,
+                serviceProjectName,
+                applicationName,
+                applicationRevisionId,
+                clusterName,
+                clusterOrEnvProjectName,
+                environmentName)
+String namespace = client.getServiceParameter(serviceDetails, 'namespace', 'default')
 
 client.deployService(
         efClient,
