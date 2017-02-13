@@ -27,7 +27,7 @@ AzureClient az = new AzureClient()
 
 int clusterWaitimeInt = (clusterWaitime?:'5').isInteger() ? clusterWaitime.toInteger() : 0
 if (clusterWaitimeInt <= 1) {
-    client.handleError("'$clusterWaitime' invalid as parameter value for 'clusterWaitime'. Parameter value must be >= 1.")
+    efClient.handleError("'$clusterWaitime' invalid as parameter value for 'clusterWaitime'. Parameter value must be >= 1.")
 }
 
 def token = az.retrieveAccessToken(pluginConfig)
@@ -67,9 +67,9 @@ if(deployedAcs.status == 200){
 
       if(response.status >= 400){
             if(response.status == 409){
-              client.handleError("It is not allowed to update ${clusterName} in resource group ${resourceGroupName}, the error is: ${response}")
+              efClient.handleError("It is not allowed to update ${clusterName} in resource group ${resourceGroupName}, the error is: ${response}")
             } else {
-              client.handleError("A error has occured while updating cluster ${clusterName} in resource group ${resourceGroupName}. Cause:${response}")
+              efClient.handleError("A error has occured while updating cluster ${clusterName} in resource group ${resourceGroupName}. Cause:${response}")
             }
 
       }
@@ -91,9 +91,9 @@ if(deployedAcs.status == 200){
 
       if(response.status >= 400){
             if(response.status == 409){
-              client.handleError("A conflict has occured while creating cluster ${clusterName} in resource group ${resourceGroupName}")
+              efClient.handleError("A conflict has occured while creating cluster ${clusterName} in resource group ${resourceGroupName}")
             } else {
-              client.handleError("A error has occured while creating cluster ${clusterName} in resource group ${resourceGroupName}. Cause:${response}")
+              efClient.handleError("A error has occured while creating cluster ${clusterName} in resource group ${resourceGroupName}. Cause:${response}")
             }
 
       }
