@@ -5,7 +5,7 @@
   <commander-version min="6.0" />
   <configure>ec_config</configure>
   <depends min="1.4.1">EC-PluginManager</depends>
-  <depends min="1.0.0.8">EC-Kubernetes</depends>
+  <!-- <depends min="1.0.0.8">EC-Kubernetes</depends> -->
   <description>Integrates with Azure Container Service to run Docker containers on the Azure Cloud Platform.</description>
   <help>help.xml</help>
   <key>EC-AzureContainerService</key>
