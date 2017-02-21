@@ -83,17 +83,11 @@ public class AzureClient extends KubernetesClient {
         String passphrase = ""
         String publicKey = pluginConfig.publicKey
         String privateKey = pluginConfig.privateKey
-        println "publicKey="+publicKey
-        println "Before privateKey="+privateKey
-        //privateKey = '''ENTER_PRIVATE_KEY_HERE_FOR_TEST'''
-        println "After privateKey="+privateKey
         def svcAccStatusCode = execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile}" )
-        
         copyFileFromRemoteServer(masterFqdn, adminUsername, privateKey, publicKey , passphrase, tempSvcAccFile, tempSvcAccFile)
         def svcAccFile = new File(tempSvcAccFile)
         def svcAccJson = new JsonSlurper().parseText(svcAccFile.text)
         def secretName =  svcAccJson.secrets.name[0]
-
         def secretStatusCode = execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get secret ${secretName} -o json > ${tempSecretFile}" )
         copyFileFromRemoteServer(masterFqdn, adminUsername, privateKey, publicKey, passphrase, tempSecretFile , tempSecretFile)
         def secretFile = new File(tempSecretFile)
