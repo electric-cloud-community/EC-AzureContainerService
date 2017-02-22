@@ -18,6 +18,7 @@ def agentPoolCount = '$[agentPoolCount]'
 def agentPoolVmsize = '$[agentPoolVmsize]'
 def agentPoolDnsPrefix = '$[agentPoolDnsPrefix]'
 def clusterWaitime =  '$[clusterWaitime]' //TODO Retrieve from cluster properties
+def clusterPrepTime = '$[clusterPrepTime]'
 
 // -- Driver script logic to provision cluster -- //
 EFClient efClient = new EFClient()
@@ -103,6 +104,8 @@ if(deployedAcs.status == 200){
                                   /*timeInSeconds*/ clusterWaitimeInt*60, 
                                   "Waiting for cluster creation to complete...")
       }
+      int postProvisionWaitTime = ((clusterPrepTime?:'5').isInteger() ? clusterPrepTime.toInteger() : 5) * 1000
+      sleep()
       efClient.logger INFO, "Container cluster creation complete"
   }
 
