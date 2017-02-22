@@ -117,4 +117,12 @@
         <required>1</required>
         <documentation>Timeout for cluster creation. If the cluster does not get created in this amount of time, the procedure fails.</documentation>
     </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Time for cluster preparation after creation (In Seconds):</label>
+        <property>clusterPrepTime</property>
+        <required>0</required>
+        <default>5</default>
+        <documentation>After the cluster is created it need to create service accounts etc. which can take a few seconds before services can be deployed</documentation>
+    </formElement>
 </editor>
