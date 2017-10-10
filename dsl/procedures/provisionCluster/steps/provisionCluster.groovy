@@ -105,7 +105,7 @@ if(deployedAcs.status == 200){
                                   "Waiting for cluster creation to complete...")
       }
       int postProvisionWaitTime = ((clusterPrepTime?:'5').isInteger() ? clusterPrepTime.toInteger() : 5) * 1000
-      sleep()
+      Thread.sleep(postProvisionWaitTime)
       efClient.logger INFO, "Container cluster creation complete"
   }
 
