@@ -87,7 +87,7 @@ if(deployedAcs.status == 200){
                                "/subscriptions/${pluginConfig.subscriptionId}/resourcegroups/${resourceGroupName}/providers/Microsoft.ContainerService/containerServices/${clusterName}",
                                token,
                                acsPayLoad,
-                               false,                       
+                               /*failOnErrorCode*/ true,
                                az.APIV_2016_09_30)
 
       if(response.status >= 400){
