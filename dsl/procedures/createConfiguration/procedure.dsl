@@ -23,6 +23,7 @@ procedure 'CreateConfiguration',
             postProcessor: 'postp',
             releaseMode: 'none',
             shell: 'ec-groovy',
+            condition: '$[/myJob/testConnection]',
             timeLimitUnits: 'minutes'
 
     step 'createConfiguration',
