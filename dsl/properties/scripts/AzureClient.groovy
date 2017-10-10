@@ -62,13 +62,10 @@ public class AzureClient extends KubernetesClient {
                                                                 clientCred,
                                                                 null);
             authResult = future.get();
-        } catch (Exception ex) {
-            ex.printStackTrace()
+            return 'Bearer ' + authResult.getAccessToken()
         } finally {
             service.shutdown();
         }
-        println "AzureToken="+authResult.getAccessToken()
-        return 'Bearer ' + authResult.getAccessToken()
     }
 
     String retrieveOrchestratorAccessToken(def pluginConfig, 
