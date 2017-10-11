@@ -58,6 +58,19 @@ $logfile .= $dslReponse->findnodes_as_string("/");
 my $errorMessage = $commander->getError();
 if ( !$errorMessage ) {
 
+    # Take copies of the file descriptors
+    open OLDOUT, '>&STDOUT';
+    open OLDERR, '>&STDERR';
+    do {
+        local *STDOUT;
+        local *STDERR;
+
+        my $device = $^O eq 'MSWin32' ? '>nul' : '>/dev/null';
+        open(STDOUT, $device);
+        open(STDERR, $device);
+        print "OUT: Should Never happen\n";
+        warn "ERR: Should Never happen\n";
+
     # This is here because we cannot do publishArtifactVersion in dsl today
 
     # delete artifact if it exists first
@@ -84,6 +97,14 @@ if ( !$errorMessage ) {
             $logfile .= "\nDetails:\n" . $artifactVersion->diagnostics();
         }
     }
+
+    };
+
+    # Restore stdout.
+    open STDOUT, '>&OLDOUT' or die "Can't restore stdout: $!";
+    open STDERR, '>&OLDERR' or die "Can't restore stderr: $!";
+    close OLDOUT or die "Can't close OLDOUT: $!";
+    close OLDERR or die "Can't close OLDERR: $!";
 }
 
 # Create output property for plugin setup debug logs
