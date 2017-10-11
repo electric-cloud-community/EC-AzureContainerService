@@ -12,6 +12,7 @@ if (!clusterOrEnvProjectName) {
 }
 String environmentName = '$[environmentName]'
 String applicationRevisionId = '$[applicationRevisionId]'
+String serviceEntityRevisionId = '$[serviceEntityRevisionId]'
 
 String resultsPropertySheet = '$[resultsPropertySheet]'
 if (!resultsPropertySheet) {
@@ -50,7 +51,8 @@ def serviceDetails = efClient.getServiceDeploymentDetails(
                 applicationRevisionId,
                 clusterName,
                 clusterOrEnvProjectName,
-                environmentName)
+                environmentName,
+                serviceEntityRevisionId)
 String namespace = client.getServiceParameter(serviceDetails, 'namespace', 'default')
 
 client.deployService(
@@ -65,4 +67,5 @@ client.deployService(
         clusterName,
         clusterOrEnvProjectName,
         environmentName,
-        resultsPropertySheet)
+        resultsPropertySheet,
+        serviceEntityRevisionId)
