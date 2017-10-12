@@ -11,6 +11,7 @@ procedure 'CreateConfiguration',
       exclusiveMode: 'none',
       postProcessor: 'postp',
       releaseMode: 'none',
+      condition: '$[testConnection]',
       timeLimitUnits: 'minutes', {
 
         actualParameter 'additionalArtifactVersion', 'com.electriccloud:EC-AzureContainerService-Grapes:1.0.0'
@@ -23,7 +24,7 @@ procedure 'CreateConfiguration',
             postProcessor: 'postp',
             releaseMode: 'none',
             shell: 'ec-groovy',
-            condition: '$[/myJob/testConnection]',
+            condition: '$[testConnection]',
             timeLimitUnits: 'minutes'
 
     step 'createConfiguration',
