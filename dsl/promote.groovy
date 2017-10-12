@@ -130,7 +130,10 @@ upgrade(upgradeAction, pluginName, otherPluginName,
 		], [
 			procedureName: 'Cleanup Cluster - Experimental',
 			stepName: 'cleanup'
-		]])
+		], [
+			procedureName: 'Undeploy Service',
+			stepName: 'undeployService'
+		 ]])
 	
 
     		
