@@ -93,7 +93,7 @@ public class AzureClient extends KubernetesClient {
         'Bearer '+new String(encodedToken.decodeBase64())
     }
 
-    Object getOrCreateResourceGroup(String rgName, String subscription_id, String accessToken){
+    Object getOrCreateResourceGroup(String rgName, String subscription_id, String accessToken, String zone){
       
       def api_version = ["api-version": "2016-09-01"]
 
@@ -112,7 +112,7 @@ public class AzureClient extends KubernetesClient {
             response = doHttpPut(AZURE_ENDPOINT, 
                        "/subscriptions/${subscription_id}/resourcegroups/${rgName}",
                        accessToken,
-                       "{'location': 'westus'}",
+                       "{'location': '${zone}'}",
                        false,                       
                        api_version)
         } 
