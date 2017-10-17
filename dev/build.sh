@@ -19,5 +19,5 @@ if [ $DEPLOY -eq 1 ]; then
   echo "Installing plugin ..."
   ectool --server localhost login admin changeme
   ectool installPlugin ./out/EC-AzureContainerService.jar --force 1
-  ectool promotePlugin EC-AzureContainerService-1.0.1
+  ectool promotePlugin EC-AzureContainerService-1.0.2
 fi  
