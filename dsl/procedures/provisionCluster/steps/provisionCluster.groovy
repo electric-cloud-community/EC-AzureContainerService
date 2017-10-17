@@ -34,7 +34,7 @@ if (clusterWaitimeInt <= 1) {
 def token = az.retrieveAccessToken(pluginConfig)
 
 
-az.getOrCreateResourceGroup(resourceGroupName, pluginConfig.subscriptionId ,token)
+az.getOrCreateResourceGroup(resourceGroupName, pluginConfig.subscriptionId ,token, zone)
 
 def deployedAcs = az.getAcs(pluginConfig.subscriptionId, resourceGroupName, clusterName, token)
 
