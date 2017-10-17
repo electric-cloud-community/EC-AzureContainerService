@@ -217,6 +217,11 @@
                 </table>
             </div>
             <h1 id="releaseNotes">Release Notes</h1>
+            <h3>EC-AzureContainerService 1.0.2</h3>
+            <ul>
+                <li>Added procedure <i>Undeploy Service</i> to undeploy a previously deployed service.</li>
+                <li>EC-AzureContainerService plugin is now able to provision clusters in any specified region.</li>
+            </ul>
             <h3>EC-AzureContainerService 1.0.1</h3>
             <ul>
                 <li>Updated the <i>Define Service</i> procedure to include namespace and service type parameters. This procedure is an internal procedure used for specifying cluster specific service mappings in ElectricFlow.</li>
