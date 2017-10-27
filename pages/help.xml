@@ -127,7 +127,7 @@
                         </tr>
                         <tr>
                             <td>Orchestrator Type</td>
-                            <td>The type of orchestrator to be used for creating the cluster. As of this version only "Kubernetes" is supported.</td>
+                            <td>The orchestrator to use for provisioning cluster. As of this version only "Kubernetes" and "DockerEC" is supported. Docker CE is in preview, available only in ukwest, uksouth, westcentralus, westus2, canadaeast, canadacentral, westindia, southindia, centralindia and should not be used for production workloads. </td>
                         </tr>
                         <tr>
                             <td>Admin User Name</td>
@@ -144,6 +144,10 @@
                         <tr>
                             <td>Master FQDN</td>
                             <td>FQDN of the master</td>
+                        </tr>
+                        <tr>
+                            <td>Master VM Size</td>
+                            <td>Size of the Master VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes</td>
                         </tr>
                         <tr>
                             <td>Agent Pool Name</td>
