@@ -38,12 +38,20 @@
         <documentation>All cluster resources will be created under this resource group name.</documentation>
     </formElement>
     <formElement>
-        <type>entry</type>
+        <type>select</type>
         <label>Orchestrator Type:</label>
         <property>orchestratorType</property>
-        <required>0</required>
         <value>kubernetes</value>
-        <documentation>The orchestrator to use for provisioning cluster. Can be one of Kubernetes, Swarm, DCOS, Custom etc</documentation>
+        <option>
+            <name>Kubernetes</name>
+            <value>kubernetes</value>
+        </option>
+        <option>
+            <name>DockerCE</name>
+            <value>DockerCE</value>
+        </option>
+        <documentation>The orchestrator to use for provisioning cluster. As of this version only "Kubernetes" and "DockerCE" is supported. Docker CE is in preview, available only in ukwest, uksouth, westcentralus, westus2, canadaeast, canadacentral, westindia, southindia, centralindia and should not be used for production workloads. </documentation>
+        <required>0</required>
     </formElement>
     <formElement>
         <type>entry</type>
@@ -81,6 +89,13 @@
         <property>masterFqdn</property>
         <required>1</required>
         <documentation>FQDN of the master</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Master VM Size:</label>
+        <property>masterVmsize</property>
+        <required>1</required>
+        <documentation>Size of the Master VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes</documentation>
     </formElement>
     <formElement>
         <type>entry</type>

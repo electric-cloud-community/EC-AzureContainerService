@@ -41,7 +41,7 @@ public class AzureClient extends KubernetesClient {
 
     // API Version Constants. Probably the only sane way to maintain them for now
     def APIV_2016_09_30 = ["api-version": "2016-09-30"]
-
+    def APIV_2017_07_01 = ["api-version": "2017-07-01"]
 
     String retrieveAccessToken(def pluginConfig) {
 
@@ -138,18 +138,15 @@ public class AzureClient extends KubernetesClient {
                 properties:[ orchestratorProfile: [
                                 orchestratorType: args.orchestratorType
                               ],
-                              servicePrincipalProfile: [
-                                clientId: args.clientId,
-                                secret: args.secret
-                              ],
                               masterProfile: [
-                                  count: args.masterCount,
+                                  count: args.masterCount.toInteger(),
                                   fqdn: args.masterFqdn,
-                                  dnsPrefix: args.masterDnsPrefix
+                                  dnsPrefix: args.masterDnsPrefix,
+                                  vmSize: args.masterVmsize
                               ],
                               agentPoolProfiles: [[
                                   name: args.agentPoolName,
-                                  count: args.agentPoolCount,
+                                  count: args.agentPoolCount.toInteger(),
                                   vmSize: args.agentPoolVmsize,
                                   dnsPrefix: args.agentPoolDnsPrefix
                               ]],
@@ -164,6 +161,17 @@ public class AzureClient extends KubernetesClient {
                 ]
 
         ]
+
+        if(args.orchestratorType == "kubernetes"){
+
+            def servicePrincipal = [
+                                      servicePrincipalProfile: [
+                                          clientId: args.clientId,
+                                          secret: args.secret
+                                      ]
+                                    ]
+            containerService.properties << servicePrincipal
+        }
         def json = new JsonBuilder(containerService)
         return json.toPrettyString()
 
@@ -179,6 +187,19 @@ public class AzureClient extends KubernetesClient {
                           APIV_2016_09_30)
 
         return existingAcs.data.properties.masterProfile.fqdn
+
+    }
+
+    String getAgentFqdn(String subscription_id, String rgName, String acsName, String accessToken){
+        if (OFFLINE) return
+
+        def existingAcs = doHttpGet(AZURE_ENDPOINT,
+                          "/subscriptions/${subscription_id}/resourceGroups/${rgName}/providers/Microsoft.ContainerService/containerServices/${acsName}",
+                          accessToken,
+                          false,
+                          APIV_2016_09_30)
+
+        return existingAcs.data.properties.agentPoolProfiles[0].fqdn
 
     }
 
@@ -338,5 +359,41 @@ public class AzureClient extends KubernetesClient {
                 failOnErrorCode)
     }
 
+     def openSSHTunnel(def masterFqdn, def adminUsername, def privateKey){
 
+        def identityFilePath = System.getenv("COMMANDER_WORKSPACE") + "/id_rsa"
+        File identityFile = new File(identityFilePath)
+        identityFile.text = privateKey
+        
+        def localHost = '127.0.0.1'                                                                                                                                     
+                                                                                                                                                                
+        def targetHost = masterFqdn                                                                                                           
+        def targetUser = adminUsername
+        def targetSSHPort = 22                                                                                                                                                                                                                                                                       
+        def targetDockerPort = 2375 
+        def localDockerPort = 2375
+
+        logger INFO, "Opening connection to ${targetUser}@${targetHost}:${targetSSHPort}"
+
+        Properties config = new Properties()                                                                                                                            
+        config.put("StrictHostKeyChecking", "no")                                                                                                                       
+        JSch jsch = new JSch()                                                                                                                                          
+        jsch.addIdentity(identityFilePath)
+
+        Session sshSession = jsch.getSession(targetUser, targetHost, targetSSHPort)                                                                                                
+        sshSession.setConfig(config)                                                                                                                                    
+        sshSession.connect()
+
+        logger INFO, "Connected to ${targetHost}:${targetSSHPort}"
+        logger INFO, "Forwarding local port ${localDockerPort} to ${targetHost}:${targetDockerPort}"
+
+        def assignedPort = sshSession.setPortForwardingL(localDockerPort, localHost, targetDockerPort) 
+        logger INFO, "Established SSH tunnel : ${sshSession.getPortForwardingL()}"  
+
+        return sshSession
+    }
+
+    def closeSSHTunnel(def sshSession){
+        sshSession.disconnect()
+    }
 }

@@ -26,6 +26,7 @@
             <h2 id="prerequisites">Prerequisites</h2>
             <ol>
                 <li>EC-Kubernetes plugin version 1.0.2.* or higher</li>
+                <li>EC-Docker plugin version 1.2.* or higher</li>
             </ol>
             <div id="CreateConfiguration">
                 <h2>Plugin Configurations</h2>
@@ -127,7 +128,7 @@
                         </tr>
                         <tr>
                             <td>Orchestrator Type</td>
-                            <td>The type of orchestrator to be used for creating the cluster. As of this version only "Kubernetes" is supported.</td>
+                            <td>The orchestrator to use for provisioning cluster. As of this version only "Kubernetes" and "DockerCE" is supported. Docker CE is in preview, available only in ukwest, uksouth, westcentralus, westus2, canadaeast, canadacentral, westindia, southindia, centralindia and should not be used for production workloads. </td>
                         </tr>
                         <tr>
                             <td>Admin User Name</td>
@@ -144,6 +145,10 @@
                         <tr>
                             <td>Master FQDN</td>
                             <td>FQDN of the master</td>
+                        </tr>
+                        <tr>
+                            <td>Master VM Size</td>
+                            <td>Size of the Master VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes</td>
                         </tr>
                         <tr>
                             <td>Agent Pool Name</td>
@@ -217,6 +222,11 @@
                 </table>
             </div>
             <h1 id="releaseNotes">Release Notes</h1>
+            <h3>EC-AzureContainerService 1.0.3</h3>
+            <ul>
+                <li>Added support for 'DockerCE' orchestrator type.</li>
+                <li>Added 'Master VM Size' parameter to specify size of master VM of Azure Container Service cluster.</li>
+            </ul>
             <h3>EC-AzureContainerService 1.0.2</h3>
             <ul>
                 <li>Added procedure <i>Undeploy Service</i> to undeploy a previously deployed service.</li>

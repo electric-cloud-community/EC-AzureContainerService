@@ -13,6 +13,7 @@ def configName = '$[config]'
 def masterCount = '$[masterCount]'
 def masterFqdn = '$[masterFqdn]'
 def masterDnsPrefix = '$[masterDnsPrefix]'
+def masterVmsize = '$[masterVmsize]'
 def agentPoolName = '$[agentPoolName]'
 def agentPoolCount = '$[agentPoolCount]'
 def agentPoolVmsize = '$[agentPoolVmsize]'
@@ -49,6 +50,7 @@ def acsPayLoad = az.buildContainerServicePayload(
                     masterCount: masterCount,
                     masterFqdn: masterFqdn,
                     masterDnsPrefix: masterDnsPrefix,
+                    masterVmsize: masterVmsize,
                     agentPoolName: agentPoolName,
                     agentPoolCount: agentPoolCount,
                     agentPoolVmsize: agentPoolVmsize,
@@ -64,7 +66,7 @@ if(deployedAcs.status == 200){
                                token,
                                acsPayLoad,
                                false,                       
-                               az.APIV_2016_09_30)
+                               az.APIV_2017_07_01)
 
       if(response.status >= 400){
             if(response.status == 409){
@@ -88,7 +90,7 @@ if(deployedAcs.status == 200){
                                token,
                                acsPayLoad,
                                /*failOnErrorCode*/ true,
-                               az.APIV_2016_09_30)
+                               az.APIV_2017_07_01)
 
       if(response.status >= 400){
             if(response.status == 409){
