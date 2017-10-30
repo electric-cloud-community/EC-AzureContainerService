@@ -47,10 +47,10 @@
             <value>kubernetes</value>
         </option>
         <option>
-            <name>DockerEC</name>
-            <value>DockerEC</value>
+            <name>DockerCE</name>
+            <value>DockerCE</value>
         </option>
-        <documentation>The orchestrator to use for provisioning cluster. As of this version only "Kubernetes" and "DockerEC" is supported. Docker CE is in preview, available only in ukwest, uksouth, westcentralus, westus2, canadaeast, canadacentral, westindia, southindia, centralindia and should not be used for production workloads. </documentation>
+        <documentation>The orchestrator to use for provisioning cluster. As of this version only "Kubernetes" and "DockerCE" is supported. Docker CE is in preview, available only in ukwest, uksouth, westcentralus, westus2, canadaeast, canadacentral, westindia, southindia, centralindia and should not be used for production workloads. </documentation>
         <required>0</required>
     </formElement>
     <formElement>
