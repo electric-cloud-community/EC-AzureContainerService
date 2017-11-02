@@ -55,7 +55,7 @@ if(clusterParameters.orchestratorType == "kubernetes"){
                     clusterOrEnvProjectName,
                     environmentName,
                     serviceEntityRevisionId)
-    String namespace = client.getServiceParameter(serviceDetails, 'namespace', 'default')
+    String namespace = azureClient.getServiceParameter(serviceDetails, 'namespace', 'default')
 
     azureClient.deployService(
         efClient,
