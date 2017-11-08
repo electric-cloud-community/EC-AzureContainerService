@@ -73,13 +73,13 @@ public class AzureClient extends KubernetesClient {
                                            String clusterName,
                                            String token,                                      
                                            String adminUsername,
-                                           String masterFqdn){
+                                           String masterFqdn,
+                                           String privateKey){
         def tempSvcAccFile = "/tmp/def_serviceAcc"
         def tempSecretFile = "/tmp/def_secret"
         def svcAccName = "default"
         String passphrase = ""
         String publicKey = pluginConfig.publicKey
-        String privateKey = pluginConfig.privateKey
         def svcAccStatusCode = execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile} 2>/dev/null" )
         copyFileFromRemoteServer(masterFqdn, adminUsername, privateKey, publicKey , passphrase, tempSvcAccFile, tempSvcAccFile)
         def svcAccFile = new File(tempSvcAccFile)
