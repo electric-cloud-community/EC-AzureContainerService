@@ -73,7 +73,8 @@ public class AzureClient extends KubernetesClient {
                                            String clusterName,
                                            String token,                                      
                                            String adminUsername,
-                                           String masterFqdn){
+                                           String masterFqdn,
+                                           String privateKey){
         def tempSvcAccFile = "/tmp/def_serviceAcc"
         def tempSecretFile = "/tmp/def_secret"
         def uniqueName = System.currentTimeMillis()
@@ -92,7 +93,6 @@ public class AzureClient extends KubernetesClient {
             handleError("Fully qualified domain name for the master node is missing")
         }
         String publicKey = pluginConfig.publicKey
-        String privateKey = pluginConfig.privateKey
 
         execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile} 2>/dev/null" )
         def svcAccJson = readRemoteFile(masterFqdn, adminUsername, privateKey, publicKey, passphrase, tempSvcAccFile, localSvcAcctFile)
