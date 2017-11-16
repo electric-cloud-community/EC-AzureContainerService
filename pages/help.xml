@@ -128,7 +128,7 @@
                         </tr>
                         <tr>
                             <td>Orchestrator Type</td>
-                            <td>The orchestrator to use for provisioning cluster. As of this version only "Kubernetes" and "DockerCE" is supported. Docker CE is in preview, available only in ukwest, uksouth, westcentralus, westus2, canadaeast, canadacentral, westindia, southindia, centralindia and should not be used for production workloads. </td>
+                            <td>The orchestrator to use for provisioning cluster.</td>
                         </tr>
                         <tr>
                             <td>Admin User Name</td>
