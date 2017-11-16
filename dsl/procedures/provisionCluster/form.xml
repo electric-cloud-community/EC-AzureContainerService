@@ -38,20 +38,12 @@
         <documentation>All cluster resources will be created under this resource group name.</documentation>
     </formElement>
     <formElement>
-        <type>select</type>
+        <type>entry</type>
         <label>Orchestrator Type:</label>
         <property>orchestratorType</property>
-        <value>kubernetes</value>
-        <option>
-            <name>Kubernetes</name>
-            <value>kubernetes</value>
-        </option>
-        <option>
-            <name>DockerCE</name>
-            <value>DockerCE</value>
-        </option>
-        <documentation>The orchestrator to use for provisioning cluster. As of this version only "Kubernetes" and "DockerCE" is supported. Docker CE is in preview, available only in ukwest, uksouth, westcentralus, westus2, canadaeast, canadacentral, westindia, southindia, centralindia and should not be used for production workloads. </documentation>
         <required>0</required>
+        <value>kubernetes</value>
+        <documentation>The orchestrator to use for provisioning cluster.</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
