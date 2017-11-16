@@ -94,7 +94,8 @@
         <type>entry</type>
         <label>Master VM Size:</label>
         <property>masterVmsize</property>
-        <required>1</required>
+        <required>0</required>
+        <value>Standard_D2</value>
         <documentation>Size of the Master VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes</documentation>
     </formElement>
     <formElement>
@@ -116,6 +117,7 @@
         <label>Agent Pool VM Size:</label>
         <property>agentPoolVmsize</property>
         <required>1</required>
+        <value>Standard_D2</value>
         <documentation>Size of the Agent VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes</documentation>
     </formElement>
     <formElement>
