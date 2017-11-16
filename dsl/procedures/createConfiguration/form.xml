@@ -60,15 +60,15 @@
         <label>Public Key:</label>
         <property>publicKey</property>
         <required>0</required>
-        <documentation>The public that should be used for cluster creation and communication.</documentation>
+        <documentation>The public key that should be used for cluster creation and communication.</documentation>
     </formElement> 
     <formElement>
         <type>credential</type>
         <label>Private Key:</label>
         <property>keypair</property>
         <required>1</required>
-        <userNameLabel>Private Key:</userNameLabel>
         <passwordLabel>Private Key:</passwordLabel>
+        <value>key</value>
         <credentialType>key</credentialType>
         <documentation>The private key that should be used for cluster creation and communication.</documentation>
         <attachedAsParameterToStep>createAndAttachCredential,testConnection</attachedAsParameterToStep>
