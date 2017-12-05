@@ -18,10 +18,18 @@
 <editor>
     <formElement>
         <type>entry</type>
-        <label>Service Name:</label>
-        <property>serviceName</property>
+        <label>Service Name Override:</label>
+        <property>serviceNameOverride</property>
         <required>0</required>
-        <documentation>The name of the service in ElectricFlow that encapsulates the service to be deployed on the Azure Container Service.</documentation>
+        <documentation>Name for the service in Kubernetes. If no override value is specified here, the service name in ElectricFlow will be used to name the service in Kubernetes.</documentation>
+    </formElement>
+
+    <formElement>
+        <type>entry</type>
+        <label>Deployment Name Override:</label>
+        <property>deploymentNameOverride</property>
+        <required>0</required>
+        <documentation>Name for the deployment in Kubernetes. If no value is specified here, then the name of the Kubernetes service being created or updated will be used to name the deployment in Kubernetes.</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
