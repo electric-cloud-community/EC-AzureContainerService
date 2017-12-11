@@ -76,21 +76,37 @@ public class AzureClient extends KubernetesClient {
                                            String masterFqdn){
         def tempSvcAccFile = "/tmp/def_serviceAcc"
         def tempSecretFile = "/tmp/def_secret"
+        def uniqueName = System.currentTimeMillis()
+
+        String dir = System.getenv('COMMANDER_WORKSPACE')
+        def localSvcAcctFile = new File (dir, "def_service_acct_${uniqueName}")
+        localSvcAcctFile.deleteOnExit()
+
+        def localSecretFile = new File (dir, "def_secret_${uniqueName}")
+        localSecretFile.deleteOnExit()
+
         def svcAccName = "default"
         String passphrase = ""
+
+        if (!masterFqdn) {
+            handleError("Fully qualified domain name for the master node is missing")
+        }
         String publicKey = pluginConfig.publicKey
         String privateKey = pluginConfig.privateKey
-        def svcAccStatusCode = execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile} 2>/dev/null" )
-        copyFileFromRemoteServer(masterFqdn, adminUsername, privateKey, publicKey , passphrase, tempSvcAccFile, tempSvcAccFile)
-        def svcAccFile = new File(tempSvcAccFile)
-        def svcAccJson = new JsonSlurper().parseText(svcAccFile.text)
+
+        execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile} 2>/dev/null" )
+        def svcAccJson = readRemoteFile(masterFqdn, adminUsername, privateKey, publicKey, passphrase, tempSvcAccFile, localSvcAcctFile)
         def secretName =  svcAccJson.secrets.name[0]
-        def secretStatusCode = execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get secret ${secretName} -o json > ${tempSecretFile} 2>/dev/null" )
-        copyFileFromRemoteServer(masterFqdn, adminUsername, privateKey, publicKey, passphrase, tempSecretFile , tempSecretFile)
-        def secretFile = new File(tempSecretFile)
-        def secretJson = new JsonSlurper().parseText(secretFile.text)
+
+        execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get secret ${secretName} -o json > ${tempSecretFile} 2>/dev/null" )
+        def secretJson = readRemoteFile(masterFqdn, adminUsername, privateKey, publicKey, passphrase, tempSecretFile , localSecretFile)
         String encodedToken = secretJson.data.token
-        'Bearer '+new String(encodedToken.decodeBase64())
+        'Bearer ' + new String(encodedToken.decodeBase64())
+    }
+
+    def readRemoteFile(String hostName, String username, String privateKey, String publicKey, String passphrase, String remoteFilePath, File localFile) {
+        copyFileFromRemoteServer(hostName, username, privateKey, publicKey, passphrase, remoteFilePath, localFile)
+        new JsonSlurper().parseText(localFile.text)
     }
 
     Object getOrCreateResourceGroup(String rgName, String subscription_id, String accessToken, String zone){
@@ -203,15 +219,12 @@ public class AzureClient extends KubernetesClient {
 
     }
 
-    def copyFileFromRemoteServer(String hostName, String username, String privateKey, String publicKey, String passphrase, String remoteFilePath, String localDropPath){
+    def copyFileFromRemoteServer(String hostName, String username, String privateKey, String publicKey, String passphrase,
+                                 String remoteFilePath, File localFile){
         ChannelSftp channel = null
         Session session = null
         InputStream inputStream  = null
         OutputStream outputStream = null
-        // Validation before we proceed, may be abstract in a separate method later
-        if(hostName == null){ 
-            println "#### Something wrong" // TBD
-        }
 
         try{
           JSch jsch = new JSch()
@@ -225,7 +238,7 @@ public class AzureClient extends KubernetesClient {
           channel = (ChannelSftp)session.openChannel("sftp");
           channel.connect();
           inputStream = channel.get(remoteFilePath);
-          outputStream = new FileOutputStream(localDropPath)
+          outputStream = new FileOutputStream(localFile)
           int read = 0;
           byte[] bytes = new byte[1024];
 
@@ -234,11 +247,12 @@ public class AzureClient extends KubernetesClient {
           }          
         } catch(Exception exc){
             exc.printStackTrace()
+            handleError("Failed to retrieve service account information from remote host '$hostName'")
         } finally {
-          channel.disconnect()
-          session.disconnect() 
-          inputStream.close()
-          outputStream.close()         
+          channel?.disconnect()
+          session?.disconnect()
+          inputStream?.close()
+          outputStream?.close()
         }
 
     }
@@ -262,11 +276,11 @@ public class AzureClient extends KubernetesClient {
               channel.connect()
               returnCode = channel.getExitStatus()
           } catch(Exception ex){
-              ex.printStackTrace()
-
+            ex.printStackTrace()
+            handleError("Failed to run kubectl command on remote host '$hostName'")
           } finally {
-              channel.disconnect()
-              session.disconnect() 
+              channel?.disconnect()
+              session?.disconnect()
           }
           returnCode
     }
@@ -359,6 +373,7 @@ public class AzureClient extends KubernetesClient {
                 failOnErrorCode)
     }
 
+     /* Unused method
      def openSSHTunnel(def masterFqdn, def adminUsername, def privateKey){
 
         def identityFilePath = System.getenv("COMMANDER_WORKSPACE") + "/id_rsa"
@@ -392,6 +407,7 @@ public class AzureClient extends KubernetesClient {
 
         return sshSession
     }
+    */
 
     def closeSSHTunnel(def sshSession){
         sshSession.disconnect()
