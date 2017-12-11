@@ -18,18 +18,10 @@
 <editor>
     <formElement>
         <type>entry</type>
-        <label>Service Name Override:</label>
-        <property>serviceNameOverride</property>
+        <label>Service Name:</label>
+        <property>serviceName</property>
         <required>0</required>
-        <documentation>Name for the service in Kubernetes. If no override value is specified here, the service name in ElectricFlow will be used to name the service in Kubernetes.</documentation>
-    </formElement>
-
-    <formElement>
-        <type>entry</type>
-        <label>Deployment Name Override:</label>
-        <property>deploymentNameOverride</property>
-        <required>0</required>
-        <documentation>Name for the deployment in Kubernetes. If no value is specified here, then the name of the Kubernetes service being created or updated will be used to name the deployment in Kubernetes.</documentation>
+        <documentation>The name of the service in ElectricFlow that encapsulates the service to be deployed on the Kubernetes cluster.</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
@@ -52,16 +44,43 @@
         <required>0</required>
         <documentation>The name of the project that the application belongs to. Not applicable for a top-level service.</documentation>
     </formElement>
-
     <formElement>
         <type>entry</type>
         <label>Namespace Name:</label>
         <property>namespace</property>
         <required>0</required>
         <value>default</value>
-        <documentation>The name of the Kubernetes namespace to which the services and deployments should be deployed. The namespace will be created if it does not already exist.</documentation>
+        <documentation>The name of namespace to which the services and deployments should be deployed.</documentation>
     </formElement>
-
+    <formElement>
+        <type>entry</type>
+        <label>Service Name Override:</label>
+        <property>serviceNameOverride</property>
+        <required>0</required>
+        <documentation>Name for the service in Kubernetes. If no override value is specified here, the service name in ElectricFlow will be used to name the service in Kubernetes.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Deployment Name Override:</label>
+        <property>deploymentNameOverride</property>
+        <required>0</required>
+        <documentation>Name for the deployment in Kubernetes. If no value is specified here, then the name of the Kubernetes service being created or updated will be used to name the deployment in Kubernetes.</documentation>
+    </formElement>
+    <formElement>
+        <label>Perform Canary Deployment:</label>
+        <property>canaryDeployment</property>
+        <documentation>A fixed text or property reference e.g., '$[doCanaryDeployment]' that evaluates to 'true' or 'false'. If evaluated to true, then a canary deployment will be performed. Any previous deployment will remain unchanged in the namespace allowing this canary deployment to receive live traffic side by side with the previous deployment.</documentation>
+        <type>entry</type>
+        <required>0</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Number of Canary Replicas:</label>
+        <property>numberOfCanaryReplicas</property>
+        <required>0</required>
+        <value>1</value>
+        <documentation>The number of replicas to create if performing a canary deployment. Defaults to 1 replica for the canary deployment.</documentation>
+    </formElement>
     <formElement>
         <type>select</type>
         <label>Service Type:</label>
@@ -122,6 +141,14 @@
     </formElement>
     <formElement>
         <type>entry</type>
+        <label>Deployment Timeout (in seconds):</label>
+        <property>deploymentTimeoutInSec</property>
+        <required>0</required>
+        <value>120</value>
+        <documentation>Number of seconds to wait for deployment to complete. If not complete within this period, deployment is marked as failed.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
         <label>Additional Resource URI:</label>
         <property>resourceUri</property>
         <required>0</required>
@@ -141,12 +168,16 @@
         <value>create</value>
         <required>0</required>
         <option>
-            <name>Create</name>
+            <name>Create (POST)</name>
             <value>create</value>
         </option>
         <option>
-            <name>Update</name>
+            <name>Update (PUT)</name>
             <value>update</value>
+        </option>
+        <option>
+            <name>Update (PATCH)</name>
+            <value>patch</value>
         </option>
         <documentation>Whether to create or update the resource.</documentation>
     </formElement>
