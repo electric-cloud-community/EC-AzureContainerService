@@ -105,6 +105,7 @@ public class AzureClient extends KubernetesClient {
     }
 
     def readRemoteFile(String hostName, String username, String privateKey, String publicKey, String passphrase, String remoteFilePath, File localFile) {
+        logger DEBUG, "Copying remote file $remoteFilePath from $hostName to $localFile.name"
         copyFileFromRemoteServer(hostName, username, privateKey, publicKey, passphrase, remoteFilePath, localFile)
         new JsonSlurper().parseText(localFile.text)
     }
@@ -244,7 +245,9 @@ public class AzureClient extends KubernetesClient {
 
           while ((read = inputStream.read(bytes)) != -1) {
             outputStream.write(bytes, 0, read);
-          }          
+          }
+          outputStream.flush()
+
         } catch(Exception exc){
             exc.printStackTrace()
             handleError("Failed to retrieve service account information from remote host '$hostName'")
