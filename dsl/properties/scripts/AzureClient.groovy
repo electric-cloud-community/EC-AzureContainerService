@@ -238,12 +238,12 @@ public class AzureClient extends KubernetesClient {
           session.connect()
           channel = (ChannelSftp)session.openChannel("sftp");
           channel.connect();
-          inputStream = channel.get(remoteFilePath);
-          outputStream = new FileOutputStream(localFile)
+          inputStream = new BufferedInputStream(channel.get(remoteFilePath))
+          outputStream = new BufferedOutputStream(new FileOutputStream(localFile))
           int read = 0;
           byte[] bytes = new byte[1024];
-
-          while ((read = inputStream.read(bytes)) != -1) {
+          while ((read = inputStream.read(bytes)) > 0) {
+            logger DEBUG, "Writing bytes count: $read"
             outputStream.write(bytes, 0, read);
           }
           outputStream.flush()
