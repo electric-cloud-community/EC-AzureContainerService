@@ -43,7 +43,8 @@ String accessToken = azureClient.retrieveOrchestratorAccessToken(pluginConfig,
                                                         clusterParameters.clusterName,
                                                         azAccessToken,
                                                         clusterParameters.adminUsername,
-                                                        masterFqdn)
+                                                        masterFqdn,
+                                                        privateKey.password)
 
 def serviceDetails = efClient.getServiceDeploymentDetails(
                 serviceName,
