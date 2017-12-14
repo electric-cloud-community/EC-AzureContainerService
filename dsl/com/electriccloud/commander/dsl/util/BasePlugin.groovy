@@ -259,7 +259,18 @@ abstract class BasePlugin extends DslDelegatingScript {
 
 			clone path: "/plugins/$otherPluginName/project/$configName",
 					cloneName: "/plugins/$pluginName/project/$configName"
+					
+		 	def oldPrivateKey = getProperty("/plugins/$pluginName/project/$configName/azureCFG/privateKey", suppressNoSuchPropertyException: true).value
 
+		 	def keypairCredName = "azureCFG_keypair"
+			createCredential(
+        		credentialName: keypairCredName,
+		        userName: configName,
+		        password: oldPrivateKey,
+		        projectName: otherPluginName
+			)
+
+			createProperty("/plugins/$pluginName/project/$configName/azureCFG/keypair", keypairCredName)
 			def credentials = getCredentials("/plugins/$otherPluginName/project")
 			if (credentials) {
 				credentials.each { cred ->
