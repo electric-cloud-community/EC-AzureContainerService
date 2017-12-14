@@ -259,18 +259,35 @@ abstract class BasePlugin extends DslDelegatingScript {
 
 			clone path: "/plugins/$otherPluginName/project/$configName",
 					cloneName: "/plugins/$pluginName/project/$configName"
-					
-		 	def oldPrivateKey = getProperty("/plugins/$pluginName/project/$configName/azureCFG/privateKey", suppressNoSuchPropertyException: true).value
 
-		 	def keypairCredName = "azureCFG_keypair"
-			createCredential(
-        		credentialName: keypairCredName,
-		        userName: configName,
-		        password: oldPrivateKey,
-		        projectName: otherPluginName
-			)
+			// Migrate 'privateKey' configuration parameter to a credential from all configurations
+			def configurations = getProperties(path: "/plugins/$pluginName/project/$configName", recurse: true)
+			configurations.property.each {
+				def pluginConfig = it.propertyName
+				println "Checking if configuration parameter 'privateKey' exists in plugin configuration '$pluginConfig'"
 
-			createProperty("/plugins/$pluginName/project/$configName/azureCFG/keypair", keypairCredName)
+				// get the private key configuration property if it exists
+				def oldPrivateKeyProperty = it.propertySheet?.property?.find { prop -> prop.name == 'privateKey'}
+				def oldPrivateKey = oldPrivateKeyProperty?.value
+
+				// if the property 'privateKey' exists, we assume it requires a migration to a crendential
+				if (oldPrivateKeyProperty != null) {
+					def keypairCredName = "${pluginConfig}_keypair"
+					println "Converting configuration parameter 'privateKey' to a credential $keypairCredName"
+					// delete the old property
+					deleteProperty propertyName: "/plugins/$pluginName/project/$configName/$pluginConfig/privateKey"
+					// create the new property for the keypair credential
+					property "/plugins/$pluginName/project/$configName/$pluginConfig/keypair", value: keypairCredName
+
+					createCredential(
+							credentialName: keypairCredName,
+							userName: 'key',
+							password: oldPrivateKey,
+							projectName: pluginName
+					)
+				}
+			}
+
 			def credentials = getCredentials("/plugins/$otherPluginName/project")
 			if (credentials) {
 				credentials.each { cred ->
