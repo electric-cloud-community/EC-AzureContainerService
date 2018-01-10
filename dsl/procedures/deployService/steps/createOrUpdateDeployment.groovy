@@ -37,6 +37,7 @@ AzureClient azureClient = new AzureClient()
 String azAccessToken = azureClient.retrieveAccessToken(pluginConfig)
 String masterFqdn = azureClient.getMasterFqdn(pluginConfig.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
 
+def privateKey = efClient.getCredentials("${configName}_keypair")
 String clusterEndPoint = "https://${masterFqdn}"
 String accessToken = azureClient.retrieveOrchestratorAccessToken(pluginConfig,
                                                         clusterParameters.resourceGroupName,
