@@ -98,18 +98,8 @@ $xpath = $ec->attachCredential($projName, $credName,
 $errors .= $ec->checkAllErrors($xpath);
 
 $xpath = $ec->attachCredential($projName, $keypairCred,
-    {procedureName => "Provision Cluster",
-     stepName => "provisionCluster"});
-$errors .= $ec->checkAllErrors($xpath);
-
-$xpath = $ec->attachCredential($projName, $keypairCred,
-    {procedureName => "Deploy Service",
-     stepName => "createOrUpdateDeployment"});
-$errors .= $ec->checkAllErrors($xpath);
-
-$xpath = $ec->attachCredential($projName, $keypairCred,
-    {procedureName => "Cleanup Cluster - Experimental",
-     stepName => "cleanup"});
+    {procedureName => "Undeploy Service",
+     stepName => "undeployService"});
 $errors .= $ec->checkAllErrors($xpath);
 
 if ("$errors" ne "") {
