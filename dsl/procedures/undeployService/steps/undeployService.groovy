@@ -31,12 +31,14 @@ AzureClient client = new AzureClient()
 String azAccessToken = client.retrieveAccessToken(pluginConfig)
 String masterFqdn = client.getMasterFqdn(pluginConfig.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
 String clusterEndPoint = "https://${masterFqdn}"
+def privateKey = efClient.getCredentials("${configName}_keypair")
 String accessToken = client.retrieveOrchestratorAccessToken(pluginConfig,
                                                         clusterParameters.resourceGroupName,
                                                         clusterParameters.clusterName,
                                                         azAccessToken,
                                                         clusterParameters.adminUsername,
-                                                        masterFqdn)
+                                                        masterFqdn,
+                                                        privateKey.password)
 
 def serviceDetails = efClient.getServiceDeploymentDetails(
                 serviceName,
