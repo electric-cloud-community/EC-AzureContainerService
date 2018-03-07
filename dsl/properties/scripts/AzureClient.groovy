@@ -76,41 +76,19 @@ public class AzureClient extends KubernetesClient {
                                            String masterFqdn,
                                            String privateKey){
 
-        def uniqueName = constructUniqueString()
-        // unique location on the master node for extracting the service account secret
-        // ECAZCS-20 - these files should be removed once the procedure it done.
-        def tempSvcAccFile = "/tmp/def_serviceAcc_${uniqueName}"
-        def tempSecretFile = "/tmp/def_secret_${uniqueName}"
-
-        String dir = System.getenv('COMMANDER_WORKSPACE')
-        def localSvcAcctFile = new File (dir, "def_service_acct_${uniqueName}")
-        localSvcAcctFile.deleteOnExit()
-
-        def localSecretFile = new File (dir, "def_secret_${uniqueName}")
-        localSecretFile.deleteOnExit()
-
-        def svcAccName = "default"
-        String passphrase = ""
-
         if (!masterFqdn) {
             handleError("Fully qualified domain name for the master node is missing")
         }
         String publicKey = pluginConfig.publicKey
+        String passphrase = ""
 
-        execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get serviceaccount ${svcAccName} -o json > ${tempSvcAccFile} 2>/dev/null" )
-        def svcAccJson = readRemoteFile(masterFqdn, adminUsername, privateKey, publicKey, passphrase, tempSvcAccFile, localSvcAcctFile)
-        def secretName =  svcAccJson.secrets.name[0]
-
-        execRemoteKubectl(masterFqdn, adminUsername, privateKey, publicKey, passphrase, "kubectl get secret ${secretName} -o json > ${tempSecretFile} 2>/dev/null" )
-        def secretJson = readRemoteFile(masterFqdn, adminUsername, privateKey, publicKey, passphrase, tempSecretFile , localSecretFile)
-        String encodedToken = secretJson.data.token
-        'Bearer ' + new String(encodedToken.decodeBase64())
-    }
-
-    def readRemoteFile(String hostName, String username, String privateKey, String publicKey, String passphrase, String remoteFilePath, File localFile) {
-        logger DEBUG, "Copying remote file $remoteFilePath from $hostName to $localFile.name"
-        copyFileFromRemoteServer(hostName, username, privateKey, publicKey, passphrase, remoteFilePath, localFile)
-        new JsonSlurper().parseText(localFile.text)
+        // Reference: https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/#without-kubectl-proxy-post-v13x
+        def kubectlSecretExtractionCommand = "kubectl describe secret \$(kubectl get secrets | grep default | cut -f1 -d ' ') | grep -E '^token' | cut -f2 -d':' | tr -d '\\t'"
+        String decodedToken = execRemoteKubectlWithOutput(masterFqdn, adminUsername, privateKey, publicKey, passphrase, kubectlSecretExtractionCommand)
+        if (!decodedToken) {
+            handleError("Failed to run kubectl command on remote host '$hostName' to extract service account bearer token")
+        }
+        'Bearer ' + new String(decodedToken)
     }
 
     Object getOrCreateResourceGroup(String rgName, String subscription_id, String accessToken, String zone){
@@ -289,6 +267,56 @@ public class AzureClient extends KubernetesClient {
               session?.disconnect()
           }
           returnCode
+    }
+
+    def execRemoteKubectlWithOutput(String hostName, String username, String privateKey, String publicKey, String passphrase, String command){
+        Channel channel = null
+        Session session = null
+        def response = ''
+        try{
+            logger DEBUG, "Running remote command: $command"
+            logger DEBUG, "\ton host: $hostName"
+            JSch jsch = new JSch()
+            jsch.addIdentity("ecloudKey",
+                    privateKey.getBytes(),
+                    publicKey.getBytes(),
+                    passphrase.getBytes())
+            session = jsch.getSession(username, hostName)
+            session.setConfig("StrictHostKeyChecking", "no")
+            session.connect()
+            channel = session.openChannel("exec")
+            ((ChannelExec)channel).setCommand(command)
+
+            // Reference for reading output stream from ChannelExec: http://www.jcraft.com/jsch/examples/Exec.java.html
+            channel.setInputStream(null);
+            ((ChannelExec)channel).setErrStream(null);
+            InputStream inputStream =channel.getInputStream();
+
+            channel.connect()
+            byte[] tmp = new byte[1024];
+            while(true){
+                while(inputStream.available() > 0){
+                    int i = inputStream.read(tmp, 0, 1024);
+                    if(i < 0)break;
+                    response += new String(tmp, 0, i);
+                }
+                if(channel.isClosed()){
+                    if(inputStream.available() > 0) continue;
+                    //System.out.println("exit-status: "+channel.getExitStatus());
+                    break;
+                }
+                try{Thread.sleep(1000);}catch(Exception ex){}
+            }
+            response = response.trim()
+
+        } catch(Exception ex){
+            ex.printStackTrace()
+            handleError("Failed to run kubectl command on remote host '$hostName'")
+        } finally {
+            channel?.disconnect()
+            session?.disconnect()
+        }
+        response
     }
 
     def pollTillCompletion(String operationUrl, String accessToken, int timeInSeconds, String pollingMsg) {
