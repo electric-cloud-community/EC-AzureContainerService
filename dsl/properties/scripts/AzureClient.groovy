@@ -75,9 +75,12 @@ public class AzureClient extends KubernetesClient {
                                            String adminUsername,
                                            String masterFqdn,
                                            String privateKey){
-        def tempSvcAccFile = "/tmp/def_serviceAcc"
-        def tempSecretFile = "/tmp/def_secret"
-        def uniqueName = System.currentTimeMillis()
+
+        def uniqueName = constructUniqueString()
+        // unique location on the master node for extracting the service account secret
+        // ECAZCS-20 - these files should be removed once the procedure it done.
+        def tempSvcAccFile = "/tmp/def_serviceAcc_${uniqueName}"
+        def tempSecretFile = "/tmp/def_secret_${uniqueName}"
 
         String dir = System.getenv('COMMANDER_WORKSPACE')
         def localSvcAcctFile = new File (dir, "def_service_acct_${uniqueName}")
@@ -414,5 +417,11 @@ public class AzureClient extends KubernetesClient {
 
     def closeSSHTunnel(def sshSession){
         sshSession.disconnect()
+    }
+
+    def constructUniqueString() {
+        def now = System.currentTimeMillis()
+        def randomInt = (new Random()).nextInt()
+        now + '-' + randomInt
     }
 }
