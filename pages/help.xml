@@ -221,6 +221,10 @@
                 </table>
             </div>
             <h1 id="releaseNotes">Release Notes</h1>
+            <h3>EC-AzureContainerService 1.0.5</h3>
+            <ul>
+                <li>Internal improvements for 8.3 release.</li>
+            </ul>
             <h3>EC-AzureContainerService 1.0.3</h3>
             <ul>
                 <li>Fixed the invalid credential name error in the <i>Undeploy Service</i> procedure.</li>
