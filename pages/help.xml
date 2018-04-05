@@ -69,6 +69,129 @@
         <h4>Prerequisites</h4>
 <ol>
 <li>EC-Kubernetes plugin version 1.0.5 or higher</li>
+<li>Retrieve the &quot;Subscription ID&quot; of the account. (
+<a href="https://blogs.msdn.microsoft.com/mschray/2015/05/13/getting-your-azure-guid-subscription-id/" target="_blank">https://blogs.msdn.microsoft.com/mschray/2015/05/13/getting-your-azure-guid-subscription-id/</a>
+)
+<ul>
+<li>Go to:  
+<a href="http://manage.windowsazure.com/" target="_blank">http://manage.windowsazure.com/</a>
+</li>
+<li>Scroll all the way down the left nav</li>
+<li>Click settings</li>
+<li>Copy you GUID</li>
+</ul>
+</li>
+<li>You also need &quot;Client ID&quot;, &quot;Tenant ID&quot; and a &quot;Key&quot; (password) for a registered service principal. (
+<a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal" target="_blank">https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal</a>
+)
+<ol>
+<li>Required permissions
+<ul>
+<li>Check Azure Active Directory permissions
+<ol>
+<li>Select Azure Active Directory.</li>
+<li>In Azure Active Directory, select User settings.</li>
+<li>Check the App registrations setting. If set to Yes, non-admin users can register AD apps. This setting means any user in the Azure AD tenant can register an app. You can proceed to Check Azure subscription permissions.</li>
+<li>If the app registrations setting is set to No, only admin users can register apps. Check whether your account is an admin for the Azure AD tenant. Select Overview and look at your user information. If your account is assigned to the User role, but the app registration setting (from the preceding step) is limited to admin users, ask your administrator to either assign you to an administrator role, or to enable users to register apps.</li>
+</ol>
+</li>
+<li>Check Azure subscription permissions
+<ol>
+<li>Select your account in the upper right corner, and select My permissions.</li>
+<li>From the drop-down list, select the subscription. Select Click here to view complete access details for this subscription.</li>
+<li>View your assigned roles, and determine if you have adequate permissions to assign an AD app to a role. If not, ask your subscription administrator to add you to User Access Administrator role. In the following image, the user is assigned to the Owner role, which means that user has adequate permissions.</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>Create an Azure Active Directory application
+<ol>
+<li>Log in to your Azure Account through the Azure portal (
+<a href="https://portal.azure.com/" target="_blank">https://portal.azure.com/</a>
+).</li>
+<li>Select Azure Active Directory.</li>
+<li>Select App registrations.</li>
+<li>Select New application registration.</li>
+<li>Provide a name and URL for the application. Select Web app / API for the type of application you want to create. You cannot create credentials for a Native application (
+<a href="https://docs.microsoft.com/en-us/azure/active-directory/active-directory-application-proxy-native-client" target="_blank">https://docs.microsoft.com/en-us/azure/active-directory/active-directory-application-proxy-native-client</a>
+); therefore, that type does not work for an automated application. After setting the values, select Create.</li>
+<li>You have created your application.</li>
+</ol>
+</li>
+<li>Get application ID and authentication key
+<ol>
+<li>From App registrations in Azure Active Directory, select your application.</li>
+<li>Copy the Application ID and store it in your application code. Some sample applications refer to this value as the client ID.</li>
+<li>To generate an authentication key, select Settings.</li>
+<li>To generate an authentication key, select Keys.</li>
+<li>Provide a description of the key, and a duration for the key. When done, select Save.</li>
+<li>After saving the key, the value of the key is displayed. Copy this value because you are not able to retrieve the key later. You provide the key value with the application ID to log in as the application. Store the key value where your application can retrieve it.</li>
+</ol>
+</li>
+<li>Get tenant ID
+<ol>
+<li>Select Azure Active Directory.</li>
+<li>To get the tenant ID, select Properties for your Azure AD tenant.</li>
+<li>Copy the Directory ID. This value is your tenant ID.</li>
+</ol>
+</li>
+<li>Assign application to role
+<ol>
+<li>Navigate to the level of scope you wish to assign the application to. For example, to assign a role at the subscription scope, select Subscriptions. You could instead select a resource group or resource.</li>
+<li>Select the particular subscription (resource group or resource) to assign the application to.</li>
+<li>Select Access Control (IAM).</li>
+<li>Select Add.</li>
+<li>Select the role you wish to assign to the application. The following image shows the Reader role.</li>
+<li>By default, Azure Active Directory applications aren't displayed in the available options. To find your application, you must provide the name of it in the search field. Select it.</li>
+<li>Select Save to finish assigning the role. You see your application in the list of users assigned to a role for that scope.</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h4>EC - preparatory steps</h4>
+<ol>
+<li>Upload the plugin</li>
+<li>Create the environment with appropriate configuration values.
+<ul>
+<li>Configuration: ec_plugin_cnfgs</li>
+<li>Container Cluster Name: test-poc</li>
+<li>Resource Group Name: ec-test</li>
+<li>Orchestrator Type: kubernetes</li>
+<li>Master Zone: westus</li>
+<li>Admin User Name: ecloudadmin</li>
+<li>Number Of Master VMs: 1</li>
+<li>Master DNS Prefix: tmaster</li>
+<li>Master FQDN: testmaster</li>
+<li>Master VM Size: Standard_D2</li>
+<li>Agent Pool Name: agenttest</li>
+<li>Agent Pool Count: 3</li>
+<li>Agent Pool VM Size: Standard_D2</li>
+<li>Agent DNS Prefix: tagent</li>
+<li>The wait time for cluster creation (In minutes): 8</li>
+</ul>
+</li>
+<li>Create the configuration - you can utilise the information we retrieved from Azure portal in prerequisite steps. You will also need a SSH keypair, the public part of key is placed on VMs that are created and private key is used to communicate with machines via SSH by plugin .This is also a good step to validate that the service principal etc. have been created as needed by &quot;test connection&quot; option available:
+<ul>
+<li>Configuration: az_conf</li>
+<li>Description: EC-AzureContainerService</li>
+<li>Tenant ID: your Tenant ID</li>
+<li>Subscription ID: your Subscription ID</li>
+<li>Service Principal Details:
+<ul>
+<li>Client ID: your Client ID</li>
+<li>Private Key: your Private key</li>
+</ul>
+</li>
+<li>Public Key: your Public key</li>
+<li>Private Key:
+<ul>
+<li>User Name: Service Principal Details -&gt;  Private Key</li>
+<li>Private Key: RSA private key</li>
+</ul>
+</li>
+</ul>
+</li>
 </ol>
 
         
@@ -129,6 +252,59 @@
             
             </tbody>
         </table>
+        
+        <h3>Make a remote connection to a Kubernetes, DC/OS, or Docker Swarm cluster</h3>
+<p>After creating an Azure Container Service cluster, you need to connect to the cluster to deploy and manage workloads. This article describes how to connect to the master VM of the cluster from a remote computer.</p>
+<p>The Kubernetes, DC/OS, and Docker Swarm clusters provide HTTP endpoints locally. For Kubernetes, this endpoint is securely exposed on the internet, and you can access it by running the kubectl command-line tool from any internet-connected machine.</p>
+<p>For DC/OS and Docker Swarm, we recommend that you create a secure shell (SSH) tunnel from your local computer to the cluster management system. After the tunnel is established, you can run commands which use the HTTP endpoints and view the orchestrator's web interface (if available) from your local system.</p>
+<h4>Prerequisites</h4>
+<ul>
+<li>A Kubernetes cluster deployed in Azure Container Service.</li>
+<li>SSH RSA private key file, corresponding to the public key added to the cluster during deployment. These commands assume that the private SSH key is in $HOME/.ssh/id_rsa on your computer. See these instructions for macOS and Linux or Windows for more information. If the SSH connection isn't working, you may need to reset your SSH keys.</li>
+</ul>
+<h3>Connect to a Kubernetes cluster</h3>
+<p>Follow these steps to install and configure kubectl on your computer.</p>
+<h6>Note</h6>
+<p>On Linux or macOS, you might need to run the commands in this section using sudo.</p>
+<h5>Install kubectl</h5>
+<p>One way to install this tool is to use the az acs kubernetes install-cli Azure CLI 2.0 command. To run this command, make sure that you installed the latest Azure CLI 2.0 and logged in to an Azure account (az login).</p>
+<p>Linux or macOS</p>
+<ul>
+<li>az acs kubernetes install-cli [--install-location=/some/directory/kubectl]</li>
+</ul>
+<p>Windows</p>
+<ul>
+<li>az acs kubernetes install-cli [--install-location=C:\some\directory\kubectl.exe]</li>
+</ul>
+<p>Alternatively, you can download the latest kubectl client directly from the Kubernetes releases page.</p>
+<h5>Download cluster credentials</h5>
+<p>Once you have kubectl installed, you need to copy the cluster credentials to your machine. One way to do get the credentials is with the az acs kubernetes get-credentials command. Pass the name of the resource group and the name of the container service resource:</p>
+<p>Azure CLI</p>
+<ul>
+<li>'az acs kubernetes get-credentials --resource-group=(cluster-resource-group) --name=(cluster-name)'</li>
+</ul>
+<p>This command downloads the cluster credentials to $HOME/.kube/config, where kubectl expects it to be located.</p>
+<p>Alternatively, you can use scp to securely copy the file from $HOME/.kube/config on the master VM to your local machine. For example:</p>
+<p>bash</p>
+<ul>
+<li>mkdir $HOME/.kube</li>
+<li>scp azureuser@(master-dns-name):.kube/config $HOME/.kube/config</li>
+</ul>
+<p>If you are on Windows, you can use Bash on Ubuntu on Windows, the PuTTy secure file copy client, or a similar tool.</p>
+<h5>Use kubectl</h5>
+<p>Once you have kubectl configured, test the connection by listing the nodes in your cluster:</p>
+<p>bash</p>
+<ul>
+<li>kubectl get nodes</li>
+</ul>
+<p>You can try other kubectl commands. For example, you can view the Kubernetes Dashboard. First, run a proxy to the Kubernetes API server:</p>
+<p>bash</p>
+<ul>
+<li>kubectl proxy</li>
+</ul>
+<p>The Kubernetes UI is now available at: localhost:8001/ui.</p>
+<p>For more information, see the Kubernetes quick start.</p>
+
         
     </div>
     
