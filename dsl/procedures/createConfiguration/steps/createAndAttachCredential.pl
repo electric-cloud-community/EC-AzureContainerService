@@ -102,6 +102,12 @@ $xpath = $ec->attachCredential($projName, $keypairCred,
      stepName => "undeployService"});
 $errors .= $ec->checkAllErrors($xpath);
 
+$xpath = $ec->attachCredential($projName, $keypairCred,
+    {procedureName => "Deploy Service",
+     stepName => "createOrUpdateDeployment"});
+$errors .= $ec->checkAllErrors($xpath);
+
+
 if ("$errors" ne "") {
     # Cleanup the partially created configuration we just created
     $ec->deleteProperty($configPath);
@@ -109,7 +115,7 @@ if ("$errors" ne "") {
 
     $ec->deleteCredential($projName, $credName);
     $ec->deleteCredential($projName, $keypairCred);
-    
+
     my $errMsg = "Error creating configuration credential: " . $errors;
     $ec->setProperty("/myJob/configError", $errMsg);
     print $errMsg;
