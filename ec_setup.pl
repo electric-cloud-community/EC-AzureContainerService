@@ -94,19 +94,23 @@ sub publishArtifact {
     return unless $base64;
 
     my $binary = decode_base64($base64);
-    my ($tempFh, $tempFilename) = tempfile(CLEANUP => 1);
+    my ($tempFh, $tempFilename) = tempfile("$artifactName-XXXXX", CLEANUP => 1, SUFFIX => '.zip');
     binmode($tempFh);
     print $tempFh $binary;
     close $tempFh;
 
-    my ($tempDir) = tempdir(CLEANUP => 1);
+    my $logfile = '';
+
+    $logfile .= "Temp archive: $tempFilename\n";
+
+    my ($tempDir) = tempdir("$artifactName-XXXXX", CLEANUP => 1);
     my $zip = Archive::Zip->new();
     unless($zip->read($tempFilename) == Archive::Zip::AZ_OK()) {
       die "Cannot read .zip dependencies: $!";
     }
     $zip->extractTree("", $tempDir . '/');
 
-    my $logfile = '';
+
     if ( $self->promoteAction eq "promote" ) {
         #publish jars to the repo server if the plugin project was created successfully
         my $am = new ElectricCommander::ArtifactManagement($commander);
