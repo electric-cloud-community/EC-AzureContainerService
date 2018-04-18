@@ -1,4 +1,4 @@
-@Grab(group='net.sf.json-lib', module='json-lib', version='2.3', classifier = 'jdk15') 
+@Grab(group='net.sf.json-lib', module='json-lib', version='2.3', classifier = 'jdk15')
 @Grab('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1' )
 @Grab('com.microsoft.azure:adal4j:1.1.3')
 @Grab('com.jcraft:jsch:0.1.54')
@@ -68,10 +68,10 @@ public class AzureClient extends KubernetesClient {
         }
     }
 
-    String retrieveOrchestratorAccessToken(def pluginConfig, 
-                                           String resourceGroupName, 
+    String retrieveOrchestratorAccessToken(def pluginConfig,
+                                           String resourceGroupName,
                                            String clusterName,
-                                           String token,                                      
+                                           String token,
                                            String adminUsername,
                                            String masterFqdn,
                                            String privateKey){
@@ -86,18 +86,18 @@ public class AzureClient extends KubernetesClient {
         def kubectlSecretExtractionCommand = "kubectl describe secret \$(kubectl get secrets | grep default | cut -f1 -d ' ') | grep -E '^token' | cut -f2 -d':' | tr -d '\\t'"
         String decodedToken = execRemoteKubectlWithOutput(masterFqdn, adminUsername, privateKey, publicKey, passphrase, kubectlSecretExtractionCommand)
         if (!decodedToken) {
-            handleError("Failed to run kubectl command on remote host '$hostName' to extract service account bearer token")
+            handleError("Failed to run kubectl command on remote host '$masterFqdn' to extract service account bearer token")
         }
         'Bearer ' + new String(decodedToken)
     }
 
     Object getOrCreateResourceGroup(String rgName, String subscription_id, String accessToken, String zone){
-      
+
       def api_version = ["api-version": "2016-09-01"]
 
       if (OFFLINE) return
 
-      def existingRg = doHttpHead(AZURE_ENDPOINT, 
+      def existingRg = doHttpHead(AZURE_ENDPOINT,
                        "/subscriptions/${subscription_id}/resourcegroups/${rgName}",
                        accessToken,
                        false,
@@ -107,13 +107,13 @@ public class AzureClient extends KubernetesClient {
             logger INFO, "The Resource group ${rgName} exists already"
         } else if(existingRg.status == 404) {
             logger INFO, "The Resource group ${rgName} does not exist, creating"
-            response = doHttpPut(AZURE_ENDPOINT, 
+            response = doHttpPut(AZURE_ENDPOINT,
                        "/subscriptions/${subscription_id}/resourcegroups/${rgName}",
                        accessToken,
                        "{'location': '${zone}'}",
-                       false,                       
+                       false,
                        api_version)
-        } 
+        }
       response
     }
 
@@ -131,7 +131,7 @@ public class AzureClient extends KubernetesClient {
     }
 
     Object buildContainerServicePayload(Map args){
-        def containerService = [ 
+        def containerService = [
                 location: args.location,
                 properties:[ orchestratorProfile: [
                                 orchestratorType: args.orchestratorType
@@ -323,7 +323,7 @@ public class AzureClient extends KubernetesClient {
         def elapsedTime = 0;
         def response
         String provisioningState = ""
-        
+
         while (elapsedTime <= timeInSeconds) {
             def before = System.currentTimeMillis()
             Thread.sleep(10*1000)
@@ -413,31 +413,31 @@ public class AzureClient extends KubernetesClient {
         def identityFilePath = System.getenv("COMMANDER_WORKSPACE") + "/id_rsa"
         File identityFile = new File(identityFilePath)
         identityFile.text = privateKey
-        
-        def localHost = '127.0.0.1'                                                                                                                                     
-                                                                                                                                                                
-        def targetHost = masterFqdn                                                                                                           
+
+        def localHost = '127.0.0.1'
+
+        def targetHost = masterFqdn
         def targetUser = adminUsername
-        def targetSSHPort = 22                                                                                                                                                                                                                                                                       
-        def targetDockerPort = 2375 
+        def targetSSHPort = 22
+        def targetDockerPort = 2375
         def localDockerPort = 2375
 
         logger INFO, "Opening connection to ${targetUser}@${targetHost}:${targetSSHPort}"
 
-        Properties config = new Properties()                                                                                                                            
-        config.put("StrictHostKeyChecking", "no")                                                                                                                       
-        JSch jsch = new JSch()                                                                                                                                          
+        Properties config = new Properties()
+        config.put("StrictHostKeyChecking", "no")
+        JSch jsch = new JSch()
         jsch.addIdentity(identityFilePath)
 
-        Session sshSession = jsch.getSession(targetUser, targetHost, targetSSHPort)                                                                                                
-        sshSession.setConfig(config)                                                                                                                                    
+        Session sshSession = jsch.getSession(targetUser, targetHost, targetSSHPort)
+        sshSession.setConfig(config)
         sshSession.connect()
 
         logger INFO, "Connected to ${targetHost}:${targetSSHPort}"
         logger INFO, "Forwarding local port ${localDockerPort} to ${targetHost}:${targetDockerPort}"
 
-        def assignedPort = sshSession.setPortForwardingL(localDockerPort, localHost, targetDockerPort) 
-        logger INFO, "Established SSH tunnel : ${sshSession.getPortForwardingL()}"  
+        def assignedPort = sshSession.setPortForwardingL(localDockerPort, localHost, targetDockerPort)
+        logger INFO, "Established SSH tunnel : ${sshSession.getPortForwardingL()}"
 
         return sshSession
     }
