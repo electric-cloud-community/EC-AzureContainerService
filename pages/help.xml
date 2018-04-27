@@ -418,7 +418,7 @@
     
     <div id="DeployService">
         <h2>Deploy Service</h2>
-        <p>Creates or updates a Deployment to bring up a Replica Set and Pods.</p>
+        <p>Creates or updates the Kubernetes service and the Deployment configuration for Pods and ReplicaSets on the Kubernetes cluster running on the Azure Container Service platform.</p>
         
         <h3>Deploy Service Parameters</h3>
         <table class="grid">
@@ -548,21 +548,14 @@
 
     <h1 id="releaseNotes">Release Notes</h1>
     
-    <h3>@PLUGIN_KEY@ 1.0.5</h3>
-    <ul>
-        
-        <li>Configured the plugin to allow the ElectricFlow UI to render the plugin procedure parameters entirely using the configured form XMLs.</li>
-        
-        <li>Enabled the plugin for managing the plugin configurations in-line when defining an application process step or a pipeline stage task.</li>
-        
-    </ul>
-    
     <h3>@PLUGIN_KEY@ 1.0.3</h3>
     <ul>
         
         <li>Fixed the invalid credential name error in the <i>Undeploy Service</i> procedure.</li>
         
         <li>Configured the 'setup' procedure step that retrieves groovy dependency jars to run all subsequent procedure steps on the same resource.</li>
+
+        <li>Added support for retrieving and creating the plugin configurations through the "Configurations" option on the application process step and the pipeline stage task editors.</li>
         
     </ul>
     
