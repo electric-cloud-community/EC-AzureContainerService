@@ -22,6 +22,9 @@
         <property>config</property>
         <required>1</required>
         <documentation>The name of an existing configuration which holds all the connection information for Azure Container Service.</documentation>
+        <!-- Improvements for CEV-18687 -->
+        <configuration>1</configuration>
+        <!-- End of improvements for CEV-18687 -->
     </formElement> 
     <formElement>
         <type>entry</type>

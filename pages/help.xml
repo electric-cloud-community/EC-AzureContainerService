@@ -547,7 +547,10 @@
     
 
     <h1 id="releaseNotes">Release Notes</h1>
-    
+    <h3>@PLUGIN_KEY@ 1.0.4</h3>
+    <ul>
+        <li>Configured the plugin to allow the ElectricFlow UI to create configs inline of procedure form.</li>
+    </ul>
     <h3>@PLUGIN_KEY@ 1.0.3</h3>
     <ul>
         
