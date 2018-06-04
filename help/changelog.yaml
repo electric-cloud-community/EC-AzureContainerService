@@ -16,3 +16,6 @@
   - Fixed the invalid credential name error in the <i>Undeploy Service</i> procedure.
   - Configured the 'setup' procedure step that retrieves groovy dependency jars to run all subsequent procedure steps on the same resource.
   - Added support for retrieving and creating the plugin configurations through the "Configurations" option on the application process step and the pipeline stage task editors.
+1.0.4:
+  - Configured the plugin to allow the ElectricFlow UI to create configs inline of procedure form.
+
