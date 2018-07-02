@@ -15,9 +15,8 @@
     <p>Plugin version @PLUGIN_VERSION@</p>
     <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade"/>
     <h3>Overview</h3>
-    <p><p>Plugin overview EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using Kubernetes.</p>
-</p>
-    
+    <p>Plugin overview EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using Kubernetes.</p>
+    <p>Revised on June 29, 2018</p>
     <h1>Contents</h1>
     <ul>
     <li><a href="#overview">Overview</a></li>
