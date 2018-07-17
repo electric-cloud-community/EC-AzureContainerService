@@ -39,17 +39,38 @@
     </formElement>
     <formElement>
         <type>entry</type>
-        <property>ecp_azure_apiEndpoint</property>
-        <label>Azure Container Service API Endpoint:</label>
+        <label>Tenant ID:</label>
+        <property>ecp_azure_tenantId</property>
         <required>0</required>
-        <documentation>The endpoint at which the Azure Container Service API will be reachable. Must be an IP address or a resolvable DNS name. This field is required and used only if you are not providing an existing environment above for discovery.</documentation>
+        <documentation>Tenant ID of the Azure Account. Required if the cluster does not exist in EF.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Subscription ID:</label>
+        <property>ecp_azure_subscriptionId</property>
+        <required>0</required>
+        <documentation>Subscription ID of the Azure Account. Required if the cluster does not exist in EF.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Client ID:</label>
+        <property>ecp_azure_clientId</property>
+        <required>0</required>
+        <documentation>The Client ID of the Service principal created in Azure. Required if the cluster does not exist in EF.</documentation>
     </formElement>
     <formElement>
         <type>textarea</type>
-        <label>Service Account API Token:</label>
+        <label>Azure Secret Key:</label>
+        <property>ecp_azure_azureSecretKey</property>
         <required>0</required>
-        <property>ecp_azure_apiToken</property>
-        <documentation>Service account bearer token for a service account which has permissions to create resources in the Azure Container Service cluster. This field is required and used only if you are not providing an existing environment above for discovery.</documentation>
+        <documentation>The Key of the Service principal created in Azure. Required if the cluster does not exist in EF.</documentation>
+    </formElement>
+    <formElement>
+        <type>textarea</type>
+        <label>Private Key:</label>
+        <property>ecp_azure_privateKey</property>
+        <required>0</required>
+        <documentation>The private key that should be used for cluster creation and communication. Required if the cluster does not exist in EF.</documentation>
     </formElement>
     <formElement>
         <type>entry</type>

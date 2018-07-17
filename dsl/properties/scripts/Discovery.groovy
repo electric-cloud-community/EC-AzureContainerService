@@ -13,16 +13,15 @@ public class Discovery extends EFClient {
     static final def KIND_SERVICE = 'Service'
 
     @Lazy
-    OpenShiftClient azureClient = {
-        def version = pluginConfig.kubernetesVersion
-        def client = new OpenShiftClient()
-        client.kubernetesVersion = version
+    AzureClient azureClient = {
+        def client = new AzureClient()
+        client.kubernetesVersion = client.getVersion(clusterEndpoint, accessToken)
         return client
     }()
 
     def pluginConfig
     @Lazy
-    def accessToken = { azureClient.retrieveAccessToken(pluginConfig) }()
+    def accessToken = { pluginConfig.accessToken }()
 
     @Lazy
     def clusterEndpoint = { pluginConfig.clusterEndpoint }()
@@ -58,15 +57,15 @@ public class Discovery extends EFClient {
                     [labelSelector: selector]
                 )
 
-                 def deploymentConfigs = azureClient.getDeploymentConfigs(
-                    clusterEndpoint,
-                    namespace,
-                    accessToken,
-                    [labelSelector: selector]
-                )
+//                 def deploymentConfigs = azureClient.getDeploymentConfigs(
+//                    clusterEndpoint,
+//                    namespace,
+//                    accessToken,
+//                    [labelSelector: selector]
+//                )
 
                 def items = deployments?.items ?: []
-                items += (deploymentConfigs?.items ?: [])
+//                items += (deploymentConfigs?.items ?: [])
 
                 items.each { deploy ->
                     def efService = buildServiceDefinition(kubeService, deploy, namespace)
@@ -574,10 +573,10 @@ public class Discovery extends EFClient {
     }
 
 
-    def fetchRoutes() {
-        def routes = azureClient.getRoutes(clusterEndpoint, namespace, accessToken)
-        return routes
-    }
+//    def fetchRoutes() {
+//        def routes = azureClient.getRoutes(clusterEndpoint, namespace, accessToken)
+//        return routes
+//    }
 
 //    This one can be redefined for OpenShift
 //    Copied from Import
@@ -595,28 +594,28 @@ public class Discovery extends EFClient {
         //     mapping.namespace = namespace
         // }
 
-        // Routes
-        def serviceName = getKubeServiceName(kubeService)
-
-        def route
-        fetchRoutes()?.each {
-            if (it?.spec?.to?.kind == KIND_SERVICE && it.spec?.to?.name == serviceName) {
-                if (route) {
-                    def routeName = it.metadata?.name
-                    logger WARNING, "Only one route per service is allowed in ElectricFlow. The route ${routeName} will not be added."
-                }
-                else {
-                    route = it
-                }
-            }
-        }
-
-        if (route) {
-            mapping.routeName = route.metadata?.name
-            mapping.routeHostname = route.spec?.host
-            mapping.routePath = route.spec?.path
-            mapping.routeTargetPort = route.spec?.port?.targetPort
-        }
+//         //Routes
+//        def serviceName = getKubeServiceName(kubeService)
+//
+//        def route
+//        fetchRoutes()?.each {
+//            if (it?.spec?.to?.kind == KIND_SERVICE && it.spec?.to?.name == serviceName) {
+//                if (route) {
+//                    def routeName = it.metadata?.name
+//                    logger WARNING, "Only one route per service is allowed in ElectricFlow. The route ${routeName} will not be added."
+//                }
+//                else {
+//                    route = it
+//                }
+//            }
+//        }
+//
+//        if (route) {
+//            mapping.routeName = route.metadata?.name
+//            mapping.routeHostname = route.spec?.host
+//            mapping.routePath = route.spec?.path
+//            mapping.routeTargetPort = route.spec?.port?.targetPort
+//        }
 
         return mapping
     }

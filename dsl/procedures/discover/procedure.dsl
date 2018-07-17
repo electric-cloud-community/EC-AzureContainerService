@@ -44,25 +44,24 @@ procedure 'Discover',
         value: 'Automatically create microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.'
 
     step 'setup',
-      subproject: '',
-      subprocedure: 'Setup',
-      command: null,
-      errorHandling: 'failProcedure',
-      exclusiveMode: 'none',
-      postProcessor: 'postp',
-      releaseMode: 'none',
-      timeLimitUnits: 'minutes', {
-          actualParameter 'additionalArtifactVersion', ''
+        subproject: '/plugins/EC-Kubernetes/project',
+        subprocedure: 'Setup',
+        command: null,
+        errorHandling: 'failProcedure',
+        exclusiveMode: 'none',
+        postProcessor: 'postp',
+        releaseMode: 'none',
+        timeLimitUnits: 'minutes', {
+        actualParameter 'additionalArtifactVersion', ''
     }
 
 	step 'discover',
-    	  command: new File(pluginDir, 'dsl/procedures/discover/steps/discover.groovy').text,
-    	  errorHandling: 'failProcedure',
-    	  exclusiveMode: 'none',
-    	  postProcessor: 'postp',
-    	  releaseMode: 'none',
-    	  resourceName: '$[grabbedResource]',
-    	  shell: 'ec-groovy',
-    	  timeLimitUnits: 'minutes'
+    	command: new File(pluginDir, 'dsl/procedures/discover/steps/discover.groovy').text,
+    	errorHandling: 'failProcedure',
+    	exclusiveMode: 'none',
+    	postProcessor: 'postp',
+    	releaseMode: 'none',
+    	resourceName: '$[grabbedResource]',
+    	shell: 'ec-groovy',
+    	timeLimitUnits: 'minutes'
 }
-
