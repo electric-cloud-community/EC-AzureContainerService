@@ -63,23 +63,30 @@ $errors .= $ec->checkAllErrors($xpath);
 
 # Give job launcher full permissions on the credential
 my $user = "$[/myJob/launchedByUser]";
-$xpath = $ec->createAclEntry("user", $user,
-    {projectName => $projName,
-     credentialName => $credName,
-     readPrivilege => allow,
-     modifyPrivilege => allow,
-     executePrivilege => allow,
-     changePermissionsPrivilege => allow});
-$errors .= $ec->checkAllErrors($xpath);
 
-$xpath = $ec->createAclEntry("user", $user,
-    {projectName => $projName,
-     credentialName => $keypairCred,
-     readPrivilege => allow,
-     modifyPrivilege => allow,
-     executePrivilege => allow,
-     changePermissionsPrivilege => allow});
-$errors .= $ec->checkAllErrors($xpath);
+$xpath = $ec->getAclEntry("user", $user, {projectName => $projName, credentialName => $credName});
+if (!$xpath->findvalue('//aclEntryId')) {
+    $xpath = $ec->createAclEntry("user", $user,
+        { projectName                  => $projName,
+            credentialName             => $credName,
+            readPrivilege              => allow,
+            modifyPrivilege            => allow,
+            executePrivilege           => allow,
+            changePermissionsPrivilege => allow });
+    $errors .= $ec->checkAllErrors($xpath);
+}
+
+$xpath = $ec->getAclEntry("user", $user, {projectName => $projName, credentialName => $credName});
+if (!$xpath->findvalue('//aclEntryId')) {
+    $xpath = $ec->createAclEntry("user", $user,
+        { projectName                  => $projName,
+            credentialName             => $keypairCred,
+            readPrivilege              => allow,
+            modifyPrivilege            => allow,
+            executePrivilege           => allow,
+            changePermissionsPrivilege => allow });
+    $errors .= $ec->checkAllErrors($xpath);
+}
 
 # Attach credential to steps that will need it
 $xpath = $ec->attachCredential($projName, $credName,
@@ -98,6 +105,11 @@ $xpath = $ec->attachCredential($projName, $credName,
 $errors .= $ec->checkAllErrors($xpath);
 
 $xpath = $ec->attachCredential($projName, $credName,
+    {procedureName => "Discover",
+     stepName => "discover"});
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential($projName, $credName,
     {procedureName => "Cleanup Cluster - Experimental",
      stepName => "cleanup"});
 $errors .= $ec->checkAllErrors($xpath);
@@ -110,6 +122,11 @@ $errors .= $ec->checkAllErrors($xpath);
 $xpath = $ec->attachCredential($projName, $keypairCred,
     {procedureName => "Deploy Service",
      stepName => "createOrUpdateDeployment"});
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential($projName, $keypairCred,
+    {procedureName => "Discover",
+     stepName => "discover"});
 $errors .= $ec->checkAllErrors($xpath);
 
 

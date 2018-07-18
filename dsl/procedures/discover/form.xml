@@ -1,0 +1,186 @@
+<!--
+
+     Copyright 2018 Electric Cloud, Inc.
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+
+-->
+<editor>
+    <formElement>
+        <type>project</type>
+        <label>Environment Project Name:</label>
+        <property>envProjectName</property>
+        <required>1</required>
+        <documentation>The project containing the existing environment, or where the new environment will be created.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Environment Name:</label>
+        <property>envName</property>
+        <required>1</required>
+        <documentation>Provide the name of an existing environment that contains the Azure Container Service-backend cluster to be discovered. If the environment does not already exist, provide the Azure Container Service connection details below for discovery, and a new environment will be created.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Cluster Name:</label>
+        <property>clusterName</property>
+        <required>1</required>
+        <documentation>In an existing environment, provide the name of the ElectricFlow cluster representing the Azure Container Service cluster whose deployed services are to be discovered. If the environment does not already exist, provide the name of the cluster to be created in the new environment.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Azure Container Service Namespace:</label>
+        <property>namespace</property>
+        <required>1</required>
+        <value>default</value>
+        <documentation>The name of the Azure Container Service namespace within which the deployed services should be discovered. Default to 'default' namespace.</documentation>
+    </formElement>
+    <formElement>
+        <type>project</type>
+        <label>Project Name:</label>
+        <property>projName</property>
+        <required>1</required>
+        <documentation>The name of project in which the discovered microservices will be created.</documentation>
+    </formElement>
+    <formElement>
+        <type>checkbox</type>
+        <label>Create Microservices within an Application:</label>
+        <checkedValue>true</checkedValue>
+        <uncheckedValue>false</uncheckedValue>
+        <required>0</required>
+        <property>ecp_azure_applicationScoped</property>
+        <documentation>(Optional) Select to create all discovered services in the Azure Container Service namespace within one application in ElectricFlow. If selected, then the application name must be provided. If unselected, microservices will be created at the top-level in the project.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Application Name:</label>
+        <required>0</required>
+        <property>ecp_azure_applicationName</property>
+        <documentation>The name of the new application that will contain the microservices. Required only if 'Create Microservices within an Application' is selected.</documentation>
+    </formElement>
+
+    <formElement>
+        <type>entry</type>
+        <label>Tenant ID:</label>
+        <property>ecp_azure_tenantId</property>
+        <required>0</required>
+        <documentation>Tenant ID of the Azure Account. Required if the cluster does not exist in EF.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Subscription ID:</label>
+        <property>ecp_azure_subscriptionId</property>
+        <required>0</required>
+        <documentation>Subscription ID of the Azure Account. Required if the cluster does not exist in EF.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Client ID:</label>
+        <property>ecp_azure_clientId</property>
+        <required>0</required>
+        <documentation>The Client ID of the Service principal created in Azure. Required if the cluster does not exist in EF.</documentation>
+    </formElement>
+    <formElement>
+        <type>textarea</type>
+        <label>Azure Secret Key:</label>
+        <property>ecp_azure_azureSecretKey</property>
+        <required>0</required>
+        <documentation>The Key of the Service principal created in Azure. Required if the cluster does not exist in EF.</documentation>
+    </formElement>
+    <formElement>
+        <type>textarea</type>
+        <label>Private Key:</label>
+        <property>ecp_azure_privateKey</property>
+        <required>0</required>
+        <documentation>The private key that should be used for cluster creation and communication. Required if the cluster does not exist in EF.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Container Cluster Name:</label>
+        <property>ecp_azure_azClusterName</property>
+        <required>0</required>
+        <documentation>The name of the cluster that needs to be provisioned.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Resource Group Name:</label>
+        <property>ecp_azure_azResourceGroupName</property>
+        <required>0</required>
+        <documentation>All cluster resources will be created under this resource group name.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Master Zone:</label>
+        <property>ecp_azure_masterZone</property>
+        <required>0</required>
+        <documentation>The primary zone for the cluster. The master zone for a cluster is set at creation time and cannot be updated so this parameter will be ignored if the cluster already exists.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Number Of Master VMs:</label>
+        <property>ecp_azure_masterCount</property>
+        <required>0</required>
+        <value>1</value>
+        <documentation>The number of masters to be created in the cluster. Values allowed are 1, 3 or 5 with 1 as default.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Master DNS Prefix:</label>
+        <property>ecp_azure_masterDnsPrefix</property>
+        <required>0</required>
+        <documentation>The DNS prefix to be used to create the FQDN of the master</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Master FQDN:</label>
+        <property>ecp_azure_masterFqdn</property>
+        <required>0</required>
+        <documentation>FQDN of the master</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Agent Pool Name:</label>
+        <property>ecp_azure_agentPoolName</property>
+        <required>0</required>
+        <documentation>The name of agent pool in which agents will be created</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Agent Pool Count:</label>
+        <property>ecp_azure_agentPoolCount</property>
+        <required>0</required>
+        <documentation>Number of agents that should be created in the pool</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Agent Pool VM Size:</label>
+        <property>ecp_azure_agentPoolVmsize</property>
+        <required>0</required>
+        <value>Standard_D2</value>
+        <documentation>Size of the Agent VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Agent DNS Prefix:</label>
+        <property>ecp_azure_agentPoolDnsPrefix</property>
+        <required>0</required>
+        <documentation>DNS prefix to be used to create the FQDN of agent pool</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>The wait time for cluster creation (In minutes):</label>
+        <property>ecp_azure_clusterWaitTime</property>
+        <required>0</required>
+        <documentation>Timeout for cluster creation. If the cluster does not get created in this amount of time, the procedure fails.</documentation>
+    </formElement>
+</editor>
