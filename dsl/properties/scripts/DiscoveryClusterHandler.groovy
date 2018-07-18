@@ -33,7 +33,21 @@ class DiscoveryClusterHandler {
         environment
     }
 
-    def ensureCluster(projectName, environmentName, clusterName, configName) {
+    def ensureCluster(projectName,
+                      environmentName,
+                      clusterName,
+                      configName,
+                      azClusterName,
+                      azResourceGroupName,
+                      masterZone,
+                      masterCount,
+                      masterDnsPrefix,
+                      masterFqdn,
+                      agentPoolName,
+                      agentPoolCount,
+                      agentPoolVmsize,
+                      agentPoolDnsPrefix,
+                      clusterWaitTime) {
         def cluster
         try {
             cluster = ef.getCluster(
@@ -49,7 +63,18 @@ class DiscoveryClusterHandler {
                 clusterName: clusterName,
                 pluginKey: PLUGIN_KEY,
                 provisionParameters: [
-                    [provisionParameterName: 'config', value: configName]
+                    [provisionParameterName: 'config', value: configName],
+                    [provisionParameterName: 'clusterName', value: azClusterName],
+                    [provisionParameterName: 'resourceGroupName', value: azResourceGroupName],
+                    [provisionParameterName: 'masterZone', value: masterZone],
+                    [provisionParameterName: 'masterCount', value: masterCount],
+                    [provisionParameterName: 'masterDnsPrefix', value: masterDnsPrefix],
+                    [provisionParameterName: 'masterFqdn', value: masterFqdn],
+                    [provisionParameterName: 'agentPoolName', value: agentPoolName],
+                    [provisionParameterName: 'agentPoolCount', value: agentPoolCount],
+                    [provisionParameterName: 'agentPoolVmsize', value: agentPoolVmsize],
+                    [provisionParameterName: 'agentPoolDnsPrefix', value: agentPoolDnsPrefix],
+                    [provisionParameterName: 'clusterWaitime', value: clusterWaitTime]
                 ],
                 provisionProcedure: 'Provision Cluster'
             )?.cluster
@@ -58,7 +83,25 @@ class DiscoveryClusterHandler {
         cluster
     }
 
-    def ensureConfiguration(tenantId, subscriptionId, clientId, azureSecretKey, privateKey) {
+
+//    def azClusterName = '$[ecp_azure_azClusterName]'
+//    def azResourceGroupName = '$[ecp_azure_azResourceGroupName]'
+//    def masterZone = '$[ecp_azure_masterZone]'
+//    def masterCount = '$[ecp_azure_masterCount]'
+//    def masterDnsPrefix = '$[ecp_azure_masterDnsPrefix]'
+//    def masterFqdn = '$[ecp_azure_masterFqdn]'
+//    def agentPoolName = '$[ecp_azure_agentPoolName]'
+//    def agentPoolCount = '$[ecp_azure_agentPoolCount]'
+//    def agentPoolVmsize = '$[ecp_azure_agentPoolVmsize]'
+//    def agentPoolDnsPrefix = '$[ecp_azure_agentPoolDnsPrefix]'
+//    def clusterWaitTime = '$[ecp_azure_clusterWaitTime]'
+
+
+    def ensureConfiguration(tenantId,
+                            subscriptionId,
+                            clientId,
+                            azureSecretKey,
+                            privateKey) {
 //        def version = retrieveKubernetesVersion(endpoint, token)
         def configName = createConfigurationName(clientId)
 
@@ -89,7 +132,7 @@ class DiscoveryClusterHandler {
             actualParameters: actualParameters,
             credentials: [
                 [credentialName: configName, userName: clientId, password: azureSecretKey],
-                [credentialName: "keypair", userName: "kubernetes", password: privateKey]
+                [credentialName: "keypair", userName: azureSecretKey, password: privateKey]
             ]
         )
 
@@ -117,8 +160,8 @@ class DiscoveryClusterHandler {
 
     def createConfigurationName(String clientId) {
         def random = new Random()
-        def randomSuffix = random.nextInt(10 ** 5)
-        "$randomSuffix} - ${clientId}".toString()
+        def randomSuffix = random.nextInt(10 ** 10)
+        "${randomSuffix}".toString()
     }
 
 //    def retrieveKubernetesVersion(endpoint, token) {

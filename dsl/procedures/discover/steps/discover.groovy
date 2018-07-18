@@ -17,7 +17,17 @@ def subscriptionId = '$[ecp_azure_subscriptionId]'
 def clientId = '$[ecp_azure_clientId]'
 def azureSecretKey = '''$[ecp_azure_azureSecretKey]'''
 def privateKey = '''$[ecp_azure_privateKey]'''
-
+def azClusterName = '$[ecp_azure_azClusterName]'
+def azResourceGroupName = '$[ecp_azure_azResourceGroupName]'
+def masterZone = '$[ecp_azure_masterZone]'
+def masterCount = '$[ecp_azure_masterCount]'
+def masterDnsPrefix = '$[ecp_azure_masterDnsPrefix]'
+def masterFqdn = '$[ecp_azure_masterFqdn]'
+def agentPoolName = '$[ecp_azure_agentPoolName]'
+def agentPoolCount = '$[ecp_azure_agentPoolCount]'
+def agentPoolVmsize = '$[ecp_azure_agentPoolVmsize]'
+def agentPoolDnsPrefix = '$[ecp_azure_agentPoolDnsPrefix]'
+def clusterWaitTime = '$[ecp_azure_clusterWaitTime]'
 
 println "Using plugin @PLUGIN_NAME@"
 println "Environment Project Name: $envProjectName"
@@ -64,7 +74,21 @@ try {
         configName = discoveryClusterHandler.ensureConfiguration(tenantId, subscriptionId, clientId, azureSecretKey, privateKey)
         def project = discoveryClusterHandler.ensureProject(envProjectName)
         def environment = discoveryClusterHandler.ensureEnvironment(envProjectName, environmentName)
-        cluster = discoveryClusterHandler.ensureCluster(envProjectName, environmentName, clusterName, configName)
+        cluster = discoveryClusterHandler.ensureCluster(envProjectName,
+                                                        environmentName,
+                                                        clusterName,
+                                                        configName,
+                                                        azClusterName,
+                                                        azResourceGroupName,
+                                                        masterZone,
+                                                        masterCount,
+                                                        masterDnsPrefix,
+                                                        masterFqdn,
+                                                        agentPoolName,
+                                                        agentPoolCount,
+                                                        agentPoolVmsize,
+                                                        agentPoolDnsPrefix,
+                                                        clusterWaitTime)
     }
     else {
         throw e
@@ -81,7 +105,7 @@ pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProj
 AzureClient client = new AzureClient()
 
 String azAccessToken = client.retrieveAccessToken(pluginConfig)
-String masterFqdn = client.getMasterFqdn(pluginConfig.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
+masterFqdn = client.getMasterFqdn(pluginConfig.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
 String clusterEndpoint = "https://${masterFqdn}"
 privateKey = efClient.getCredentials("${configName}_keypair")
 String accessToken = client.retrieveOrchestratorAccessToken(pluginConfig,
