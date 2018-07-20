@@ -150,7 +150,7 @@ class DiscoveryClusterHandler {
 
     def createConfigurationName(String clientId) {
         def random = new Random()
-        def randomSuffix = random.nextInt(10 ** 4)
+        def randomSuffix = random.nextInt(10 ** 10)
         "ACS-${randomSuffix}".toString()
     }
 
