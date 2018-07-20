@@ -16,10 +16,12 @@ def tenantId = '$[ecp_azure_tenantId]'
 def subscriptionId = '$[ecp_azure_subscriptionId]'
 def clientId = '$[ecp_azure_clientId]'
 def azureSecretKey = '''$[ecp_azure_azureSecretKey]'''
+def publicKey = '''$[ecp_azure_publicKey]'''
 def privateKey = '''$[ecp_azure_privateKey]'''
 def azClusterName = '$[ecp_azure_azClusterName]'
 def azResourceGroupName = '$[ecp_azure_azResourceGroupName]'
 def masterZone = '$[ecp_azure_masterZone]'
+def adminUsername = '$[ecp_azure_adminUsername]'
 def masterCount = '$[ecp_azure_masterCount]'
 def masterDnsPrefix = '$[ecp_azure_masterDnsPrefix]'
 def masterFqdn = '$[ecp_azure_masterFqdn]'
@@ -56,13 +58,13 @@ else {
     applicationName = null
 }
 
-def pluginConfig
+def pluginConfig = [createByDiscovery: false, credential:[:]]
 def pluginProjectName = '$[/myProject/projectName]'
 def configName
 def cluster
 try {
     cluster = ef.getCluster(projectName: envProjectName, environmentName: environmentName, clusterName: clusterName)?.cluster
-
+    pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
 
 } catch (RuntimeException e) {
     if (e.message =~ /NoSuchCluster|NoSuchEnvironment|NoSuchProject/) {
@@ -71,7 +73,7 @@ try {
         }
 
         def discoveryClusterHandler = new DiscoveryClusterHandler()
-        configName = discoveryClusterHandler.ensureConfiguration(tenantId, subscriptionId, clientId, azureSecretKey, privateKey)
+        configName = discoveryClusterHandler.ensureConfiguration(tenantId, subscriptionId, clientId, azureSecretKey, publicKey, privateKey)
         def project = discoveryClusterHandler.ensureProject(envProjectName)
         def environment = discoveryClusterHandler.ensureEnvironment(envProjectName, environmentName)
         cluster = discoveryClusterHandler.ensureCluster(envProjectName,
@@ -88,7 +90,15 @@ try {
                                                         agentPoolCount,
                                                         agentPoolVmsize,
                                                         agentPoolDnsPrefix,
-                                                        clusterWaitTime)
+                                                        clusterWaitTime,
+                                                        adminUsername)
+        pluginConfig.tenantId = tenantId
+        pluginConfig.subscriptionId = subscriptionId
+        pluginConfig.publicKey = publicKey
+        pluginConfig.credential.userName = clientId
+        pluginConfig.credential.password = azureSecretKey
+        pluginConfig.createByDiscovery = true
+        pluginConfig.put("${configName}_keypair".toString(), ["userName": azureSecretKey,"password":privateKey] )
     }
     else {
         throw e
@@ -100,21 +110,21 @@ def clusterParameters = efClient.getProvisionClusterParameters(
         envProjectName,
         environmentName)
 configName = clusterParameters.config
-pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
 
 AzureClient client = new AzureClient()
 
 String azAccessToken = client.retrieveAccessToken(pluginConfig)
 masterFqdn = client.getMasterFqdn(pluginConfig.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
 String clusterEndpoint = "https://${masterFqdn}"
-privateKey = efClient.getCredentials("${configName}_keypair")
+
+privateKey = pluginConfig.createByDiscovery ? privateKey : efClient.getCredentials("${configName}_keypair").password
 String accessToken = client.retrieveOrchestratorAccessToken(pluginConfig,
         clusterParameters.resourceGroupName,
         clusterParameters.clusterName,
         azAccessToken,
         clusterParameters.adminUsername,
         masterFqdn,
-        privateKey.password)
+        privateKey)
 
 try {
     if (!cluster) {
