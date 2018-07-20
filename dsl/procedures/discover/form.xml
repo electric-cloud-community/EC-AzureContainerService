@@ -97,6 +97,24 @@
         <required>0</required>
         <documentation>The Key of the Service principal created in Azure. Required if the cluster does not exist in EF.</documentation>
     </formElement>
+    <!--<formElement>-->
+        <!--<type>credential</type>-->
+        <!--<label>Service Principal Details:</label>-->
+        <!--<property>credential</property>-->
+        <!--<required>0</required>-->
+        <!--<userNameLabel>Client ID:</userNameLabel>-->
+        <!--<passwordLabel>Azure Secret Key:</passwordLabel>-->
+        <!--<credentialType>key</credentialType>-->
+        <!--<documentation>The Client ID and the Key of the Service principal created in Azure.</documentation>-->
+        <!--<attachedAsParameterToStep>discover</attachedAsParameterToStep>-->
+    <!--</formElement>-->
+    <formElement>
+        <type>textarea</type>
+        <label>Public Key:</label>
+        <property>ecp_azure_publicKey</property>
+        <required>0</required>
+        <documentation>The public key that should be used for cluster creation and communication.</documentation>
+    </formElement>
     <formElement>
         <type>textarea</type>
         <label>Private Key:</label>
@@ -104,6 +122,17 @@
         <required>0</required>
         <documentation>The private key that should be used for cluster creation and communication. Required if the cluster does not exist in EF.</documentation>
     </formElement>
+    <!--<formElement>-->
+        <!--<type>credential</type>-->
+        <!--<label>Private Key:</label>-->
+        <!--<property>keypair</property>-->
+        <!--<required>0</required>-->
+        <!--<passwordLabel>Private Key:</passwordLabel>-->
+        <!--<value>key</value>-->
+        <!--<credentialType>key</credentialType>-->
+        <!--<documentation>The private key that should be used for cluster creation and communication.</documentation>-->
+        <!--<attachedAsParameterToStep>discover</attachedAsParameterToStep>-->
+    <!--</formElement>-->
     <formElement>
         <type>entry</type>
         <label>Container Cluster Name:</label>
@@ -124,6 +153,14 @@
         <property>ecp_azure_masterZone</property>
         <required>0</required>
         <documentation>The primary zone for the cluster. The master zone for a cluster is set at creation time and cannot be updated so this parameter will be ignored if the cluster already exists.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Admin User Name:</label>
+        <property>ecp_azure_adminUsername</property>
+        <required>0</required>
+        <value>admin</value>
+        <documentation>The name of Administrator user for VMs</documentation>
     </formElement>
     <formElement>
         <type>entry</type>

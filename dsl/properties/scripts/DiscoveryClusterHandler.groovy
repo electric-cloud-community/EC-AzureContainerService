@@ -47,7 +47,8 @@ class DiscoveryClusterHandler {
                       agentPoolCount,
                       agentPoolVmsize,
                       agentPoolDnsPrefix,
-                      clusterWaitTime) {
+                      clusterWaitTime,
+                      adminUsername) {
         def cluster
         try {
             cluster = ef.getCluster(
@@ -55,7 +56,7 @@ class DiscoveryClusterHandler {
                 environmentName: environmentName,
                 clusterName: clusterName
             )?.cluster
-            println "Cluster ${clusterName} has been found in the project ${projectName}"
+            println "Cluster ${clusterName} has been found in the environment ${environmentName}"
         } catch (Throwable e) {
             cluster = ef.createCluster(
                 projectName: projectName,
@@ -67,6 +68,7 @@ class DiscoveryClusterHandler {
                     [provisionParameterName: 'clusterName', value: azClusterName],
                     [provisionParameterName: 'resourceGroupName', value: azResourceGroupName],
                     [provisionParameterName: 'masterZone', value: masterZone],
+                    [provisionParameterName: 'adminUsername', value: adminUsername],
                     [provisionParameterName: 'masterCount', value: masterCount],
                     [provisionParameterName: 'masterDnsPrefix', value: masterDnsPrefix],
                     [provisionParameterName: 'masterFqdn', value: masterFqdn],
@@ -78,29 +80,16 @@ class DiscoveryClusterHandler {
                 ],
                 provisionProcedure: 'Provision Cluster'
             )?.cluster
-            println "Cluster ${clusterName} has been created in the project ${projectName}"
+            println "Cluster ${clusterName} has been found in the environment ${environmentName}"
         }
         cluster
     }
-
-
-//    def azClusterName = '$[ecp_azure_azClusterName]'
-//    def azResourceGroupName = '$[ecp_azure_azResourceGroupName]'
-//    def masterZone = '$[ecp_azure_masterZone]'
-//    def masterCount = '$[ecp_azure_masterCount]'
-//    def masterDnsPrefix = '$[ecp_azure_masterDnsPrefix]'
-//    def masterFqdn = '$[ecp_azure_masterFqdn]'
-//    def agentPoolName = '$[ecp_azure_agentPoolName]'
-//    def agentPoolCount = '$[ecp_azure_agentPoolCount]'
-//    def agentPoolVmsize = '$[ecp_azure_agentPoolVmsize]'
-//    def agentPoolDnsPrefix = '$[ecp_azure_agentPoolDnsPrefix]'
-//    def clusterWaitTime = '$[ecp_azure_clusterWaitTime]'
-
 
     def ensureConfiguration(tenantId,
                             subscriptionId,
                             clientId,
                             azureSecretKey,
+                            publicKey,
                             privateKey) {
 //        def version = retrieveKubernetesVersion(endpoint, token)
         def configName = createConfigurationName(clientId)
@@ -123,6 +112,7 @@ class DiscoveryClusterHandler {
             [actualParameterName: 'desc', value: "This configuration was created by Discovery procedure."],
             [actualParameterName: 'tenantId', value: tenantId],
             [actualParameterName: 'subscriptionId', value: subscriptionId],
+            [actualParameterName: 'publicKey', value: publicKey],
             [actualParameterName: 'credential', value: configName],
             [actualParameterName: 'keypair', value: "keypair"],
         ]
@@ -140,7 +130,7 @@ class DiscoveryClusterHandler {
         def jobId = result.jobId
 
         def status = ''
-        def timeout = 120
+        def timeout = 240
         def elapsed = 0
         def delay = 20
         def info
@@ -160,8 +150,8 @@ class DiscoveryClusterHandler {
 
     def createConfigurationName(String clientId) {
         def random = new Random()
-        def randomSuffix = random.nextInt(10 ** 10)
-        "${randomSuffix}".toString()
+        def randomSuffix = random.nextInt(10 ** 4)
+        "ACS-${randomSuffix}".toString()
     }
 
 //    def retrieveKubernetesVersion(endpoint, token) {

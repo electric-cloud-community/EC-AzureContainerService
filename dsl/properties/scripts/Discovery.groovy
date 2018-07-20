@@ -15,7 +15,8 @@ public class Discovery extends EFClient {
     @Lazy
     AzureClient azureClient = {
         def client = new AzureClient()
-        client.kubernetesVersion = client.getVersion(clusterEndpoint, accessToken)
+        def versionMap = client.getVersion(clusterEndpoint, accessToken)
+        client.kubernetesVersion = "${versionMap.major}.${versionMap.minor}"
         return client
     }()
 
