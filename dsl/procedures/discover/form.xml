@@ -97,17 +97,6 @@
         <required>0</required>
         <documentation>The Key of the Service principal created in Azure. Required if the cluster does not exist in EF.</documentation>
     </formElement>
-    <!--<formElement>-->
-        <!--<type>credential</type>-->
-        <!--<label>Service Principal Details:</label>-->
-        <!--<property>credential</property>-->
-        <!--<required>0</required>-->
-        <!--<userNameLabel>Client ID:</userNameLabel>-->
-        <!--<passwordLabel>Azure Secret Key:</passwordLabel>-->
-        <!--<credentialType>key</credentialType>-->
-        <!--<documentation>The Client ID and the Key of the Service principal created in Azure.</documentation>-->
-        <!--<attachedAsParameterToStep>discover</attachedAsParameterToStep>-->
-    <!--</formElement>-->
     <formElement>
         <type>textarea</type>
         <label>Public Key:</label>
@@ -122,17 +111,6 @@
         <required>0</required>
         <documentation>The private key that should be used for cluster creation and communication. Required if the cluster does not exist in EF.</documentation>
     </formElement>
-    <!--<formElement>-->
-        <!--<type>credential</type>-->
-        <!--<label>Private Key:</label>-->
-        <!--<property>keypair</property>-->
-        <!--<required>0</required>-->
-        <!--<passwordLabel>Private Key:</passwordLabel>-->
-        <!--<value>key</value>-->
-        <!--<credentialType>key</credentialType>-->
-        <!--<documentation>The private key that should be used for cluster creation and communication.</documentation>-->
-        <!--<attachedAsParameterToStep>discover</attachedAsParameterToStep>-->
-    <!--</formElement>-->
     <formElement>
         <type>entry</type>
         <label>Container Cluster Name:</label>
