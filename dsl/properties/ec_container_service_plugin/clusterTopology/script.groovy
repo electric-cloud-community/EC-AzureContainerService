@@ -4,41 +4,37 @@ def clusterName = args.clusterName
 def config = args.configurationParameters
 
 def credentials = args.credential
-assert credentials.size() == 1
-//def userName = credentials[0].userName
-//def password = credentials[0].password
+assert credentials.size() != null
+def userName = credentials[0].userName
+def password = credentials[0].password
+//def privateKey = credentials[1].password //wait for fix
+def privateKey = """-----BEGIN RSA PRIVATE KEY-----
 
-//def endpoint = config.clusterEndpoint
-//def token = password
-//def version = config.kubernetesVersion
-//assert endpoint
-//assert version
-
-def cluster = getCluster(projectName: projectName, environmentName: environmentName, clusterName: clusterName)
-def clusterId = cluster.clusterId.toString()
+-----END RSA PRIVATE KEY-----"""
 
 import com.electriccloud.errors.EcException
 import com.electriccloud.errors.ErrorCodes
 import com.electriccloud.kubernetes.*
 
-def clusterParameters = getProvisionClusterParameters(
-        clusterName,
-        projectName,
-        environmentName)
+def cluster = getCluster(projectName: projectName, environmentName: environmentName, clusterName: clusterName)
+def clusterId = cluster.clusterId.toString()
+def clusterParameters = Client.getClusterParametersMap(cluster)
 
-String azAccessToken = Client.retrieveAccessToken(pluginConfig)
-String masterFqdn = Client.getMasterFqdn(config.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
-String clusterEndPoint = "https://${masterFqdn}"
-def privateKey = efClient.getCredentials("${configName}_keypair")
-String accessToken = Client.retrieveOrchestratorAccessToken(pluginConfig,
+def azAccessToken = Client.retrieveAccessToken(config.tenantId, userName, password)
+def masterFqdn = Client.getMasterFqdn(config.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
+def endpoint = "https://${masterFqdn}"
+def token = Client.retrieveOrchestratorAccessToken(config.publicKey,
         clusterParameters.resourceGroupName,
         clusterParameters.clusterName,
         azAccessToken,
         clusterParameters.adminUsername,
         masterFqdn,
-        privateKey.password)
-def version = Client.getVersion(clusterEndPoint, accessToken)
-def client = new Client(clusterEndPoint, accessToken, version)
+        privateKey)
+
+assert endpoint
+assert token
+
+def client = new Client(endpoint, token)
 assert clusterId
 assert clusterName
 def clusterView = new ClusterView(kubeClient: client,
@@ -67,4 +63,5 @@ try {
         .location(this.class.getCanonicalName())
         .build()
 }
+
 response

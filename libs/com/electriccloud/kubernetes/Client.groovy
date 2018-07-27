@@ -1,5 +1,17 @@
 package com.electriccloud.kubernetes
 
+//@Grab('com.microsoft.azure:adal4j:1.1.3')
+
+import com.microsoft.aad.adal4j.AuthenticationContext;
+import com.microsoft.aad.adal4j.AuthenticationResult;
+import com.microsoft.aad.adal4j.ClientCredential;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+
+
 import com.electriccloud.errors.EcException
 import com.electriccloud.errors.ErrorCodes
 import groovyx.net.http.HTTPBuilder
@@ -26,14 +38,84 @@ class Client {
     private static final Integer SOCKET_TIMEOUT = 20 * 1000
     private static final Integer CONNECTION_TIMEOUT = 5 * 1000
 
-    Client(String endpoint, String accessToken, String version) {
+    final public static String AUTH_ENDPOINT = "https://login.microsoftonline.com/"
+    final public static AZURE_ENDPOINT = "https://management.azure.com"
+    final public static APIV_2016_09_30 = ["api-version": "2016-09-30"]
+
+    Client(String endpoint, String accessToken) {
         this.endpoint = endpoint
-        this.kubernetesVersion = version
         this.accessToken = accessToken
         this.http = new HTTPBuilder(this.endpoint)
         this.http.ignoreSSLIssues()
+        this.kubernetesVersion = getClusterVersion()
     }
 
+
+    public static String retrieveAccessToken(tenantId, userName, password) {
+
+        AuthenticationContext authContext = null;
+        AuthenticationResult authResult = null;
+        ExecutorService service = null;
+
+        try {
+            service = Executors.newFixedThreadPool(1);
+            String url = AUTH_ENDPOINT + tenantId + "/oauth2/authorize";
+            authContext = new AuthenticationContext(url,
+                    false,
+                    service);
+            ClientCredential clientCred = new ClientCredential(userName, password);
+            Future<AuthenticationResult>  future = authContext.acquireToken(
+                    AZURE_ENDPOINT + "/",
+                    clientCred,
+                    null);
+            authResult = future.get();
+            return 'Bearer ' + authResult.getAccessToken()
+        } finally {
+            service.shutdown();
+        }
+    }
+
+    public static String retrieveOrchestratorAccessToken(def publicKey,
+                                           String resourceGroupName,
+                                           String clusterName,
+                                           String token,
+                                           String adminUsername,
+                                           String masterFqdn,
+                                           String privateKey){
+
+        if (!masterFqdn) {
+            handleError("Fully qualified domain name for the master node is missing")
+        }
+
+        String passphrase = ""
+
+        // Reference: https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/#without-kubectl-proxy-post-v13x
+        def kubectlSecretExtractionCommand = "kubectl describe secret \$(kubectl get secrets | grep default | cut -f1 -d ' ') | grep -E '^token' | cut -f2 -d':' | tr -d '\\t'"
+        String decodedToken = execRemoteKubectlWithOutput(masterFqdn, adminUsername, privateKey, publicKey, passphrase, kubectlSecretExtractionCommand)
+        if (!decodedToken) {
+            handleError("Failed to run kubectl command on remote host '$masterFqdn' to extract service account bearer token")
+        }
+        'Bearer ' + new String(decodedToken)
+    }
+
+    public static String getMasterFqdn(String subscription_id, String rgName, String acsName, String accessToken){
+        def existingAcs = doHttpGet(AZURE_ENDPOINT,
+                "/subscriptions/${subscription_id}/resourceGroups/${rgName}/providers/Microsoft.ContainerService/containerServices/${acsName}",
+                accessToken,
+                false,
+                APIV_2016_09_30)
+
+        return existingAcs.data.properties.masterProfile.fqdn
+
+    }
+
+    public static def getClusterParametersMap(def cluster){
+        def result = [:]
+        cluster.provisionParameters.each{ param ->
+           result.put("${param.parameterName}", "${param.parameterValue}")
+        }
+        return result
+    }
     Object doHttpRequest(Method method, String requestUri,
                          Object requestBody = null,
                          def queryArgs = null) {
