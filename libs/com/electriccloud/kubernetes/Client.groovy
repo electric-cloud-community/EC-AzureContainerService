@@ -9,7 +9,7 @@ import com.microsoft.aad.adal4j.ClientCredential;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
+import com.electriccloud.errors.EcException
 
 
 import com.electriccloud.errors.EcException
@@ -56,21 +56,33 @@ class Client {
         AuthenticationContext authContext = null;
         AuthenticationResult authResult = null;
         ExecutorService service = null;
+        ClientCredential clientCred = null
+        Future<AuthenticationResult> future = null
+        String url
 
         try {
             service = Executors.newFixedThreadPool(1);
-            String url = AUTH_ENDPOINT + tenantId + "/oauth2/authorize";
+            url = AUTH_ENDPOINT + tenantId + "/oauth2/authorize";
             authContext = new AuthenticationContext(url,
                     false,
                     service);
-            ClientCredential clientCred = new ClientCredential(userName, password);
-            Future<AuthenticationResult>  future = authContext.acquireToken(
+            clientCred = new ClientCredential(userName, password);
+            future = authContext.acquireToken(
                     AZURE_ENDPOINT + "/",
                     clientCred,
                     null);
             authResult = future.get();
             return 'Bearer ' + authResult.getAccessToken()
-        } finally {
+        }
+        catch (Exception e){
+            throw EcException
+                    .code(ErrorCodes.ScriptError)
+                    .message("retrieveAccessToken: \n url = ${url} \n service = ${service} \n authContext = ${authContext} \n clientCred = ${clientCred} \n future = ${future} \n authResult = ${authResult}")
+                    .cause(e)
+                    .location(this.class.getCanonicalName())
+                    .build()
+        }
+        finally {
             service.shutdown();
         }
     }
