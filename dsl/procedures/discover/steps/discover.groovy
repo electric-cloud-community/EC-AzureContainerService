@@ -64,6 +64,8 @@ def configName
 def cluster
 try {
     cluster = ef.getCluster(projectName: envProjectName, environmentName: environmentName, clusterName: clusterName)?.cluster
+    def resTemp = cluster.provisionParameters.parameterDetail.find{it -> it.parameterName == "config"} //.parameterValue
+    configName = resTemp.parameterValue
     pluginConfig = efClient.getConfigValues('ec_plugin_cfgs', configName, pluginProjectName)
 
 } catch (RuntimeException e) {
@@ -127,9 +129,9 @@ String accessToken = client.retrieveOrchestratorAccessToken(pluginConfig,
         privateKey)
 
 try {
-    if (!cluster) {
-        throw new PluginException("Cluster ${clusterName} does not exist in the environment ${environmentName}")
-    }
+//    if (!cluster) {
+//        throw new PluginException("Cluster ${clusterName} does not exist in the environment ${environmentName}")
+//    }
     if (cluster.pluginKey != 'EC-AzureContainerService') {
         throw new PluginException("ElectricFlow cluster '$clusterName' in environment '$environmentName' is not backed by a ACS-based cluster")
     }
