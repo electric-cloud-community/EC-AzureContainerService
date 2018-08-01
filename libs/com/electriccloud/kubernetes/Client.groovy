@@ -11,6 +11,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import com.electriccloud.errors.EcException
 
+import com.jcraft.jsch.Channel
+import com.jcraft.jsch.ChannelExec
+import com.jcraft.jsch.ChannelSftp
+import com.jcraft.jsch.JSch
+import com.jcraft.jsch.Session
 
 import com.electriccloud.errors.EcException
 import com.electriccloud.errors.ErrorCodes
@@ -43,11 +48,22 @@ class Client {
     final public static APIV_2016_09_30 = ["api-version": "2016-09-30"]
 
     Client(String endpoint, String accessToken) {
-        this.endpoint = endpoint
-        this.accessToken = accessToken
-        this.http = new HTTPBuilder(this.endpoint)
-        this.http.ignoreSSLIssues()
-        this.kubernetesVersion = getClusterVersion()
+        try{
+            this.endpoint = endpoint
+            this.accessToken = accessToken
+            this.http = new HTTPBuilder(this.endpoint)
+            this.http.ignoreSSLIssues()
+            this.kubernetesVersion = getClusterVersion()
+        }
+        catch (Exception e){
+            throw EcException
+                    .code(ErrorCodes.ScriptError)
+                    .message("endpoint: \n url = ${this.endpoint} \n accessToken = ${this.accessToken} \n http = ${this.http} \n version = ${this.kubernetesVersion} \n")
+                    .cause(e)
+                    .location(this.class.getCanonicalName())
+                    .build()
+        }
+
     }
 
 
@@ -107,7 +123,7 @@ class Client {
         if (!decodedToken) {
             handleError("Failed to run kubectl command on remote host '$masterFqdn' to extract service account bearer token")
         }
-        'Bearer ' + new String(decodedToken)
+        new String(decodedToken)
     }
 
     public static String getMasterFqdn(String subscription_id, String rgName, String acsName, String accessToken){
@@ -116,9 +132,7 @@ class Client {
                 accessToken,
                 false,
                 APIV_2016_09_30)
-
-        return existingAcs.data.properties.masterProfile.fqdn
-
+            return existingAcs.data.properties.masterProfile.fqdn
     }
 
     public static LinkedHashMap getClusterParametersMap(def cluster){
@@ -219,6 +233,57 @@ class Client {
                         .build()
             }
         }
+    }
+
+
+    static def execRemoteKubectlWithOutput(String hostName, String username, String privateKey, String publicKey, String passphrase, String command){
+        Channel channel = null
+        Session session = null
+        def response = ''
+        try{
+            logger DEBUG, "Running remote command: $command"
+            logger DEBUG, "\ton host: $hostName"
+            JSch jsch = new JSch()
+            jsch.addIdentity("ecloudKey",
+                    privateKey.getBytes(),
+                    publicKey.getBytes(),
+                    passphrase.getBytes())
+            session = jsch.getSession(username, hostName)
+            session.setConfig("StrictHostKeyChecking", "no")
+            session.connect()
+            channel = session.openChannel("exec")
+            ((ChannelExec)channel).setCommand(command)
+
+            // Reference for reading output stream from ChannelExec: http://www.jcraft.com/jsch/examples/Exec.java.html
+            channel.setInputStream(null);
+            ((ChannelExec)channel).setErrStream(null);
+            InputStream inputStream =channel.getInputStream();
+
+            channel.connect()
+            byte[] tmp = new byte[1024];
+            while(true){
+                while(inputStream.available() > 0){
+                    int i = inputStream.read(tmp, 0, 1024);
+                    if(i < 0)break;
+                    response += new String(tmp, 0, i);
+                }
+                if(channel.isClosed()){
+                    if(inputStream.available() > 0) continue;
+                    //System.out.println("exit-status: "+channel.getExitStatus());
+                    break;
+                }
+                try{Thread.sleep(1000);}catch(Exception ex){}
+            }
+            response = response.trim()
+
+        } catch(Exception ex){
+            ex.printStackTrace()
+            handleError("Failed to run kubectl command on remote host '$hostName'")
+        } finally {
+            channel?.disconnect()
+            session?.disconnect()
+        }
+        response
     }
 
 
