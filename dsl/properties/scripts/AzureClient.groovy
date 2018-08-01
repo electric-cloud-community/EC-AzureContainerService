@@ -452,4 +452,66 @@ public class AzureClient extends KubernetesClient {
         def randomInt = (new Random()).nextInt()
         now + '-' + randomInt
     }
+
+    @Override
+    def mergeJSON(def dest, def src) {
+        src.each { prop, value ->
+            logger DEBUG, "Has property $prop? value:" + dest[prop]
+            if (dest[prop] != null && dest[prop] instanceof Map) {
+                mergeJSON(dest[prop], value)
+            } else if (checkIfElementsAreListsAndSuitableForMerge(dest[prop], value)) {
+                mergeLists(dest[prop], value)
+            } else {
+                dest[prop] = value
+            }
+        }
+        return dest
+    }
+
+    boolean checkIfElementsAreListsAndSuitableForMerge(def dest, def src) {
+        if (dest && src && dest instanceof List && src instanceof List
+                && checkIfAllElementsOfListAreMapsWithNameProperty(dest)
+                && checkIfAllElementsOfListAreMapsWithNameProperty(src)
+                && checkIfAllElementsOfListAreUniqueBasedOnNameKey(dest)
+                && checkIfAllElementsOfListAreUniqueBasedOnNameKey(src)
+        ) {
+            return true
+        }
+        return false
+    }
+
+    static boolean checkIfAllElementsOfListAreMapsWithNameProperty(def list) {
+        list.every { it && it instanceof Map && it['name'] }
+    }
+
+    static boolean checkIfAllElementsOfListAreUniqueBasedOnNameKey(def list) {
+        !list.countBy { it['name'] }.grep { it.value > 1 }
+    }
+
+    def mergeLists(def destList, def srcList) {
+        // items which are not present in source list are to be removed from the destination list
+        // items from source list which does not exists in destination list are to be added to the destination list
+        def indicesOfUnmappedDestListItems = [] // to be removed
+        def indicesOfUnmappedSrcListItems = [] // to be added
+        def indicesOfMappedSrcListItems = []
+        destList.eachWithIndex { destListItem, destListItemIndex ->
+            def srcListItemIndex = srcList.findIndexOf { srcListItem ->
+                srcListItem['name'] == destListItem['name']
+            }
+            if (srcListItemIndex == -1) {
+                indicesOfUnmappedDestListItems.add(destListItemIndex)
+            } else {
+                indicesOfMappedSrcListItems.add(srcListItemIndex)
+                destList[destListItemIndex] = mergeJSON(destList[destListItemIndex], srcList[srcListItemIndex])
+            }
+        }
+
+        // remove unmapped destination list items from the destination list
+        indicesOfUnmappedDestListItems.each { it -> destList.removeAt(it) }
+
+        // add unmapped source list items to the destination list
+        def allSrcListIndices = (0..srcList.size() - 1)
+        indicesOfUnmappedSrcListItems = (allSrcListIndices - indicesOfMappedSrcListItems)
+        indicesOfUnmappedSrcListItems.each { it -> destList.add(srcList[it]) }
+    }
 }
