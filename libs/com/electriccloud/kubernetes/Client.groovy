@@ -111,7 +111,7 @@ class Client {
     }
 
     public static String getMasterFqdn(String subscription_id, String rgName, String acsName, String accessToken){
-        def existingAcs = doHttpGet(AZURE_ENDPOINT,
+        def existingAcs = doAzureHttpGet(AZURE_ENDPOINT,
                 "/subscriptions/${subscription_id}/resourceGroups/${rgName}/providers/Microsoft.ContainerService/containerServices/${acsName}",
                 accessToken,
                 false,
@@ -121,13 +121,74 @@ class Client {
 
     }
 
-    public static def getClusterParametersMap(def cluster){
+    public static LinkedHashMap getClusterParametersMap(def cluster){
         def result = [:]
         cluster.provisionParameters.each{ param ->
-           result.put("${param.parameterName}", "${param.parameterValue}")
+            result[param.parameterName] = param.parameterValue
         }
         return result
     }
+
+    static Object doAzureHttpRequest(Method method, String requestUrl,
+                         String requestUri, def requestHeaders,
+                         boolean failOnErrorCode = true,
+                         Object requestBody = null,
+                         def queryArgs = null) {
+
+        logger DEBUG, "Request details:\n  requestUrl: '$requestUrl' \n  method: '$method' \n  URI: '$requestUri'"
+        if (queryArgs) {
+            logger DEBUG, "queryArgs: '$queryArgs'"
+        }
+        logger DEBUG, "URL: '$requestUrl$requestUri'"
+        if (requestBody) logger DEBUG, "Payload: $requestBody"
+
+        def http = new HTTPBuilder(requestUrl)
+        http.ignoreSSLIssues()
+
+        http.request(method, JSON) {
+            if (requestUri) {
+                uri.path = requestUri
+            }
+            if (queryArgs) {
+                uri.query = queryArgs
+            }
+            headers = requestHeaders
+            body = requestBody
+
+            response.success = { resp, json ->
+                logger DEBUG, "request was successful $resp.statusLine.statusCode $json"
+                [statusLine: resp.statusLine,
+                 status: resp.status,
+                 data      : json]
+            }
+
+            if (failOnErrorCode) {
+                response.failure = { resp, reader ->
+                    logger ERROR, "Response: $reader"
+                    handleError("Request failed with $resp.statusLine")
+                }
+            } else {
+                response.failure = { resp, reader ->
+                    logger DEBUG, "Response: $reader"
+                    logger DEBUG, "Response: $resp.statusLine"
+                    [statusLine: resp.statusLine,
+                     status: resp.status]
+                }
+            }
+        }
+    }
+
+    static Object doAzureHttpGet(String requestUrl, String requestUri, String accessToken, boolean failOnErrorCode = true, Map queryArgs) {
+
+        doAzureHttpRequest(GET,
+                requestUrl,
+                requestUri,
+                ['Authorization' : accessToken, 'Content-Type': 'application/json'],
+                failOnErrorCode,
+                null,
+                queryArgs)
+    }
+
     Object doHttpRequest(Method method, String requestUri,
                          Object requestBody = null,
                          def queryArgs = null) {
