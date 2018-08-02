@@ -1126,11 +1126,3 @@ class TestAcsClientTestMergingOfObjects extends Specification {
         }
     }
 }
-
-//testMergeObjNamespacePropertyFromDestinationIsKept()
-//testMergeObjNewPortsAreToBeAdded()
-//testMergeObjObsoletePortsAreToBeRemoved()
-//testMergeObjPortIsOverrideByTheValueFromSource()
-//testMergeObjPortsToBeReplacedDueToNoNameInDestination()
-//testMergeObjPortsToBeReplacedDueToNoNameInSource()
-//testMergeObjResultIsEqualToDestination()
