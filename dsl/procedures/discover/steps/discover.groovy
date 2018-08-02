@@ -71,7 +71,7 @@ try {
 } catch (RuntimeException e) {
     if (e.message =~ /NoSuchCluster|NoSuchEnvironment|NoSuchProject/) {
         if (!tenantId || !subscriptionId || !clientId || !azureSecretKey || !privateKey) {
-            efClient.handleProcedureError("Because the specified cluster ${clusterName} does not exist in ${environmentName} environment, you must specify this fields to create cluster: enantID, subscriptionID, clientID, azureSecretKey, privateKey")
+            efClient.handleProcedureError("Because the specified cluster ${clusterName} does not exist in ${environmentName} environment, you must specify this fields to create cluster: tenantID, subscriptionID, clientID, azureSecretKey, privateKey")
         }
 
         def discoveryClusterHandler = new DiscoveryClusterHandler()
