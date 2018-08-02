@@ -4,25 +4,42 @@ def clusterName = args.clusterName
 def config = args.configurationParameters
 
 def credentials = args.credential
-assert credentials.size() == 1
+assert credentials.size() != null
 def userName = credentials[0].userName
 def password = credentials[0].password
+//def privateKey = credentials[1].password //wait for fix
+def privateKey = """-----BEGIN RSA PRIVATE KEY-----
 
-def endpoint = config.clusterEndpoint
-def token = password
-def version = config.kubernetesVersion
-assert endpoint
-assert version
-
-def cluster = getCluster(projectName: projectName, environmentName: environmentName, clusterName: clusterName)
-def clusterId = cluster.clusterId.toString()
-
+-----END RSA PRIVATE KEY-----"""
 
 import com.electriccloud.errors.EcException
 import com.electriccloud.errors.ErrorCodes
 import com.electriccloud.kubernetes.*
 
-def client = new Client(endpoint, token, version)
+def cluster = getCluster(projectName: projectName, environmentName: environmentName, clusterName: clusterName)
+def clusterId = cluster.clusterId.toString()
+def clusterParameters = Client.getClusterParametersMap(cluster)
+//
+//fill it
+def azAccessToken = ''
+//def azAccessToken = Client.retrieveAccessToken(config.tenantId, userName, password)
+def masterFqdn = Client.getMasterFqdn(config.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
+def endpoint = "https://${masterFqdn}"
+def token = Client.retrieveOrchestratorAccessToken(config.publicKey,
+        clusterParameters.resourceGroupName,
+        clusterParameters.clusterName,
+        azAccessToken,
+        clusterParameters.adminUsername,
+        masterFqdn,
+        privateKey)
+
+
+//def endpoint = "https://flowqe.eastus.cloudapp.azure.com"
+//def token = ""
+assert endpoint
+assert token
+
+def client = new Client(endpoint, token)
 assert clusterId
 assert clusterName
 def clusterView = new ClusterView(kubeClient: client,

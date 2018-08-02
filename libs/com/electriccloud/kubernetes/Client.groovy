@@ -132,7 +132,19 @@ class Client {
                 accessToken,
                 false,
                 APIV_2016_09_30)
+        try{
             return existingAcs.data.properties.masterProfile.fqdn
+        }
+        catch (Exception e){
+            throw EcException
+                    .code(ErrorCodes.ScriptError)
+                    .message("Error = ${existingAcs}")
+                    .cause(e)
+                    .location(this.class.getCanonicalName())
+                    .build()
+        }
+
+
     }
 
     public static LinkedHashMap getClusterParametersMap(def cluster){
