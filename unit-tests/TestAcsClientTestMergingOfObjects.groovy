@@ -898,6 +898,158 @@ class TestAcsClientTestMergingOfObjects extends Specification {
         ])
     }
 
+    def testMergeObjMergingListsWithMultipleDataStructuresInside() {
+        given:
+        testMergeObj([
+                message       : "result is equal to destination",
+                dest          : """
+{
+    "kind": "Service",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "service123",
+        "namespace": "default",
+        "selfLink": "/api/v1/namespaces/default/services/service123",
+        "uid": "1b043142-8f35-11e8-87cf-000d3a4dabee",
+        "resourceVersion": "1382574",
+        "creationTimestamp": "2018-07-24T11:31:28Z",
+        "labels": {
+            "ec-svc-id": "f7c675a0-8f34-11e8-8eeb-0242ac1d0102"
+        }
+    },
+    "spec": {
+        "ports": [
+            {
+                "name": "servicehttpservice123nginx80",
+                "protocol": "TCP",
+                "port": 810,
+                "targetPort": "null80",
+                "nodePort": 32589,
+                "testInnerList": [
+                    {
+                        "name": "xvv",
+                        "someTextProperty": "someOldValue",
+                        "someInnerMap": {
+                            "test1": "test1OldValue",
+                            "test2": 32589
+                        }
+                    }
+                ]
+            }
+        ],
+        "selector": {
+            "ec-svc": "service123"
+        },
+        "clusterIP": "10.0.152.231",
+        "type": "LoadBalancer",
+        "sessionAffinity": "None",
+        "externalTrafficPolicy": "Cluster"
+    },
+    "status": {
+        "loadBalancer": {
+            "ingress": [
+                {
+                    "ip": "40.114.76.177"
+                }
+            ]
+        }
+    }
+}
+""",
+                src           : """
+{
+    "kind": "Service",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "service123",
+        "labels": {
+            "ec-svc-id": "f7c675a0-8f34-11e8-8eeb-0242ac1d0102"
+        }
+    },
+    "spec": {
+        "selector": {
+            "ec-svc": "service123"
+        },
+        "type": "LoadBalancer",
+        "sessionAffinity": "None",
+        "ports": [
+            {
+                "port": 810,
+                "name": "servicehttpservice123nginx80",
+                "targetPort": "null80",
+                "protocol": "TCP",
+                "testInnerList": [
+                    {
+                        "name": "xvv",
+                        "someTextProperty": "someNewValue",
+                        "someInnerMap": {
+                            "test1": "test1NewValue",
+                            "test2": 32589
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
+""",
+                expectedResult: """
+{
+    "kind": "Service",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "service123",
+        "namespace": "default",
+        "selfLink": "/api/v1/namespaces/default/services/service123",
+        "uid": "1b043142-8f35-11e8-87cf-000d3a4dabee",
+        "resourceVersion": "1382574",
+        "creationTimestamp": "2018-07-24T11:31:28Z",
+        "labels": {
+            "ec-svc-id": "f7c675a0-8f34-11e8-8eeb-0242ac1d0102"
+        }
+    },
+    "spec": {
+        "ports": [
+            {
+                "name": "servicehttpservice123nginx80",
+                "protocol": "TCP",
+                "port": 810,
+                "targetPort": "null80",
+                "nodePort": 32589,
+                "testInnerList": [
+                    {
+                        "name": "xvv",
+                        "someTextProperty": "someNewValue",
+                        "someInnerMap": {
+                            "test1": "test1NewValue",
+                            "test2": 32589
+                        }
+                    }
+                ]
+            }
+        ],
+        "selector": {
+            "ec-svc": "service123"
+        },
+        "clusterIP": "10.0.152.231",
+        "type": "LoadBalancer",
+        "sessionAffinity": "None",
+        "externalTrafficPolicy": "Cluster"
+    },
+    "status": {
+        "loadBalancer": {
+            "ingress": [
+                {
+                    "ip": "40.114.76.177"
+                }
+            ]
+        }
+    }
+}
+"""
+        ])
+    }
+
     class AcsClient {
 
 
