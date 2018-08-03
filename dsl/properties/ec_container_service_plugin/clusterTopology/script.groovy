@@ -21,8 +21,8 @@ def clusterId = cluster.clusterId.toString()
 def clusterParameters = Client.getClusterParametersMap(cluster)
 //
 //fill it
-def azAccessToken = ''
-//def azAccessToken = Client.retrieveAccessToken(config.tenantId, userName, password)
+//def azAccessToken = ''
+def azAccessToken = Client.retrieveAccessToken(config.tenantId, userName, password)
 def masterFqdn = Client.getMasterFqdn(config.subscriptionId, clusterParameters.resourceGroupName, clusterParameters.clusterName, azAccessToken)
 def endpoint = "https://${masterFqdn}"
 def token = Client.retrieveOrchestratorAccessToken(config.publicKey,

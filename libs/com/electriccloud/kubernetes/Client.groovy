@@ -24,6 +24,7 @@ import groovyx.net.http.Method
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.Method.GET
+import static groovyx.net.http.Method.POST
 
 class Client {
 
@@ -43,7 +44,7 @@ class Client {
     private static final Integer SOCKET_TIMEOUT = 20 * 1000
     private static final Integer CONNECTION_TIMEOUT = 5 * 1000
 
-    final public static String AUTH_ENDPOINT = "https://login.microsoftonline.com/"
+    final public static String AUTH_ENDPOINT = "https://login.microsoftonline.com"
     final public static AZURE_ENDPOINT = "https://management.azure.com"
     final public static APIV_2016_09_30 = ["api-version": "2016-09-30"]
 
@@ -65,42 +66,89 @@ class Client {
         }
 
     }
+//    "curl --request POST \
+//    =SzqYyyQU1a%2BhJIYxJxWAAo15Br0oMTXUzvHd6qP%2F1qM%3D&resource=https%3A%2F%2Fmanagement.azure.com%2F' \
 
 
     public static String retrieveAccessToken(tenantId, userName, password) {
+        def body = [grant_type        :   "client_credentials",
+                    client_id         :   "${userName}",
+                    client_secret     :   "${password}",
+                    resource          :   AZURE_ENDPOINT]
+        def uri = "/${tenantId}/oauth2/token"
+        def headers = ['Content-Type': 'application/json']
 
-        AuthenticationContext authContext = null;
-        AuthenticationResult authResult = null;
-        ExecutorService service = null;
-        ClientCredential clientCred = null
-        Future<AuthenticationResult> future = null
-        String url
 
-        try {
-            service = Executors.newFixedThreadPool(1);
-            url = AUTH_ENDPOINT + tenantId + "/oauth2/authorize";
-            authContext = new AuthenticationContext(url,
-                    false,
-                    service);
-            clientCred = new ClientCredential(userName, password);
-            future = authContext.acquireToken(
-                    AZURE_ENDPOINT + "/",
-                    clientCred,
-                    null);
-            authResult = future.get();
-            return 'Bearer ' + authResult.getAccessToken()
+        def response = doAzureHttpRequest(POST,
+                AUTH_ENDPOINT,
+                uri,
+                headers,
+                false,
+                body,
+                null)
+
+
+        try{
+            return response.data.access_token
         }
         catch (Exception e){
             throw EcException
                     .code(ErrorCodes.ScriptError)
-                    .message("retrieveAccessToken: \n url = ${url} \n service = ${service} \n authContext = ${authContext} \n clientCred = ${clientCred} \n future = ${future} \n authResult = ${authResult}")
+                    .message("endpoint = ${AUTH_ENDPOINT}\n uri = ${uri} \n header = ${headers} \n body = ${body} \n response = + ${response}")
                     .cause(e)
                     .location(this.class.getCanonicalName())
                     .build()
         }
-        finally {
-            service.shutdown();
-        }
+
+//                doAzureHttpGet(AUTH_ENDPOINT,
+//                "/${tenantId}/oauth2/token",
+//                accessToken,
+//                false,
+//                APIV_2016_09_30)
+//        try{
+//            return existingAcs.data.properties.masterProfile.fqdn
+//        }
+//        catch (Exception e){
+//            throw EcException
+//                    .code(ErrorCodes.ScriptError)
+//                    .message("Error = ${existingAcs}")
+//                    .cause(e)
+//                    .location(this.class.getCanonicalName())
+//                    .build()
+//        }
+
+//        AuthenticationContext authContext = null;
+//        AuthenticationResult authResult = null;
+//        ExecutorService service = null;
+//        ClientCredential clientCred = null
+//        Future<AuthenticationResult> future = null
+//        String url
+//
+//        try {
+//            service = Executors.newFixedThreadPool(1);
+//            url = AUTH_ENDPOINT + tenantId + "/oauth2/authorize";
+//            authContext = new AuthenticationContext(url,
+//                    false,
+//                    service);
+//            clientCred = new ClientCredential(userName, password);
+//            future = authContext.acquireToken(
+//                    AZURE_ENDPOINT + "/",
+//                    clientCred,
+//                    null);
+//            authResult = future.get();
+//            return 'Bearer ' + authResult.getAccessToken()
+//        }
+//        catch (Exception e){
+//            throw EcException
+//                    .code(ErrorCodes.ScriptError)
+//                    .message("retrieveAccessToken: \n url = ${url} \n service = ${service} \n authContext = ${authContext} \n clientCred = ${clientCred} \n future = ${future} \n authResult = ${authResult}")
+//                    .cause(e)
+//                    .location(this.class.getCanonicalName())
+//                    .build()
+//        }
+//        finally {
+//            service.shutdown();
+//        }
     }
 
     public static String retrieveOrchestratorAccessToken(def publicKey,
@@ -111,18 +159,12 @@ class Client {
                                            String masterFqdn,
                                            String privateKey){
 
-        if (!masterFqdn) {
-            handleError("Fully qualified domain name for the master node is missing")
-        }
 
         String passphrase = ""
 
         // Reference: https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/#without-kubectl-proxy-post-v13x
         def kubectlSecretExtractionCommand = "kubectl describe secret \$(kubectl get secrets | grep default | cut -f1 -d ' ') | grep -E '^token' | cut -f2 -d':' | tr -d '\\t'"
         String decodedToken = execRemoteKubectlWithOutput(masterFqdn, adminUsername, privateKey, publicKey, passphrase, kubectlSecretExtractionCommand)
-        if (!decodedToken) {
-            handleError("Failed to run kubectl command on remote host '$masterFqdn' to extract service account bearer token")
-        }
         new String(decodedToken)
     }
 
@@ -191,7 +233,6 @@ class Client {
             if (failOnErrorCode) {
                 response.failure = { resp, reader ->
                     logger ERROR, "Response: $reader"
-                    handleError("Request failed with $resp.statusLine")
                 }
             } else {
                 response.failure = { resp, reader ->
@@ -241,7 +282,7 @@ class Client {
             response.failure = { resp, reader ->
                 throw EcException
                         .code(ErrorCodes.RealtimeClusterLookupFailed)
-                        .message("Request for '$requestUri' failed with $resp.statusLine, code: ${resp.status}")
+                        .message("Request for '$requestUri' failed with $resp.statusLine, code: ${resp.status} \n + ${resp}")
                         .build()
             }
         }
@@ -290,7 +331,7 @@ class Client {
 
         } catch(Exception ex){
             ex.printStackTrace()
-            handleError("Failed to run kubectl command on remote host '$hostName'")
+
         } finally {
             channel?.disconnect()
             session?.disconnect()
