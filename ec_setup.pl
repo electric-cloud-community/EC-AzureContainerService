@@ -130,6 +130,8 @@ sub publishArtifact {
         if ( $artifactVersion->diagnostics() ) {
             $logfile .= "\nDetails:\n" . $artifactVersion->diagnostics();
         }
+
+        unlink($tempFilename);
     }
 
     return $logfile;
