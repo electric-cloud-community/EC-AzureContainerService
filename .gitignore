@@ -1,3 +1,17 @@
 *ivydata*
 .idea
 build
+#.gitignore
+#.gradle/
+#build.gradle
+#gradle/
+#gradlew
+#gradlew.bat
+#settings.gradle
+#src/
+.gradle/
+#environments/
+src/main/java/
+src/test/groovy/com/electriccloud/procedures/topology/
+src/test/java/
+src/test/resources/dsl/rerlease/

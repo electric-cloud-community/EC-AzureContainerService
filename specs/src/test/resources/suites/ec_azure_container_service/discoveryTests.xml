@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name = "Discovery tests" parallel="false" thread-count="3">
+
+    <test name="Discovery Tests">
+        <classes>
+            <class name="com.electriccloud.procedures.discovery.DiscoveryTests"/>
+        </classes>
+    </test>
+
+
+</suite>
