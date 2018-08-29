@@ -11,11 +11,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import com.electriccloud.errors.EcException
 
-import com.jcraft.jsch.Channel
-import com.jcraft.jsch.ChannelExec
-import com.jcraft.jsch.ChannelSftp
-import com.jcraft.jsch.JSch
-import com.jcraft.jsch.Session
 
 import com.electriccloud.errors.EcException
 import com.electriccloud.errors.ErrorCodes
@@ -24,7 +19,6 @@ import groovyx.net.http.Method
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.Method.GET
-import static groovyx.net.http.Method.POST
 
 class Client {
 
@@ -44,223 +38,101 @@ class Client {
     private static final Integer SOCKET_TIMEOUT = 20 * 1000
     private static final Integer CONNECTION_TIMEOUT = 5 * 1000
 
-    final public static String AUTH_ENDPOINT = "https://login.microsoftonline.com"
+    final public static String AUTH_ENDPOINT = "https://login.microsoftonline.com/"
     final public static AZURE_ENDPOINT = "https://management.azure.com"
     final public static APIV_2016_09_30 = ["api-version": "2016-09-30"]
 
     Client(String endpoint, String accessToken) {
-        try{
-            this.endpoint = endpoint
-            this.accessToken = accessToken
-            this.http = new HTTPBuilder(this.endpoint)
-            this.http.ignoreSSLIssues()
-            this.kubernetesVersion = getClusterVersion()
-        }
-        catch (Exception e){
-            throw EcException
-                    .code(ErrorCodes.ScriptError)
-                    .message("endpoint: \n url = ${this.endpoint} \n accessToken = ${this.accessToken} \n http = ${this.http} \n version = ${this.kubernetesVersion} \n")
-                    .cause(e)
-                    .location(this.class.getCanonicalName())
-                    .build()
-        }
-
+        this.endpoint = endpoint
+        this.accessToken = accessToken
+        this.http = new HTTPBuilder(this.endpoint)
+        this.http.ignoreSSLIssues()
+        this.kubernetesVersion = getClusterVersion()
     }
-//    "curl --request POST \
-//    =SzqYyyQU1a%2BhJIYxJxWAAo15Br0oMTXUzvHd6qP%2F1qM%3D&resource=https%3A%2F%2Fmanagement.azure.com%2F' \
 
 
     public static String retrieveAccessToken(tenantId, userName, password) {
-        def body = [grant_type        :   "client_credentials",
-                    client_id         :   "${userName}",
-                    client_secret     :   "${password}",
-                    resource          :   AZURE_ENDPOINT]
-        def uri = "/${tenantId}/oauth2/token"
-        def headers = ['Content-Type': 'application/json']
 
+        AuthenticationContext authContext = null;
+        AuthenticationResult authResult = null;
+        ExecutorService service = null;
+        ClientCredential clientCred = null
+        Future<AuthenticationResult> future = null
+        String url
 
-        def response = doAzureHttpRequest(POST,
-                AUTH_ENDPOINT,
-                uri,
-                headers,
-                false,
-                body,
-                null)
-
-
-        try{
-            return response.data.access_token
+        try {
+            service = Executors.newFixedThreadPool(1);
+            url = AUTH_ENDPOINT + tenantId + "/oauth2/authorize";
+            authContext = new AuthenticationContext(url,
+                    false,
+                    service);
+            clientCred = new ClientCredential(userName, password);
+            future = authContext.acquireToken(
+                    AZURE_ENDPOINT + "/",
+                    clientCred,
+                    null);
+            authResult = future.get();
+            return 'Bearer ' + authResult.getAccessToken()
         }
         catch (Exception e){
             throw EcException
                     .code(ErrorCodes.ScriptError)
-                    .message("endpoint = ${AUTH_ENDPOINT}\n uri = ${uri} \n header = ${headers} \n body = ${body} \n response = + ${response}")
+                    .message("exception message: " + e.getMessage() + "\n retrieveAccessToken: \n url = ${url} \n service = ${service} \n authContext = ${authContext} \n clientCred = ${clientCred} \n future = ${future} \n authResult = ${authResult}")
                     .cause(e)
                     .location(this.class.getCanonicalName())
                     .build()
         }
-
-//                doAzureHttpGet(AUTH_ENDPOINT,
-//                "/${tenantId}/oauth2/token",
-//                accessToken,
-//                false,
-//                APIV_2016_09_30)
-//        try{
-//            return existingAcs.data.properties.masterProfile.fqdn
-//        }
-//        catch (Exception e){
-//            throw EcException
-//                    .code(ErrorCodes.ScriptError)
-//                    .message("Error = ${existingAcs}")
-//                    .cause(e)
-//                    .location(this.class.getCanonicalName())
-//                    .build()
-//        }
-
-//        AuthenticationContext authContext = null;
-//        AuthenticationResult authResult = null;
-//        ExecutorService service = null;
-//        ClientCredential clientCred = null
-//        Future<AuthenticationResult> future = null
-//        String url
-//
-//        try {
-//            service = Executors.newFixedThreadPool(1);
-//            url = AUTH_ENDPOINT + tenantId + "/oauth2/authorize";
-//            authContext = new AuthenticationContext(url,
-//                    false,
-//                    service);
-//            clientCred = new ClientCredential(userName, password);
-//            future = authContext.acquireToken(
-//                    AZURE_ENDPOINT + "/",
-//                    clientCred,
-//                    null);
-//            authResult = future.get();
-//            return 'Bearer ' + authResult.getAccessToken()
-//        }
-//        catch (Exception e){
-//            throw EcException
-//                    .code(ErrorCodes.ScriptError)
-//                    .message("retrieveAccessToken: \n url = ${url} \n service = ${service} \n authContext = ${authContext} \n clientCred = ${clientCred} \n future = ${future} \n authResult = ${authResult}")
-//                    .cause(e)
-//                    .location(this.class.getCanonicalName())
-//                    .build()
-//        }
-//        finally {
-//            service.shutdown();
-//        }
+        finally {
+            service.shutdown();
+        }
     }
 
     public static String retrieveOrchestratorAccessToken(def publicKey,
-                                           String resourceGroupName,
-                                           String clusterName,
-                                           String token,
-                                           String adminUsername,
-                                           String masterFqdn,
-                                           String privateKey){
+                                                         String resourceGroupName,
+                                                         String clusterName,
+                                                         String token,
+                                                         String adminUsername,
+                                                         String masterFqdn,
+                                                         String privateKey){
 
+        if (!masterFqdn) {
+            handleError("Fully qualified domain name for the master node is missing")
+        }
 
         String passphrase = ""
 
         // Reference: https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/#without-kubectl-proxy-post-v13x
         def kubectlSecretExtractionCommand = "kubectl describe secret \$(kubectl get secrets | grep default | cut -f1 -d ' ') | grep -E '^token' | cut -f2 -d':' | tr -d '\\t'"
         String decodedToken = execRemoteKubectlWithOutput(masterFqdn, adminUsername, privateKey, publicKey, passphrase, kubectlSecretExtractionCommand)
-        new String(decodedToken)
+        if (!decodedToken) {
+            handleError("Failed to run kubectl command on remote host '$masterFqdn' to extract service account bearer token")
+        }
+        'Bearer ' + new String(decodedToken)
     }
 
     public static String getMasterFqdn(String subscription_id, String rgName, String acsName, String accessToken){
-        def existingAcs = doAzureHttpGet(AZURE_ENDPOINT,
+        def existingAcs = doHttpGet(AZURE_ENDPOINT,
                 "/subscriptions/${subscription_id}/resourceGroups/${rgName}/providers/Microsoft.ContainerService/containerServices/${acsName}",
                 accessToken,
                 false,
                 APIV_2016_09_30)
-        try{
-            return existingAcs.data.properties.masterProfile.fqdn
-        }
-        catch (Exception e){
-            throw EcException
-                    .code(ErrorCodes.ScriptError)
-                    .message("Error = ${existingAcs}")
-                    .cause(e)
-                    .location(this.class.getCanonicalName())
-                    .build()
-        }
 
+        return existingAcs.data.properties.masterProfile.fqdn
 
     }
 
-    public static LinkedHashMap getClusterParametersMap(def cluster){
+    public static def getClusterParametersMap(def cluster){
         def result = [:]
         cluster.provisionParameters.each{ param ->
-            result[param.parameterName] = param.parameterValue
+            result.put("${param.parameterName}", "${param.parameterValue}")
         }
         return result
     }
-
-    static Object doAzureHttpRequest(Method method, String requestUrl,
-                         String requestUri, def requestHeaders,
-                         boolean failOnErrorCode = true,
-                         Object requestBody = null,
-                         def queryArgs = null) {
-
-        logger DEBUG, "Request details:\n  requestUrl: '$requestUrl' \n  method: '$method' \n  URI: '$requestUri'"
-        if (queryArgs) {
-            logger DEBUG, "queryArgs: '$queryArgs'"
-        }
-        logger DEBUG, "URL: '$requestUrl$requestUri'"
-        if (requestBody) logger DEBUG, "Payload: $requestBody"
-
-        def http = new HTTPBuilder(requestUrl)
-        http.ignoreSSLIssues()
-
-        http.request(method, JSON) {
-            if (requestUri) {
-                uri.path = requestUri
-            }
-            if (queryArgs) {
-                uri.query = queryArgs
-            }
-            headers = requestHeaders
-            body = requestBody
-
-            response.success = { resp, json ->
-                logger DEBUG, "request was successful $resp.statusLine.statusCode $json"
-                [statusLine: resp.statusLine,
-                 status: resp.status,
-                 data      : json]
-            }
-
-            if (failOnErrorCode) {
-                response.failure = { resp, reader ->
-                    logger ERROR, "Response: $reader"
-                }
-            } else {
-                response.failure = { resp, reader ->
-                    logger DEBUG, "Response: $reader"
-                    logger DEBUG, "Response: $resp.statusLine"
-                    [statusLine: resp.statusLine,
-                     status: resp.status]
-                }
-            }
-        }
-    }
-
-    static Object doAzureHttpGet(String requestUrl, String requestUri, String accessToken, boolean failOnErrorCode = true, Map queryArgs) {
-
-        doAzureHttpRequest(GET,
-                requestUrl,
-                requestUri,
-                ['Authorization' : accessToken, 'Content-Type': 'application/json'],
-                failOnErrorCode,
-                null,
-                queryArgs)
-    }
-
     Object doHttpRequest(Method method, String requestUri,
                          Object requestBody = null,
                          def queryArgs = null) {
         def requestHeaders = [
-            'Authorization': "Bearer ${this.accessToken}"
+                'Authorization': "Bearer ${this.accessToken}"
         ]
         http.request(method, JSON) { req ->
             if (requestUri) {
@@ -282,61 +154,10 @@ class Client {
             response.failure = { resp, reader ->
                 throw EcException
                         .code(ErrorCodes.RealtimeClusterLookupFailed)
-                        .message("Request for '$requestUri' failed with $resp.statusLine, code: ${resp.status} \n + ${resp}")
+                        .message("Request for '$requestUri' failed with $resp.statusLine, code: ${resp.status}")
                         .build()
             }
         }
-    }
-
-
-    static def execRemoteKubectlWithOutput(String hostName, String username, String privateKey, String publicKey, String passphrase, String command){
-        Channel channel = null
-        Session session = null
-        def response = ''
-        try{
-            logger DEBUG, "Running remote command: $command"
-            logger DEBUG, "\ton host: $hostName"
-            JSch jsch = new JSch()
-            jsch.addIdentity("ecloudKey",
-                    privateKey.getBytes(),
-                    publicKey.getBytes(),
-                    passphrase.getBytes())
-            session = jsch.getSession(username, hostName)
-            session.setConfig("StrictHostKeyChecking", "no")
-            session.connect()
-            channel = session.openChannel("exec")
-            ((ChannelExec)channel).setCommand(command)
-
-            // Reference for reading output stream from ChannelExec: http://www.jcraft.com/jsch/examples/Exec.java.html
-            channel.setInputStream(null);
-            ((ChannelExec)channel).setErrStream(null);
-            InputStream inputStream =channel.getInputStream();
-
-            channel.connect()
-            byte[] tmp = new byte[1024];
-            while(true){
-                while(inputStream.available() > 0){
-                    int i = inputStream.read(tmp, 0, 1024);
-                    if(i < 0)break;
-                    response += new String(tmp, 0, i);
-                }
-                if(channel.isClosed()){
-                    if(inputStream.available() > 0) continue;
-                    //System.out.println("exit-status: "+channel.getExitStatus());
-                    break;
-                }
-                try{Thread.sleep(1000);}catch(Exception ex){}
-            }
-            response = response.trim()
-
-        } catch(Exception ex){
-            ex.printStackTrace()
-
-        } finally {
-            channel?.disconnect()
-            session?.disconnect()
-        }
-        response
     }
 
 
