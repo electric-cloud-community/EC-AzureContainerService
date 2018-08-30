@@ -24,7 +24,7 @@ allure {
     useTestNG {
         version = "${allureVersion}"
     }
-    downloadLink = "https://dl.bintray.com/qameta/generic/io/qameta/allure/allure/$allureVersion/allure-${allureVersion}.zip"
+    downloadLink = "https://github.com/allure-framework/allure2/releases/download/$allureVersion/allure-${allureVersion}.zip"
 }
 
 idea {

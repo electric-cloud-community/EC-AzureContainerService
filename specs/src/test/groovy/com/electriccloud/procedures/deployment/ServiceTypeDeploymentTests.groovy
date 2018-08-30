@@ -17,11 +17,11 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
 
 
 
-    /*@BeforeClass
+    @BeforeClass
     void setUpTests(){
         acsClient.deleteConfiguration(configName)
         acsClient.createConfiguration(configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, true, LogLevel.DEBUG)
-    }*/
+    }
 
     @BeforeMethod
     void setUpTest(){
@@ -31,13 +31,13 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
     @AfterMethod
     void tearDownTest(){
         acsClient.undeployService(projectName, serviceName)
-        //acsClient.client.deleteProject(projectName)
+        acsClient.client.deleteProject(projectName)
     }
 
-    /*@AfterClass
+    @AfterClass
     void tearDownTests(){
         acsClient.deleteConfiguration(configName)
-    }*/
+    }
 
 
     @Test
