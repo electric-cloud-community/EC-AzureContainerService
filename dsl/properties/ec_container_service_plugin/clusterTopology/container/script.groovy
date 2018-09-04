@@ -11,10 +11,11 @@ def userName = credentials[0].userName
 def password = credentials[0].password
 
 def credential = new Credential(projectName: projectName,
-    environmentName: environmentName,
-    clusterName: clusterName,
-    efContext: this,
-    secret: password)
+        environmentName: environmentName,
+        clusterName: clusterName,
+        efContext: this,
+        userName: userName,
+        password: password)
 def token = credential.token
 def endpoint = credential.endpoint
 
@@ -48,11 +49,11 @@ try {
             .build()
 } catch (Throwable e) {
     throw EcException
-        .code(ErrorCodes.ScriptError)
-        .message("Exception occured while retrieving container details, cause: ${e.message}")
-        .cause(e)
-        .location(this.class.getCanonicalName())
-        .build()
+            .code(ErrorCodes.ScriptError)
+            .message("Exception occured while retrieving container details, cause: ${e.message}")
+            .cause(e)
+            .location(this.class.getCanonicalName())
+            .build()
 }
 response
 

@@ -32,8 +32,8 @@ class Credential {
         }
 
         ClusterInfoCrypter clusterInfoCrypter = new ClusterInfoCrypter(
-                userName,
-                password
+                password,
+                userName
         )
 
         String accessTokenDecrypted = clusterInfoCrypter.decrypt(accessTokenEncrypted)

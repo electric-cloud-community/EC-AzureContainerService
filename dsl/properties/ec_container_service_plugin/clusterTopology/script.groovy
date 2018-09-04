@@ -9,11 +9,11 @@ def userName = credentials[0].userName
 def password = credentials[0].password
 
 def credential = new Credential(projectName: projectName,
-    environmentName: environmentName,
-    clusterName: clusterName,
-    efContext: this,
-    userName: userName,
-    password: password)
+        environmentName: environmentName,
+        clusterName: clusterName,
+        efContext: this,
+        userName: userName,
+        password: password)
 def token = credential.token
 def endpoint = credential.endpoint
 
@@ -27,10 +27,10 @@ def client = new Client(endpoint, token)
 assert clusterId
 assert clusterName
 def clusterView = new ClusterView(kubeClient: client,
-    projectName: projectName,
-    environmentName: environmentName,
-    clusterName: clusterName,
-    clusterId: clusterId)
+        projectName: projectName,
+        environmentName: environmentName,
+        clusterName: clusterName,
+        clusterId: clusterId)
 def response
 try {
     response = clusterView.getRealtimeClusterTopology()
@@ -38,17 +38,17 @@ try {
     throw e
 } catch (SocketTimeoutException | ConnectException e) {
     throw EcException
-        .code(ErrorCodes.RealtimeClusterLookupFailed)
-        .message("Kubernetes API Endpoint ${endpoint} could not be reached - ${e.message}")
-        .cause(e)
-        .location(this.class.getCanonicalName())
-        .build()
+            .code(ErrorCodes.RealtimeClusterLookupFailed)
+            .message("Kubernetes API Endpoint ${endpoint} could not be reached - ${e.message}")
+            .cause(e)
+            .location(this.class.getCanonicalName())
+            .build()
 } catch (Throwable e) {
     throw EcException
-        .code(ErrorCodes.ScriptError)
-        .message("Exception occured while retrieving cluster topology: ${e.message}")
-        .cause(e)
-        .location(this.class.getCanonicalName())
-        .build()
+            .code(ErrorCodes.ScriptError)
+            .message("Exception occured while retrieving cluster topology: ${e.message}")
+            .cause(e)
+            .location(this.class.getCanonicalName())
+            .build()
 }
 response
