@@ -12,7 +12,8 @@ def credential = new Credential(projectName: projectName,
     environmentName: environmentName,
     clusterName: clusterName,
     efContext: this,
-    secret: password)
+    userName: userName,
+    password: password)
 def token = credential.token
 def endpoint = credential.endpoint
 
@@ -51,4 +52,3 @@ try {
         .build()
 }
 response
-

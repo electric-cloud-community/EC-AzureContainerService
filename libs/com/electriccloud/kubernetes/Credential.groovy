@@ -1,25 +1,28 @@
 package com.electriccloud.kubernetes
+
 import com.electriccloud.errors.EcException
 import com.electriccloud.errors.ErrorCodes
+import com.electriccloud.kubernetes.ClusterInfoCrypter
 
 class Credential {
     def efContext
-    def secret
+    def userName
+    def password
     def projectName
     def environmentName
     def clusterName
 
-    private final String TOKEN_PROPERTY = 'ec_token'
-    private final String ENDPOINT_PROPERTY = 'ec_endpoint'
+    private final String TOKEN_PROPERTY = 'clusterAccessTokenEncrypted'
+    private final String ENDPOINT_PROPERTY = 'clusterEndPoint'
 
 
     def getToken() {
-        def token = efContext.getProperty(clusterName: clusterName,
+        def accessTokenEncrypted = efContext.getProperty(clusterName: clusterName,
             projectName: projectName,
             environmentName: environmentName,
             propertyName: TOKEN_PROPERTY)?.value
 
-        if (!token) {
+        if (!accessTokenEncrypted) {
             throw EcException
                 .code(ErrorCodes.ScriptError)
                 .message("No token found in the cluster properties")
@@ -27,8 +30,15 @@ class Credential {
                 .location(this.class.getCanonicalName())
                 .build()
         }
-//        TODO decrypt
-        return token
+
+        ClusterInfoCrypter clusterInfoCrypter = new ClusterInfoCrypter(
+                userName,
+                password
+        )
+
+        String accessTokenDecrypted = clusterInfoCrypter.decrypt(accessTokenEncrypted)
+
+        return accessTokenDecrypted
     }
 
     def getEndpoint() {
