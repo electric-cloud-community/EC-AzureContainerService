@@ -82,17 +82,6 @@ project pluginName, {
 					property 'serviceEntityRevisionId', value: 'serviceEntityRevisionId'
 				}
 			}
-			property 'gatherClusterInfo', {
-				property 'procedureName', value: 'Gather Cluster Info'
-				property 'ui_formRefs', {
-					parameterForm = 'ec_parameterForm'
-				}
-				property 'parameterRefs', {
-					property 'clusterName', value: 'clusterName'
-					property 'clusterOrEnvironmentProjectName', value: 'clusterOrEnvProjectName'
-					property 'environmentName', value: 'environmentName'
-				}
-			}
 			property 'createConfiguration', {
 				property 'procedureName', value: 'CreateConfiguration'
 				property 'ui_formRefs', {
