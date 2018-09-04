@@ -8,7 +8,6 @@ import org.testng.annotations.*
 
 import static com.electriccloud.helpers.enums.LogLevels.*
 import static com.electriccloud.helpers.enums.ServiceTypes.*
-import static io.restassured.RestAssured.given
 import static org.awaitility.Awaitility.await
 
 @Feature("Deploy")

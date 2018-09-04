@@ -11,7 +11,7 @@ class LogLevels {
 
         String value
 
-        LogLevel(value){
+        LogLevel(String value){
             this.value = value
         }
 

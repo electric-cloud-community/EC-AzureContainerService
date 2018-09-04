@@ -7,7 +7,11 @@ def names = args.names,
         configName = names.configName,
         clusterName = names.clusterName,
         resourceGroup = names.resourceGroup,
-        agentPoolCount = names.agentPoolCount.toString()
+        agentPoolCount = names.agentPoolCount.toString(),
+        agentPoolDnsPrefix = names.agentPoolDnsPrefix,
+        agentPoolName = names.agentPoolName,
+        masterDnsPrefix = names.masterDnsPrefix,
+        masterFqdn = names.masterFqdn
 
 
 
@@ -30,8 +34,8 @@ project 'acsProj', {
       provisionParameter = [
               'adminUsername': username,
               'agentPoolCount': agentPoolCount, // 1 is for nginx, 2 for Motorbike Demo
-              'agentPoolDnsPrefix': 'flowqeagent',
-              'agentPoolName': 'agentflowqe',
+              'agentPoolDnsPrefix': agentPoolDnsPrefix,
+              'agentPoolName': agentPoolName,
               'agentPoolVmsize': 'Standard_D1',
               'masterVmsize': 'Standard_D1',
               'clusterName': clusterName,
@@ -39,8 +43,8 @@ project 'acsProj', {
               'clusterPrepTime': '60',
               'config': configName,
               'masterCount': '1',
-              'masterDnsPrefix': 'flowqe',
-              'masterFqdn': 'masterflowqe',
+              'masterDnsPrefix': masterDnsPrefix,
+              'masterFqdn': masterFqdn,
               'masterZone': 'eastus',
               'orchestratorType': 'kubernetes',
               'resourceGroupName': resourceGroup,

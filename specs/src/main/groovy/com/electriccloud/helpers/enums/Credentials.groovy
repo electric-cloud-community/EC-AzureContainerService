@@ -3,9 +3,8 @@ package com.electriccloud.helpers.enums
 
 class Credentials {
 
-
     enum Credential {
-        DOCKER_HUB('DockerHub', 'savvagenchevskiy', 'S.genchevskiy19021992', 'Test')
+        DOCKER_HUB('DockerHub', 'ecplugins', 'ecloud4321', 'Test')
 
         String credName
         String userName

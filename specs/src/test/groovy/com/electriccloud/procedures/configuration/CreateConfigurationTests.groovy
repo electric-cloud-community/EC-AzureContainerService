@@ -165,15 +165,15 @@ class CreateConfigurationTests extends AzureTestBase {
     @DataProvider(name = "invalidData")
     def getInvalidData(){
         return [
-                //[" ", publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, LogLevel.DEBUG, 'Error creating configuration credential: \'credentialName\' is required and must be between 1 and 255 characters (InvalidCredentialName)', 'error', 'completed'],
-                //[configName, publicKey, privateKey, "", credClientId, tenantId, subscriptionId, LogLevel.DEBUG, "ERROR: Service principal Client ID or Key not specified\n", "error", "completed"],
-                //[configName, publicKey, privateKey, credPrivateKey.substring(5), credClientId, tenantId, subscriptionId, LogLevel.DEBUG, "Invalid client secret is provided.", 'error', 'completed'],
+                [" ", publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, LogLevel.DEBUG, 'Error creating configuration credential: \'credentialName\' is required and must be between 1 and 255 characters (InvalidCredentialName)', 'error', 'completed'],
+                [configName, publicKey, privateKey, "", credClientId, tenantId, subscriptionId, LogLevel.DEBUG, "ERROR: Service principal Client ID or Key not specified\n", "error", "completed"],
+                [configName, publicKey, privateKey, credPrivateKey.substring(5), credClientId, tenantId, subscriptionId, LogLevel.DEBUG, "Invalid client secret is provided.", 'error', 'completed'],
                 [configName, publicKey, privateKey, credPrivateKey, "", tenantId, subscriptionId, LogLevel.DEBUG, "ERROR: Service principal Client ID or Key not specified", 'error', 'completed'],
                 [configName, publicKey, privateKey, credPrivateKey, credClientId.substring(5), tenantId, subscriptionId, LogLevel.DEBUG, "Application with identifier '${credClientId.substring(5)}' was not found", 'error', 'completed'],
-                //[configName, publicKey, privateKey, credPrivateKey, credClientId, "", subscriptionId, LogLevel.DEBUG, "Invalid client secret is provided.", 'error', 'completed'],
-                //[configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId.substring(5), subscriptionId, LogLevel.DEBUG, "Invalid client secret is provided.", 'error', 'completed'],
-                //[configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, "", LogLevel.DEBUG, "Invalid client secret is provided.", 'error', 'completed'],
-                //[configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId.substring(5), LogLevel.DEBUG, "Invalid client secret is provided.", 'error', 'completed']
+                [configName, publicKey, privateKey, credPrivateKey, credClientId, "", subscriptionId, LogLevel.DEBUG, "ERROR: Error while connecting to the Azure Container Service using the given account details", 'error', 'completed'],
+                [configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId.substring(5), subscriptionId, LogLevel.DEBUG, "ERROR: Error while connecting to the Azure Container Service using the given account details", 'error', 'completed'],
+                [configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, "", LogLevel.DEBUG, "Invalid client secret is provided.", 'error', 'completed'],
+                [configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId.substring(5), LogLevel.DEBUG, "Invalid client secret is provided.", 'error', 'completed']
         ] as Object[][]
     }
 

@@ -1,12 +1,11 @@
 package com.electriccloud.client.plugin
 
 import com.electriccloud.helpers.enums.LogLevels.LogLevel
-import com.electriccloud.helpers.enums.ServiceTypes.ServiceType
+
 import com.electriccloud.client.commander.CommanderClient
 import static com.electriccloud.helpers.config.ConfigHelper.message
 import static com.electriccloud.helpers.config.ConfigHelper.dslPath
-import static com.electriccloud.helpers.config.ConfigHelper.yamlPath
-import static com.electriccloud.helpers.enums.LogLevels.*
+import static com.electriccloud.helpers.enums.ServiceTypes.*
 
 import io.qameta.allure.Step
 

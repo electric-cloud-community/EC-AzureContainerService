@@ -16,7 +16,6 @@ class CommanderClient {
     APIClient client
     def timeout = 120
     def plugin
-
     def json
     JsonHelper jsonHelper
 

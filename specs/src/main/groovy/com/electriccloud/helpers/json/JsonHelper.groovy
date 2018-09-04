@@ -157,13 +157,18 @@ class JsonHelper {
 
 
 
-    def azureEnvJson = { confName, userName, cluster, resGroup, poolCount ->
+    def azureEnvJson = { _confifName, _username, _clusterName, _resourceGroup, _agentPoolCount, _agentPoolDnsPrefix, _agentPoolName, _masterDnsPrefix, _masterFqdn->
         json.names {
-            configName confName
-            username userName
-            clusterName cluster
-            resourceGroup resGroup
-            agentPoolCount poolCount
+            configName _confifName
+            username _username
+            clusterName _clusterName
+            resourceGroup _resourceGroup
+            agentPoolCount _agentPoolCount
+            //-----
+            agentPoolDnsPrefix _agentPoolDnsPrefix
+            agentPoolName _agentPoolName
+            masterDnsPrefix _masterDnsPrefix
+            masterFqdn _masterFqdn
         }
         json
     }

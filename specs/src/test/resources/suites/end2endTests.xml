@@ -20,7 +20,7 @@
             <class name="com.electriccloud.procedures.deployment.MicroserviceDeploymentTests"/>
             <class name="com.electriccloud.procedures.deployment.ApplicationDeploymentTests"/>
             <class name="com.electriccloud.procedures.deployment.ServiceTypeDeploymentTests"/>
-            <class name="com.electriccloud.procedures.deployment.PluginUpdateDeploymentTests"/>
+            <!--<class name="com.electriccloud.procedures.deployment.PluginUpdateDeploymentTests"/>-->
         </classes>
     </test>
     <test name="Import Tests">

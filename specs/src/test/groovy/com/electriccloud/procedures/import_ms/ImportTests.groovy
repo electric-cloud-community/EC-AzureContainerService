@@ -6,7 +6,6 @@ import io.qameta.allure.Feature
 import io.qameta.allure.Story
 import io.qameta.allure.TmsLink
 import io.qameta.allure.TmsLinks
-import org.junit.jupiter.api.DisplayName
 import org.testng.annotations.AfterClass
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeClass

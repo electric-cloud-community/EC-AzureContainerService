@@ -10,9 +10,11 @@ import static groovyx.net.http.ContentType.JSON
 class HttpClient {
 
     protected static ConfigHelper configHelper = new ConfigHelper()
-    public static ConfigObject efConf          = configHelper.conf('efConf')
-    public static ConfigObject pluginsConf     = configHelper.conf('pluginConf')
     public static Logger log                   = Logger.getLogger("appLogger")
+
+    // We can make configuration from the code
+    //public static ConfigObject efConf          = configHelper.conf('efConf')
+    //public static ConfigObject pluginsConf     = configHelper.conf('pluginConf')
 
     HTTPBuilder http
 

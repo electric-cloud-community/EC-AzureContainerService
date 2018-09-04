@@ -9,6 +9,7 @@ import static groovyx.net.http.Method.*
 import static com.electriccloud.helpers.enums.Credentials.*
 import static com.electriccloud.helpers.config.ConfigHelper.message
 
+
 class APIClient extends HttpClient {
 
     def sessionId
@@ -20,9 +21,9 @@ class APIClient extends HttpClient {
     def defaultHeaders() { [Cookie: "sessionId=$sessionId;", Accept: "application/json"] }
 
     APIClient() {
-        this.baseUri     = "${efConf.server.url}/rest/v1.0"
-        this.ecUsername  = efConf.server.username
-        this.ecPassword  = efConf.server.password
+        this.baseUri     = "${System.getenv("COMMANDER_HOST")}/rest/v1.0"
+        this.ecUsername  = System.getenv("COMMANDER_LOGIN")
+        this.ecPassword  = System.getenv("COMMANDER_PASSWORD")
         log.info("Connected to '$baseUri'")
         this.sessionId   = login(ecUsername, ecPassword).json.sessionId
     }
@@ -295,7 +296,7 @@ class APIClient extends HttpClient {
 
                 def logs = []
 
-                def dir = new File("$efConf.server.workspace/$job.jobName")
+                def dir = new File("${System.getenv("COMMANDER_WORKSPACE")}/$job.jobName")
                 dir.eachFileMatch (FileType.FILES, ~/.*log/) { file ->
                     logs << file.text
                 }

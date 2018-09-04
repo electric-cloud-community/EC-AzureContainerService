@@ -1,6 +1,6 @@
 package com.electriccloud.procedures.deployment
 
-import com.electriccloud.helpers.enums.ServiceTypes
+
 import com.electriccloud.procedures.AzureTestBase
 import io.qameta.allure.Description
 import io.qameta.allure.Story
@@ -12,9 +12,8 @@ import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
 import static com.electriccloud.helpers.enums.LogLevels.*
-import static com.electriccloud.helpers.enums.ServiceTypes.*
-import static io.restassured.RestAssured.given
 import static org.awaitility.Awaitility.await
+import static com.electriccloud.helpers.enums.ServiceTypes.*
 
 class ApplicationDeploymentTests extends AzureTestBase {
 

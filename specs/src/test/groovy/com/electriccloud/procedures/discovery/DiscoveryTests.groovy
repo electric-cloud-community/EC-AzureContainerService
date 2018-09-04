@@ -35,6 +35,7 @@ class DiscoveryTests extends AzureTestBase {
 
     @AfterClass
     void tearDownTests(){
+        acsClient.createEnvironment(configName, adminAccount, acsClusterName, resourceGroup, 2)
         acsClient.createService(2, volumes, false, ServiceType.LOAD_BALANCER)
         acsClient.undeployService(projectName, serviceName)
         acsClient.client.deleteProject(projectName)

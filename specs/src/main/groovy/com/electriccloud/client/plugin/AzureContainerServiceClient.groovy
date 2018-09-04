@@ -41,9 +41,17 @@ class AzureContainerServiceClient extends CommanderClient {
     }
 
     @Step
-    def createEnvironment(configName, adminName, acsClusterName, resourceGroup, agentPoolCount = 2) {
+    def createEnvironment(configName,
+                          adminName,
+                          acsClusterName,
+                          resourceGroup,
+                          agentPoolCount = 2,
+                          agentPoolDnsPrefix = "flowqeagent",
+                          agentPoolName = 'agentflowqe',
+                          masterDnsPrefix = "flowqe",
+                          masterFqdn = "masterflowqe") {
         message("environment creation")
-        def json = jsonHelper.azureEnvJson(configName, adminName, acsClusterName, resourceGroup, agentPoolCount.toString())
+        def json = jsonHelper.azureEnvJson(configName, adminName, acsClusterName, resourceGroup, agentPoolCount.toString(), agentPoolDnsPrefix, agentPoolName, masterDnsPrefix, masterFqdn)
         def response = client.dslFile dslPath(plugin, 'environment'), client.encode(json.toString())
         client.log.info("Environment for project: ${response.json.project.projectName} is created successfully.")
         response

@@ -13,6 +13,7 @@ import org.testng.annotations.Test
 import static com.electriccloud.helpers.enums.LogLevels.*
 import static com.electriccloud.helpers.enums.ServiceTypes.*
 
+
 class ServiceTypeDeploymentTests extends AzureTestBase {
 
 

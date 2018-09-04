@@ -48,21 +48,18 @@ class AzureTestBase implements NamingTestBase {
         acsClusterName      = "flowqe-test-cluster"
         resourceGroup       = "flowqe-test-resource-group"
 
-        pluginName          = pluginsConf.containerPlugins.plugins.azureContainerService.name
-        adminAccount        = pluginsConf.containerPlugins.plugins.azureContainerService.admin
-        pluginVersion       = pluginsConf.containerPlugins.plugins.azureContainerService.buildVersion
-        pluginLegacyVersion = pluginsConf.containerPlugins.plugins.azureContainerService.legacyVersion
-        subscriptionId      = pluginsConf.containerPlugins.plugins.azureContainerService.subscriptionId
-        tenantId            = pluginsConf.containerPlugins.plugins.azureContainerService.tenantId
-        credClientId        = pluginsConf.containerPlugins.plugins.azureContainerService.credClientId
-        credPrivateKey      = pluginsConf.containerPlugins.plugins.azureContainerService.credPrivateKey
-        certsPath           = pluginsConf.containerPlugins.plugins.azureContainerService.certsDir
-        clusterEndpoint     = pluginsConf.containerPlugins.plugins.azureContainerService.clusterEndpoint
-        nodeEndpoint        = pluginsConf.containerPlugins.plugins.azureContainerService.nodeEndpoint
-        clusterToken        = pluginsConf.containerPlugins.plugins.azureContainerService.clusterToken
-
-        privateKey          = new File("${certsPath}/privateKey.pub").text
-        publicKey           = new File("${certsPath}/publicKey.pub").text
+        pluginName          = System.getenv("PLUGIN_NAME")
+        adminAccount        = System.getenv("AZURE_ADMIN")
+        pluginVersion       = System.getenv("PLUGIN_BUILD_VERSION")
+        pluginLegacyVersion = System.getenv("PLUGIN_LEGACY_VERSION")
+        subscriptionId      = System.getenv("AZURE_SUBSCRIPTION_ID")
+        tenantId            = System.getenv("AZURE_TENANT_ID")
+        credClientId        = System.getenv("AZURE_CRED_CLIENT_ID")
+        credPrivateKey      = System.getenv("AZURE_CRED_PRIVATE_KEY")
+        clusterEndpoint     = System.getenv("AZURE_CLUSTER_ENDPOINT")
+        clusterToken        = System.getenv("AZURE_CLUSTER_TOKEN")
+        privateKey          = System.getenv("AZURE_PRIVATE_KEY").split("\\\\n").join('\n')
+        publicKey           = System.getenv("AZURE_PUBLIC_KEY")
 
         ectoolApi = new EctoolApi(true)
         acsClient = new AzureContainerServiceClient()

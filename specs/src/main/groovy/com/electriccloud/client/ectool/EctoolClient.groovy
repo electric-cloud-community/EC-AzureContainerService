@@ -1,6 +1,5 @@
 package com.electriccloud.client.ectool
 
-import com.electriccloud.helpers.config.ConfigHelper
 import org.apache.log4j.Logger
 import org.json.JSONObject
 
@@ -9,10 +8,6 @@ import java.nio.file.Paths
 class EctoolClient {
 
     static Logger log = Logger.getLogger("appLogger")
-
-    public def isDebug = false
-
-    protected ConfigObject ectoolConf
 
     def ectoolPath
     def electricFlowServerUrl
@@ -24,12 +19,10 @@ class EctoolClient {
 
     EctoolClient() {
 
-        ectoolConf  = new ConfigHelper("efConf").config
-
-        ectoolPath             = ectoolConf.ectool.path as String
-        electricFlowServerUrl  = ectoolConf.server.url as String
-        ecUsername             = ectoolConf.server.username as String
-        ecPassword             = ectoolConf.server.password as String
+        ectoolPath             = System.getenv("ECTOOL_HOME") as String
+        electricFlowServerUrl  = System.getenv("COMMANDER_HOST") as String
+        ecUsername             = System.getenv("COMMANDER_LOGIN") as String
+        ecPassword             = System.getenv("COMMANDER_PASSWORD") as String
     }
 
     // Execute commands
