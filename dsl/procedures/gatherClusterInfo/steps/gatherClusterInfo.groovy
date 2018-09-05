@@ -1,6 +1,7 @@
 $[/myProject/scripts/preamble]
 
 $[/myProject/scripts/ClusterInfoCrypter]
+$[/myProject/scripts/ClusterInfoStorer]
 
 //// Input parameters
 String clusterName = '$[clusterName]'
@@ -36,34 +37,14 @@ String accessToken = azureClient.retrieveOrchestratorAccessToken(
         privateKey.password
 )
 
-// store gathered information under within cluster properties
-final String ENDPOINT_PROPERTY = 'ec_clusterEndPoint'
-final String TOKEN_PROPERTY = 'ec_clusterAccessTokenEncrypted'
-final String TOKEN_IV_PROPERTY = 'ec_clusterAccessTokenEncryptionIv'
-
 ClusterInfoCrypter clusterInfoCrypter = new ClusterInfoCrypter()
-ClusterInfoCrypter.EncryptionResult encryptionResult = clusterInfoCrypter.encrypt(
+ClusterInfoStorer.storeClusterInfo(
+        clusterEndPoint,
         accessToken,
-        pluginConfig.credential.password,
-        pluginConfig.credential.userName
+        pluginConfig,
+        efClient,
+        clusterInfoCrypter,
+        clusterOrEnvProjectName,
+        environmentName,
+        clusterName
 )
-String accessTokenEncrypted = encryptionResult.getEncryptedSensitiveData()
-String iv = encryptionResult.getIv()
-
-String clusterEndpointPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/$ENDPOINT_PROPERTY"
-String clusterAccessTokenEncryptedPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/$TOKEN_PROPERTY"
-String clusterAccessTokenEncryptionIvPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/$TOKEN_IV_PROPERTY"
-
-ScriptExtensions.createOrUpdateProperty(efClient, clusterEndpointPropertyPath, clusterEndPoint)
-ScriptExtensions.createOrUpdateProperty(efClient, clusterAccessTokenEncryptedPropertyPath, accessTokenEncrypted)
-ScriptExtensions.createOrUpdateProperty(efClient, clusterAccessTokenEncryptionIvPropertyPath, iv)
-
-class ScriptExtensions {
-    static void createOrUpdateProperty(EFClient efClient, String propertyPath, String value) {
-        if (efClient.getEFProperty(propertyPath, true).data) {
-            efClient.setEFProperty(propertyPath, value)
-        } else {
-            efClient.createProperty(propertyPath, value)
-        }
-    }
-}
