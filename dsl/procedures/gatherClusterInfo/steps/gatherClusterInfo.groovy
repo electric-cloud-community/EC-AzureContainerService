@@ -12,7 +12,8 @@ EFClient efClient = new EFClient()
 def clusterParameters = efClient.getProvisionClusterParameters(
         clusterName,
         clusterOrEnvProjectName,
-        environmentName)
+        environmentName
+)
 
 def configName = clusterParameters.config
 def pluginProjectName = '$[/myProject/projectName]'
@@ -25,36 +26,44 @@ String masterFqdn = azureClient.getMasterFqdn(pluginConfig.subscriptionId, clust
 
 def privateKey = efClient.getCredentials("${configName}_keypair")
 String clusterEndPoint = "https://${masterFqdn}"
-String accessToken = azureClient.retrieveOrchestratorAccessToken(pluginConfig,
-                                                        clusterParameters.resourceGroupName,
-                                                        clusterParameters.clusterName,
-                                                        azAccessToken,
-                                                        clusterParameters.adminUsername,
-                                                        masterFqdn,
-                                                        privateKey.password)
+String accessToken = azureClient.retrieveOrchestratorAccessToken(
+        pluginConfig,
+        clusterParameters.resourceGroupName,
+        clusterParameters.clusterName,
+        azAccessToken,
+        clusterParameters.adminUsername,
+        masterFqdn,
+        privateKey.password
+)
 
-// place gathered information under cluster properties
+// store gathered information under within cluster properties
 final String ENDPOINT_PROPERTY = 'ec_clusterEndPoint'
 final String TOKEN_PROPERTY = 'ec_clusterAccessTokenEncrypted'
+final String TOKEN_IV_PROPERTY = 'ec_clusterAccessTokenEncryptionIv'
 
-ClusterInfoCrypter clusterInfoCrypter = new ClusterInfoCrypter(
+ClusterInfoCrypter clusterInfoCrypter = new ClusterInfoCrypter()
+ClusterInfoCrypter.EncryptionResult encryptionResult = clusterInfoCrypter.encrypt(
+        accessToken,
         pluginConfig.credential.password,
         pluginConfig.credential.userName
-);
+)
+String accessTokenEncrypted = encryptionResult.getEncryptedSensitiveData()
+String iv = encryptionResult.getIv()
 
-String accessTokenEncrypted = clusterInfoCrypter.encrypt(accessToken);
+String clusterEndpointPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/$ENDPOINT_PROPERTY"
+String clusterAccessTokenEncryptedPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/$TOKEN_PROPERTY"
+String clusterAccessTokenEncryptionIvPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/$TOKEN_IV_PROPERTY"
 
-String clusterEndpointPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/$ENDPOINT_PROPERTY";
-String clusterAccessTokenEncryptedPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/$TOKEN_PROPERTY";
+ScriptExtensions.createOrUpdateProperty(efClient, clusterEndpointPropertyPath, clusterEndPoint)
+ScriptExtensions.createOrUpdateProperty(efClient, clusterAccessTokenEncryptedPropertyPath, accessTokenEncrypted)
+ScriptExtensions.createOrUpdateProperty(efClient, clusterAccessTokenEncryptionIvPropertyPath, iv)
 
-if (efClient.getEFProperty(clusterEndpointPropertyPath, true).data) {
-    efClient.setEFProperty(clusterEndpointPropertyPath, clusterEndPoint)
-} else {
-    efClient.createProperty(clusterEndpointPropertyPath, clusterEndPoint)
-}
-
-if (efClient.getEFProperty(clusterAccessTokenEncryptedPropertyPath, true).data) {
-    efClient.setEFProperty(clusterAccessTokenEncryptedPropertyPath, accessTokenEncrypted)
-} else {
-    efClient.createProperty(clusterAccessTokenEncryptedPropertyPath, accessTokenEncrypted)
+class ScriptExtensions {
+    static void createOrUpdateProperty(EFClient efClient, String propertyPath, String value) {
+        if (efClient.getEFProperty(propertyPath, true).data) {
+            efClient.setEFProperty(propertyPath, value)
+        } else {
+            efClient.createProperty(propertyPath, value)
+        }
+    }
 }
