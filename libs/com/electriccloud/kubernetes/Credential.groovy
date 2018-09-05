@@ -32,7 +32,6 @@ class Credential {
             throw EcException
                     .code(ErrorCodes.ScriptError)
                     .message("No token found in the cluster properties")
-                    .cause(e)
                     .location(this.class.getCanonicalName())
                     .build()
         }
@@ -41,7 +40,6 @@ class Credential {
             throw EcException
                     .code(ErrorCodes.ScriptError)
                     .message("No token iv found in the cluster properties")
-                    .cause(e)
                     .location(this.class.getCanonicalName())
                     .build()
         }
