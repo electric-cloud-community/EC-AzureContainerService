@@ -12,8 +12,8 @@ class Credential {
     def environmentName
     def clusterName
 
-    private final String TOKEN_PROPERTY = 'clusterAccessTokenEncrypted'
-    private final String ENDPOINT_PROPERTY = 'clusterEndPoint'
+    private final String TOKEN_PROPERTY = 'ec_clusterAccessTokenEncrypted'
+    private final String ENDPOINT_PROPERTY = 'ec_clusterEndPoint'
 
 
     def getToken() {

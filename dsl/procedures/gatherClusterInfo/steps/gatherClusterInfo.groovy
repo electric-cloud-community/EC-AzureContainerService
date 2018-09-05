@@ -34,6 +34,9 @@ String accessToken = azureClient.retrieveOrchestratorAccessToken(pluginConfig,
                                                         privateKey.password)
 
 // place gathered information under cluster properties
+final String ENDPOINT_PROPERTY = 'ec_clusterEndPoint'
+final String TOKEN_PROPERTY = 'ec_clusterAccessTokenEncrypted'
+
 ClusterInfoCrypter clusterInfoCrypter = new ClusterInfoCrypter(
         pluginConfig.credential.password,
         pluginConfig.credential.userName
@@ -41,8 +44,8 @@ ClusterInfoCrypter clusterInfoCrypter = new ClusterInfoCrypter(
 
 String accessTokenEncrypted = clusterInfoCrypter.encrypt(accessToken);
 
-String clusterEndpointPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/clusterEndPoint";
-String clusterAccessTokenEncryptedPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/clusterAccessTokenEncrypted";
+String clusterEndpointPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/$ENDPOINT_PROPERTY";
+String clusterAccessTokenEncryptedPropertyPath = "/projects/$clusterOrEnvProjectName/environments/$environmentName/clusters/$clusterName/$TOKEN_PROPERTY";
 
 if (efClient.getEFProperty(clusterEndpointPropertyPath, true).data) {
     efClient.setEFProperty(clusterEndpointPropertyPath, clusterEndPoint)
