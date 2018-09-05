@@ -21,13 +21,13 @@
         <label>Cluster Name:</label>
         <property>clusterName</property>
         <required>1</required>
-        <documentation>The name of the cluster in ElectricFlow that encapsulates the Azure Container Service on which the service is to be deployed.</documentation>
+        <documentation>The name of the cluster in ElectricFlow that encapsulates the Azure Container Service.</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
         <label>Cluster Or Environment Project Name:</label>
         <property>clusterOrEnvProjectName</property>
-        <required>0</required>
+        <required>1</required>
         <documentation>The name of the project that the cluster belongs to if it is a top-level project cluster. Or the name of the project that the environment belongs to if it is an environment-scoped cluster.</documentation>
     </formElement>
     <formElement>
