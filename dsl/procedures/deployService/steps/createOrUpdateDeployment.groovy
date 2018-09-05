@@ -1,5 +1,8 @@
 $[/myProject/scripts/preamble]
 
+$[/myProject/scripts/ClusterInfoCrypter]
+$[/myProject/scripts/ClusterInfoStorer]
+
 //// Input parameters
 String serviceName = '$[serviceName]'
 String serviceProjectName = '$[serviceProjectName]'
@@ -72,3 +75,15 @@ azureClient.deployService(
     environmentName,
     resultsPropertySheet,
     serviceEntityRevisionId)
+
+ClusterInfoCrypter clusterInfoCrypter = new ClusterInfoCrypter()
+ClusterInfoStorer.storeClusterInfo(
+        clusterEndPoint,
+        accessToken,
+        pluginConfig,
+        efClient,
+        clusterInfoCrypter,
+        clusterOrEnvProjectName,
+        environmentName,
+        clusterName
+)
