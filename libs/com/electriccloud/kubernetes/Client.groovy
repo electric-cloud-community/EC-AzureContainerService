@@ -38,7 +38,7 @@ class Client {
                          Object requestBody = null,
                          def queryArgs = null) {
         def requestHeaders = [
-            'Authorization': "Bearer ${this.accessToken}"
+            'Authorization': "${this.accessToken}"
         ]
         http.request(method, JSON) { req ->
             if (requestUri) {

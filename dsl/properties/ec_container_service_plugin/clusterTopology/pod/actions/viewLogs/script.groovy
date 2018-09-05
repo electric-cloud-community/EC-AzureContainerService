@@ -12,10 +12,11 @@ def userName = credentials[0].userName
 def password = credentials[0].password
 
 def credential = new Credential(projectName: projectName,
-    environmentName: environmentName,
-    clusterName: clusterName,
-    efContext: this,
-    secret: password)
+        environmentName: environmentName,
+        clusterName: clusterName,
+        efContext: this,
+        userName: userName,
+        password: password)
 def token = credential.token
 def version = credential.version
 def endpoint = credential.endpoint
@@ -53,11 +54,11 @@ try {
 ////    throw e.getMessage()
 //    throw e.getStackTrace()
     throw EcException
-        .code(ErrorCodes.ScriptError)
-        .message("Exception occured while retrieving container logs: ${e.message}")
-        .cause(e)
-        .location(this.class.getCanonicalName())
-        .build()
+            .code(ErrorCodes.ScriptError)
+            .message("Exception occured while retrieving container logs: ${e.message}")
+            .cause(e)
+            .location(this.class.getCanonicalName())
+            .build()
 }
 response
 

@@ -129,6 +129,11 @@ $xpath = $ec->attachCredential($projName, $keypairCred,
      stepName => "discover"});
 $errors .= $ec->checkAllErrors($xpath);
 
+$xpath = $ec->attachCredential($projName, $credName,
+    {procedureName => "Gather Cluster Info",
+        stepName => "gatherClusterInfo"});
+$errors .= $ec->checkAllErrors($xpath);
+
 
 if ("$errors" ne "") {
     # Cleanup the partially created configuration we just created

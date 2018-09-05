@@ -9,10 +9,11 @@ def userName = credentials[0].userName
 def password = credentials[0].password
 
 def credential = new Credential(projectName: projectName,
-    environmentName: environmentName,
-    clusterName: clusterName,
-    efContext: this,
-    secret: password)
+        environmentName: environmentName,
+        clusterName: clusterName,
+        efContext: this,
+        userName: userName,
+        password: password)
 def token = credential.token
 def endpoint = credential.endpoint
 
