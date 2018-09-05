@@ -1,7 +1,7 @@
 import java.io.File
 
 procedure 'Gather Cluster Info',
-	description: 'Gather cluster info', {
+	description: 'Retrieves token and endpoint for Smart Map.', {
 
     step 'setup',
       subproject: '/plugins/EC-Kubernetes/project',
@@ -25,6 +25,6 @@ procedure 'Gather Cluster Info',
 	  resourceName: '$[grabbedResource]',
 	  shell: 'ec-groovy',
 	  timeLimitUnits: 'minutes'
-	  
+
 }
-  
+
