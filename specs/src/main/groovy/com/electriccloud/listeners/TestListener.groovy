@@ -3,11 +3,12 @@ package com.electriccloud.listeners
 
 import io.qameta.allure.Attachment
 import org.apache.log4j.Logger
+import org.testng.ITestContext
 import org.testng.ITestResult
 import org.testng.reporters.ExitCodeListener
-
 import static com.google.common.io.Files.toByteArray
 import static com.electriccloud.helpers.config.ConfigHelper.message
+
 
 class TestListener extends ExitCodeListener {
 
@@ -18,16 +19,30 @@ class TestListener extends ExitCodeListener {
     static def logFileName = "allureLog"
 
     @Override
+    void onStart(ITestContext context) {
+        super.onStart(context)
+        //message("${context.getAllTestMethods().getMetaClass().toString()} test is failed", '==', '*')
+    }
+
+    @Override
+    void onFinish(ITestContext context) {
+        super.onFinish(context)
+    }
+
+    @Override
     void onTestFailure(ITestResult result) {
         super.onTestFailure(result)
-        message('Test is completed with failure', '=', '*')
+        //def testNameColl = result.getMethod().getMethodName().split("(?=\\p{Upper})")
+
+
+        message("${result.getMethod().getMethodName().replaceAll(/(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/) { ' ' + it }} test is failed", '==', '**')
         attachLog()
     }
 
     @Override
     void onTestSkipped(ITestResult result) {
         super.onTestSkipped(result)
-        message('Test is skipped', '=', '*')
+        message("${result.getMethod().getMethodName().replaceAll(/(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/) { ' ' + it }} test is skipped", '==', '**')
         attachLog()
 
     }
@@ -35,7 +50,7 @@ class TestListener extends ExitCodeListener {
     @Override
     void onTestSuccess(ITestResult result) {
         super.onTestSuccess(result)
-        message('Test is completed with success', '=', '*')
+        message("${result.getMethod().getMethodName().replaceAll(/(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/) { ' ' + it }} test is passed", '==', '**')
         attachLog()
     }
 
@@ -43,7 +58,7 @@ class TestListener extends ExitCodeListener {
     @Override
     void onTestStart(ITestResult result) {
         super.onTestStart(result)
-        message(' Test is started', '=', '*')
+        message("${result.getMethod().getMethodName().replaceAll(/(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/) { ' ' + it }} test is started", '==', '**')
         cleanUpLog(logFileName)
     }
 

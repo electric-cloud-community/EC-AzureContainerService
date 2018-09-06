@@ -49,7 +49,7 @@ class ImportTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Import Project-level Microservice")
     @TmsLink("279007")
     @Story('Import microservice')
     @Description("Import Project-level Microservice")
@@ -80,7 +80,7 @@ class ImportTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Import Project-level Microservice without mapping")
     @TmsLink("")
     @Story('Import microservice')
     @Description("Import Project-level Microservice without environment mapping")
@@ -113,7 +113,7 @@ class ImportTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Import Application-level Microservice")
     @TmsLink("363503")
     @Story('Import microservice')
     @Description("Import Application-level Microservice")
@@ -142,7 +142,7 @@ class ImportTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Import Application-level Microservice without mapping")
     @TmsLink("")
     @Story('Import microservice')
     @Description("Import Application-level Microservice without environment mapping")
@@ -172,7 +172,7 @@ class ImportTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Import existing Project-level Microservice")
     @TmsLink("363471")
     @Story('Import with invalid data')
     @Description("Unable to import Project-level Microservice that already exist")
@@ -212,7 +212,7 @@ class ImportTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Import existing Application-level Microservice")
     @TmsLink("363472")
     @Story('Import with invalid data')
     @Description("Unable to import Application-level Microservice that already exist")
@@ -253,7 +253,8 @@ class ImportTests extends AzureTestBase {
     /** Unable to import Microservice with invalid data */
 
 
-    @Test(dataProvider = 'importData')
+    @Test(dataProvider = 'importData',
+            testName = "Import with invalid data")
     @TmsLinks([ @TmsLink("363509"),
             @TmsLink("363508"),
             @TmsLink("363507"),

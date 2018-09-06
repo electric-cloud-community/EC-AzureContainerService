@@ -3,6 +3,7 @@ package com.electriccloud.procedures.deployment
 
 import com.electriccloud.procedures.AzureTestBase
 import io.qameta.allure.Description
+import io.qameta.allure.Flaky
 import io.qameta.allure.Story
 import io.qameta.allure.TmsLink
 import org.testng.annotations.AfterClass
@@ -20,7 +21,9 @@ class ApplicationDeploymentTests extends AzureTestBase {
 
     @BeforeClass
     void setUpTests(){
+        k8sClient.deleteConfiguration(configName)
         acsClient.deleteConfiguration(configName)
+        k8sClient.createConfiguration(configName, clusterEndpoint, adminAccount, clusterToken, "1.8", true, '/api/v1/namespaces')
         acsClient.createConfiguration(configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, true, LogLevel.DEBUG)
     }
 
@@ -30,20 +33,14 @@ class ApplicationDeploymentTests extends AzureTestBase {
         acsClient.createApplication(2, volumes, false, ServiceType.LOAD_BALANCER)
     }
 
-    @AfterClass
-    void tearDownTests(){
-        acsClient.deleteConfiguration(configName)
-    }
-
     @AfterMethod
     void tearDownTest(){
-        acsClient.undeployApplication(projectName, applicationName)
+        k8sClient.cleanUpCluster(configName, "default")
         acsClient.client.deleteProject(projectName)
     }
 
 
-
-    @Test
+    @Test(testName = "Deploy Application-Level Microservice")
     @TmsLink("")
     @Story("Deploy Microservcice")
     @Description("Deploy Application-Level Microservice")
@@ -81,7 +78,7 @@ class ApplicationDeploymentTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Update Application-Level Microservice")
     @TmsLink("")
     @Story('Update Microservice')
     @Description("Update Application-level Microservice with the same data")
@@ -121,7 +118,7 @@ class ApplicationDeploymentTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Scale Application-Level Microservice ")
     @TmsLink("")
     @Story('Update Microservice')
     @Description("Update Application-level Microservice")
@@ -160,7 +157,7 @@ class ApplicationDeploymentTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Deploy Canary Application-Level Microservice ")
     @TmsLink("")
     @Story('Canary deploy of Microservice')
     @Description("Canary Deploy for Application-level Microservice")
@@ -207,20 +204,20 @@ class ApplicationDeploymentTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Undeploy Application-Level Microservice")
     @TmsLink("")
     @Story('Undeploy Microservice')
     @Description("Undeploy Application-level Microservice")
     void undeployApplicationLevelMicroservice() {
         acsClient.deployApplication(projectName, applicationName)
         acsClient.undeployApplication(projectName, applicationName)
+        await("Deployment size to be: 0").until {
+            k8sApi.getPods().json.items.size() == 0
+            k8sApi.getDeployments().json.items.size() == 0
+        }
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
-        await("Wait for Deployment size to be: \'0\'").until {
-            pods.size() == 0
-            deployments.size() == 0
-        }
         assert deployments.size() == 0
         assert services.size() == 1
         assert pods.size() == 0
@@ -229,7 +226,8 @@ class ApplicationDeploymentTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Undeploy Canary Application-Level Microservice")
+    @Flaky
     @TmsLink("")
     @Story('Undeploy Microservice after Canary deployment')
     @Description("Undeploy Application-level Microservice after Canary Deploy")
@@ -238,21 +236,20 @@ class ApplicationDeploymentTests extends AzureTestBase {
         acsClient.updateApplication(2, volumes, true, ServiceType.LOAD_BALANCER)
         acsClient.deployApplication(projectName, applicationName)
         acsClient.undeployApplication(projectName, applicationName)
+        await("Pods size to be: 2").until {
+            k8sApi.getDeployments().json.items.size() == 1
+            k8sApi.getPods().json.items.size() == 2
+        }
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
         def resp = req.get("http://${services[1].status.loadBalancer.ingress[0].ip}:81")
-        await("Wait for Deployment size to be: \'1\'").until {
-            pods.size() == 2
-            deployments.size() == 1
-        }
         assert services.size() == 2
-        assert pods.size() == 2
+        assert deployments.size() == 1
         assert services[1].metadata.name == serviceName
         assert services[1].metadata.namespace == "default"
         assert services[1].spec.type == ServiceType.LOAD_BALANCER.value
         assert services[1].spec.ports.first().port == 81
-        assert deployments.size() == 1
         assert deployments[0].metadata.name == serviceName
         assert deployments[0].metadata.labels."ec-track" == "stable"
         assert deployments[0].spec.replicas == 2

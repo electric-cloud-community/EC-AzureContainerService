@@ -1,10 +1,13 @@
 package com.electriccloud
 
+import com.electriccloud.client.APIClient
 import com.electriccloud.client.api.AzureContainerServiceApi
 import com.electriccloud.client.api.KubernetesApi
 import com.electriccloud.client.ectool.EctoolApi
 import com.electriccloud.client.plugin.AzureContainerServiceClient
 import com.electriccloud.client.plugin.KubernetesClient
+import com.electriccloud.helpers.json.JsonHelper
+import org.apache.commons.lang.RandomStringUtils
 
 import java.text.SimpleDateFormat
 
@@ -20,7 +23,6 @@ trait NamingTestBase {
     def containerName
     def acsClusterName
     def resourceGroup
-    def certsPath
     def clusterEndpoint
     def clusterToken
 
@@ -28,12 +30,109 @@ trait NamingTestBase {
     def adminAccount
     def pluginVersion
     def pluginLegacyVersion
-    def nodeEndpoint
 
+    //API
     EctoolApi ectoolApi
-    AzureContainerServiceClient acsClient
-    KubernetesClient k8sClient
     AzureContainerServiceApi acsApi
     KubernetesApi k8sApi
+    //GoogleContainerEngineApi gceApi
+    //DockerApi dockerApi
+    //OpenshiftApi osApi
+    //DockerHubApi dockerHub
+
+    // Clients
+    TopologyMatcher topologyM
+    JsonHelper jsonHelper
+    AzureContainerServiceClient acsClient
+    KubernetesClient k8sClient
+    // DockerClient dockerClient
+    // GoogleContainerEngineClient gceClient
+    // OpenshiftClient osClient
+    // Artifactory
+    // ArtifactoryClient artifactoryClient
+    // Artifactory artifactory
+
+
+    // Default Id
+
+    def ecpNamespaceId,
+        ecpClusterId,
+        ecpClusterName,
+        ecpServiceId,
+        ecpServiceName,
+        ecpContainerId,
+        ecpContainerName,
+        ecpNamespaceName = "default",
+        ecpPodName   = "",
+        ecpPodId     = ""
+
+    // Default Names
+
+    def environmentId   = '',
+        applicationId = '',
+        processId = '',
+        processName = '',
+        processStepName = '',
+        pluginProjectName = '',
+        snapshotName,
+        serviceId,
+        appServiceId,
+        clusterId,
+        pipelineName,
+        releaseName,
+        stageName,
+        pipelineId,
+        releaseId,
+        stageId,
+        flowRuntimeId,
+        taskName,
+        clusterVersion,
+        topologyOutcome,
+        description = 'some desc',
+
+    //Docker
+        endpoint,
+        nodeEndpoint,
+        caCert,
+        cert,
+        key,
+        certsPath,
+        artifactsDir,
+        configSwarm,
+        configTls,
+        configCommunity,
+
+    //Artifactory
+        artifactoryUrl,
+        artifactoryConfig,
+        artifactoryUsername,
+        artifactoryPassword
+
+
+    // Parametrized names
+
+    // Naming Helpers
+
+    String unique(objectName) {
+//        new SimpleDateFormat("${objectName}yyyyMMddHHmmssSSS".toString()).format(new Date())
+        objectName + (new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()))
+    }
+
+    String characters(objectName, num) {
+        num = num as Integer
+        def _num
+        if(num != 0) {
+            _num = RandomStringUtils.random(num).next()
+            return "${objectName}${_num}".toString()
+        } else {
+            return ''
+        }
+    }
+
+    String characters(num) {
+        characters('', num)
+    }
+
+
 
 }

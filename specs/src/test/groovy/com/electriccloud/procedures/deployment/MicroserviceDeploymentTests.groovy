@@ -1,14 +1,19 @@
 package com.electriccloud.procedures.deployment
 
 import com.electriccloud.procedures.AzureTestBase
+import groovy.json.JsonBuilder
 import io.qameta.allure.Description
 import io.qameta.allure.Feature
+import io.qameta.allure.Flaky
 import io.qameta.allure.Story
+import io.qameta.allure.TmsLink
 import org.testng.annotations.*
 
 import static com.electriccloud.helpers.enums.LogLevels.*
 import static com.electriccloud.helpers.enums.ServiceTypes.*
 import static org.awaitility.Awaitility.await
+
+
 
 @Feature("Deploy")
 class MicroserviceDeploymentTests extends AzureTestBase {
@@ -16,7 +21,9 @@ class MicroserviceDeploymentTests extends AzureTestBase {
 
     @BeforeClass
     void setUpTests(){
+        k8sClient.deleteConfiguration(configName)
         acsClient.deleteConfiguration(configName)
+        k8sClient.createConfiguration(configName, clusterEndpoint, adminAccount, clusterToken, "1.8", true, '/api/v1/namespaces')
         acsClient.createConfiguration(configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, true, LogLevel.DEBUG)
     }
 
@@ -26,20 +33,15 @@ class MicroserviceDeploymentTests extends AzureTestBase {
         acsClient.createService(2, volumes, false, ServiceType.LOAD_BALANCER)
     }
 
-    @AfterClass
-    void tearDownTests(){
-        acsClient.deleteConfiguration(configName)
-    }
-
     @AfterMethod
     void tearDownTest(){
-        acsClient.undeployService(projectName, serviceName)
+        k8sClient.cleanUpCluster(configName, "default")
         acsClient.client.deleteProject(projectName)
     }
 
 
 
-    @Test
+    @Test(testName = "Deploy Project-Level Microservice")
     @Story("Deploy Microservcice")
     @Description("Deploy Project-Level Microservice")
     void deployProjectLevelMicroservice(){
@@ -75,7 +77,7 @@ class MicroserviceDeploymentTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Update Project-Level Microservice")
     @Story('Update Microservice')
     @Description("Update Project-level Microservice with the same data")
     void updateProjectLevelMicroserviceWithSameData(){
@@ -114,7 +116,7 @@ class MicroserviceDeploymentTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Scale Project-Level Microservice")
     @Story("Update Microservice")
     @Description("Update Project-level Microservice")
     void updateProjectLevelMicroservice(){
@@ -152,7 +154,7 @@ class MicroserviceDeploymentTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Deploy Canary Project-Level Microservice")
     @Story('Canary deploy of Microservice')
     @Description("Canary Deploy for Project-level Microservice")
     void preformCanaryDeploymentForProjectLevelMicroservice() {
@@ -199,19 +201,19 @@ class MicroserviceDeploymentTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Undeploy Project-Level Microservice")
     @Story('Undeploy Microservice')
     @Description("Undeploy Project-level Microservice")
     void undeployMicroservice() {
         acsClient.deployService(projectName, serviceName)
         acsClient.undeployService(projectName, serviceName)
+        await("Deployment size to be: 0").until {
+            k8sApi.getPods().json.items.size() == 0
+            k8sApi.getDeployments().json.items.size() == 0
+        }
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
-        await("Wait for Deployment size to be: \'0\'").until {
-            pods.size() == 0
-            deployments.size() == 0
-        }
         assert deployments.size() == 0
         assert services.size() == 1
         assert pods.size() == 0
@@ -221,7 +223,9 @@ class MicroserviceDeploymentTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Undeploy Canary Project-Level Microservice")
+    @Flaky
+    @TmsLink("")
     @Story('Undeploy Microservice after Canary deployment')
     @Description("Undeploy Project-level Microservice after Canary Deploy")
     void undeployMicroserviceAfterCanaryDeployment() {
@@ -229,21 +233,20 @@ class MicroserviceDeploymentTests extends AzureTestBase {
         acsClient.updateService(2, volumes, true, ServiceType.LOAD_BALANCER)
         acsClient.deployService(projectName, serviceName)
         acsClient.undeployService(projectName, serviceName)
+        await("Pods size to be: 2").until {
+            k8sApi.getDeployments().json.items.size() == 1
+            k8sApi.getPods().json.items.size() == 2
+        }
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
         def resp = req.get("http://${services[1].status.loadBalancer.ingress[0].ip}:81")
-        await("Wait for Deployment size to be: \'1\'").until {
-            pods.size() == 2
-            deployments.size() == 1
-        }
         assert services.size() == 2
-        assert pods.size() == 2
+        assert deployments.size() == 1
         assert services[1].metadata.name == serviceName
         assert services[1].metadata.namespace == "default"
         assert services[1].spec.type == ServiceType.LOAD_BALANCER.value
         assert services[1].spec.ports.first().port == 81
-        assert deployments.size() == 1
         assert deployments[0].metadata.name == serviceName
         assert deployments[0].metadata.labels."ec-track" == "stable"
         assert deployments[0].spec.replicas == 2

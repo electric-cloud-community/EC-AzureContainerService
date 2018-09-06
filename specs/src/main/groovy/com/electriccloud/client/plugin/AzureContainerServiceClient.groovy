@@ -13,13 +13,13 @@ class AzureContainerServiceClient extends CommanderClient {
 
 
     AzureContainerServiceClient(){
-        this.timeout = 350
+        this.timeout = 500
         this.plugin = 'azure_container_service'
     }
 
     AzureContainerServiceClient(serverUri, username, password) {
         super(serverUri, username, password)
-        this.timeout = 350
+        this.timeout = 500
         this.plugin = 'azure_container_service'
     }
 

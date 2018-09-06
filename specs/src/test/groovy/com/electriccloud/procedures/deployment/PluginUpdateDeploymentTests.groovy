@@ -33,7 +33,8 @@ class PluginUpdateDeploymentTests extends AzureTestBase {
 
     @AfterMethod
     void tearDownTest(){
-        acsClient.undeployService(projectName, serviceName)
+        k8sApi.deleteService(serviceName)
+        k8sApi.deleteDeployments()
     }
 
 

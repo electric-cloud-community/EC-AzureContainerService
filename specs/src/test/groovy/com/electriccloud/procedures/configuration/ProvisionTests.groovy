@@ -30,7 +30,6 @@ class ProvisionTests extends AzureTestBase {
 
     @AfterClass
     void tearDownTests(){
-        acsClient.deleteConfiguration(configName)
         acsClient.client.deleteProject(environmentProjectName)
         println "Deleting the resource group: $testResGroup"
         acsApi.azure.resourceGroups().beginDeleteByName(testResGroup)
@@ -39,7 +38,7 @@ class ProvisionTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Provision new cluster")
     @TmsLink("")
     @Story("Environment Provisioning")
     @Description("Provision New Azure cluster")
@@ -71,7 +70,7 @@ class ProvisionTests extends AzureTestBase {
     }
 
 
-    @Test
+    @Test(testName = "Provision cluster that allready exits")
     @TmsLink("")
     @Story("Environment Provisioning")
     @Description("Provision Existing Azure cluster")
@@ -99,7 +98,8 @@ class ProvisionTests extends AzureTestBase {
     }
 
 
-    @Test(dataProvider = 'invalidData')
+    @Test(dataProvider = 'invalidData',
+            testName = "Provision cluster with invalid data")
     @TmsLink("")
     @Story("Environment Provisioning with invalid Data")
     @Description("Provision Openshift cluster with invalid data")

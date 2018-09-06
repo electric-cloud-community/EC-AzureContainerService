@@ -20,7 +20,9 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
 
     @BeforeClass
     void setUpTests(){
+        k8sClient.deleteConfiguration(configName)
         acsClient.deleteConfiguration(configName)
+        k8sClient.createConfiguration(configName, clusterEndpoint, adminAccount, clusterToken, "1.8", true, '/api/v1/namespaces')
         acsClient.createConfiguration(configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, true, LogLevel.DEBUG)
     }
 
@@ -29,19 +31,14 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
         acsClient.createEnvironment(configName, adminAccount, acsClusterName, resourceGroup, 2)
     }
 
-    @AfterMethod
+    /*@AfterMethod
     void tearDownTest(){
-        acsClient.undeployService(projectName, serviceName)
+        k8sClient.cleanUpCluster(configName, "default")
         acsClient.client.deleteProject(projectName)
-    }
-
-    @AfterClass
-    void tearDownTests(){
-        acsClient.deleteConfiguration(configName)
-    }
+    }*/
 
 
-    @Test
+    @Test(testName = "Deploy Microservice with LoadBalancer")
     @TmsLink("")
     @Story("Deploy service using LoadBalancer service type")
     @Description(" Deploy Project-level Microservice with LoadBalancer service type")
@@ -80,7 +77,7 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
     }
 
 
-    @Test
+    @Test(testName = "Deploy Microservice with ClusterIP")
     @TmsLink("")
     @Story("Deploy service using ClusterIP service type")
     @Description("Deploy Project-level Microservice with ClusterIP service type")
@@ -116,7 +113,7 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
     }
 
 
-    @Test
+    @Test(testName = "Deploy Microservice with NodePort")
     @TmsLink("")
     @Story("Deploy service using NodePort service type")
     @Description("Deploy Project-level Microservice with NodePort service type")

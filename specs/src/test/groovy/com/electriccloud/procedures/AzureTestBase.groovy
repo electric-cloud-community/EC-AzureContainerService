@@ -36,7 +36,7 @@ class AzureTestBase implements NamingTestBase {
 
     @BeforeClass
     void setUpData(){
-        setDefaultTimeout(40, TimeUnit.SECONDS)
+        setDefaultTimeout(70, TimeUnit.SECONDS)
         configName          = 'acsConfig'
         projectName         = 'acsProj'
         environmentProjectName = 'acsProj'

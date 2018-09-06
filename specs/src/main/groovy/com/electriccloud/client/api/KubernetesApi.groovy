@@ -15,14 +15,6 @@ class KubernetesApi extends HttpClient {
     def defaultHeaders() { ["Authorization": "Bearer ${getToken()}", Accept: "application/json"] }
     def json = new JsonBuilder()
 
-
-    KubernetesApi() {
-        this.baseUri = pluginsConf.containerPlugins.plugins.kubernetes.endpoint
-        this.token = pluginsConf.containerPlugins.plugins.kubernetes.token
-        log.info("Connecting cluster endpoint ${this.baseUri}")
-        log.info("Cluster access token: ${this.token}")
-    }
-
     KubernetesApi(baseUri, token) {
         this.baseUri = baseUri
         this.token = token
@@ -30,23 +22,21 @@ class KubernetesApi extends HttpClient {
         log.info("Cluster access token: ${this.token}")
     }
 
-    def deleteService(name) {
-        message("deleting ${name} service")
-        def uri = "api/v1/namespaces/default/services/${name}"
-        def resp = request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
-        log.info(resp.json)
-    }
 
     def getService(name) {
-        message("getting ${name} service")
         def uri = "api/v1/namespaces/default/services/${name}"
         request(baseUri, uri, GET, null, defaultHeaders(), null, false)
     }
 
     def getDeployment(name) {
-        message("getting ${name} deployment")
         def uri = "apis/apps/v1beta1/namespaces/default/deployments/${name}"
         request(baseUri, uri, GET, null, defaultHeaders(), null, false)
+    }
+
+    def getReplicaSets(){
+        def uri = "/apis/apps/v1/namespaces/default/replicasets"
+        def resp = request(baseUri, uri, GET, null, defaultHeaders(), null, true)
+        resp
     }
 
     def getServices() {
@@ -59,7 +49,6 @@ class KubernetesApi extends HttpClient {
     }
 
     def getDeployments() {
-        message("getting deployments")
         def uri = "apis/apps/v1beta1/namespaces/default/deployments"
         def resp = request(baseUri, uri, GET, null, defaultHeaders(), null, false)
         log.info("Got deployments:")
@@ -68,12 +57,53 @@ class KubernetesApi extends HttpClient {
     }
 
     def getPods() {
-        message("getting pods")
         def uri = "api/v1/namespaces/default/pods"
         def resp = request(baseUri, uri, GET, null, defaultHeaders(), null, false)
         log.info("Got pods:")
         resp.json.items.forEach { log.info("Pod Name: ${it.metadata.name} | Pod IP: ${it.status.podIP} | Host IP: ${it.status.hostIP}") }
         resp
     }
+
+
+    def deleteDeployments() {
+        def uri = "/apis/apps/v1beta1/namespaces/default/deployments"
+        request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
+    }
+
+    def deleteDeployment(name) {
+        def uri = "/apis/apps/v1beta1/namespaces/default/deployments/${name}"
+        request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
+    }
+
+    def deletePods(){
+        def uri = "api/v1/namespaces/default/pods"
+        def resp = request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
+        resp
+    }
+
+    def deletePod(name){
+        def uri = "api/v1/namespaces/default/pods/${name}"
+        def resp = request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
+        resp
+    }
+
+    def deleteReplicaSets(){
+        def uri ="/apis/apps/v1/namespaces/default/replicasets"
+        def resp = request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
+        resp
+    }
+
+    def deleteReplicaSet(name){
+        def uri ="/apis/apps/v1/namespaces/default/replicasets/${name}"
+        def resp = request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
+        resp
+    }
+
+
+    def deleteService(name) {
+        def uri = "api/v1/namespaces/default/services/${name}"
+        request(baseUri, uri, DELETE, null, defaultHeaders(), null, true)
+    }
+
 
 }

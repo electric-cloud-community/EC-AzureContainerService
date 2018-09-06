@@ -50,7 +50,12 @@ project 'acsProj', {
                 actualParameter = [
                         'canaryDeployment': isCanary,
                         'numberOfCanaryReplicas': replicas.toString(),
-                        'serviceType': servType,
+                        'createOrUpdateResource': '0',
+                        'deploymentTimeoutInSec': '120',
+                        'namespace': 'default',
+                        'requestType': 'create',
+                        'sessionAffinity': 'None',
+                        'serviceType': servType
                 ]
                 clusterName = 'acs-cluster'
                 environmentMapName = 'nginxMappings'

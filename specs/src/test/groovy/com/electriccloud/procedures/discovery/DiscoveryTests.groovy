@@ -13,7 +13,9 @@ class DiscoveryTests extends AzureTestBase {
 
     @BeforeClass
     void setUpTests(){
+        k8sClient.deleteConfiguration(configName)
         acsClient.deleteConfiguration(configName)
+        k8sClient.createConfiguration(configName, clusterEndpoint, adminAccount, clusterToken, "1.8", true, '/api/v1/namespaces')
         acsClient.createConfiguration(configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, true, LogLevel.DEBUG)
         acsClient.createEnvironment(configName, adminAccount, acsClusterName, resourceGroup, 2)
         acsClient.createService(2, volumes, false, ServiceType.LOAD_BALANCER)
@@ -35,16 +37,13 @@ class DiscoveryTests extends AzureTestBase {
 
     @AfterClass
     void tearDownTests(){
-        acsClient.createEnvironment(configName, adminAccount, acsClusterName, resourceGroup, 2)
-        acsClient.createService(2, volumes, false, ServiceType.LOAD_BALANCER)
-        acsClient.undeployService(projectName, serviceName)
+        k8sClient.cleanUpCluster(configName, "default")
         acsClient.client.deleteProject(projectName)
-        acsClient.deleteConfiguration(configName)
     }
 
 
 
-    @Test
+    @Test(testName = "Discover Project-level Microservice")
     @TmsLink("363534")
     @Story("Microservice discovery")
     @Description("Discover Project-level Microservice")
@@ -74,7 +73,7 @@ class DiscoveryTests extends AzureTestBase {
     }
 
 
-    @Test
+    @Test(testName = "Discover Microservice with new environment")
     @TmsLink("363536")
     @Story("Microservice discovery")
     @Description("Discover Project-level Microservice with environment generation")
@@ -124,7 +123,7 @@ class DiscoveryTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Discover Microservice with new project")
     @TmsLink("363537")
     @Story("Microservice discovery")
     @Description("Discover Project-level Microservice with project generation ")
@@ -172,7 +171,7 @@ class DiscoveryTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Discover Application-level Microservice")
     @TmsLink("363538")
     @Story("Application discovery")
     @Description("Discover Application-level Microservice")
@@ -213,7 +212,7 @@ class DiscoveryTests extends AzureTestBase {
     }
 
 
-    @Test
+    @Test(testName = "Discover Application with new environment")
     @TmsLink("363539")
     @Story("Application discovery")
     @Description("Discover Application-level Microservice with environment generation")
@@ -261,7 +260,7 @@ class DiscoveryTests extends AzureTestBase {
     }
 
 
-    @Test
+    @Test(testName = "Discover Application with new project")
     @TmsLink("363540")
     @Story("Microservice discovery")
     @Description(" Discover Application-level Microservice with project generation")
@@ -311,7 +310,7 @@ class DiscoveryTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Discover existing Project-level Microservice")
     @TmsLink("363542")
     @Story("Invalid Microservice discovery")
     @Description("Unable to discover Project-level Microservice that already exist")
@@ -338,7 +337,7 @@ class DiscoveryTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Discover existing Application-level Microservice")
     @TmsLink("363564")
     @Story("Invalid Application discovery")
     @Description("Unable to Discover Application-level Microservice that already exist")
@@ -387,7 +386,7 @@ class DiscoveryTests extends AzureTestBase {
 
 
 
-    @Test
+    @Test(testName = "Unable to Discover with invalid namespace")
     @TmsLink("363543")
     @Story("Invalid Microservice discovery")
     @Description("Unable to discover Project-level Microservice with invalid Namespace ")
@@ -407,7 +406,8 @@ class DiscoveryTests extends AzureTestBase {
 
 
 
-    @Test(priority = 1)
+    @Test(priority = 1,
+            testName = "Discover Microservice with invalid data")
     @TmsLink("363542")
     @Story("Invalid Microservice discovery")
     @Description("Unable to Discover Microservice without plugin configuration")
@@ -477,7 +477,19 @@ class DiscoveryTests extends AzureTestBase {
     @DataProvider(name = 'invalidDiscoveryData')
     def getDiscoveryData() {
         def data = [
-               [ '', environmentProjectName, environmentName, clusterName, "default", acsClusterName, resourceGroup, 1, credClientId, credPrivateKey, privateKey, publicKey, subscriptionId, tenantId, 'One or more arguments are missing. Please provide the following arguments: projectName' ],
+               [
+                       '',
+                       environmentProjectName,
+                       environmentName,
+                       clusterName,
+                       "default",
+                       acsClusterName, resourceGroup,
+                       1,
+                       credClientId, credPrivateKey,
+                       privateKey, publicKey,
+                       subscriptionId, tenantId,
+                       'One or more arguments are missing. Please provide the following arguments: projectName'
+               ],
                [ projectName, '', environmentName, clusterName, "default", null, null, 1, null, null, "", "", null, null, 'One or more arguments are missing. Please provide the following arguments: projectName' ],
                [ projectName, environmentProjectName, '', clusterName, "default", null, null, 1, null, null, "", "", null, null, '\'environmentName\' must be between 1 and 255 characters' ],
                [ projectName, environmentProjectName, environmentName, '', "default", null, null, 1, null, null, "", "", null, null, 'Please provide the following arguments: clusterName' ],
