@@ -1,11 +1,14 @@
 package dsl.azure_container_service
 
 def names = args.names,
-    replicas = names.replicas.toString(),
-    sourceVolume = names.sourceVolume,
-    targetVolume = names.targetVolume,
-    isCanary = names.isCanary.toString(),
-    serviceType = names.serviceType
+        replicas = names.replicas.toString(),
+        sourceVolume = names.sourceVolume,
+        targetVolume = names.targetVolume,
+        isCanary = names.isCanary.toString(),
+        serviceType = names.serviceType,
+        namespace = names.namespace,
+        deploymentTimeout = names.deploymentTimeout
+
 
 project 'acsProj', {
 
@@ -101,20 +104,11 @@ project 'acsProj', {
                 subserviceProcess = 'Deploy'
                 useUtilityResource = '0'
 
-                // Custom properties
-
                 property 'ec_deploy', {
-
-                    // Custom properties
                     ec_notifierStatus = '0'
                 }
             }
-
-            // Custom properties
-
             property 'ec_deploy', {
-
-                // Custom properties
                 ec_notifierStatus = '0'
             }
         }
@@ -146,11 +140,7 @@ project 'acsProj', {
                 }
             }
 
-            // Custom properties
-
             property 'ec_deploy', {
-
-                // Custom properties
                 ec_notifierStatus = '0'
             }
         }
@@ -165,7 +155,9 @@ project 'acsProj', {
                 actualParameter = [
                         'canaryDeployment': isCanary,
                         'numberOfCanaryReplicas': replicas.toString(),
-                        'serviceType': serviceType,
+                        'deploymentTimeoutInSec': deploymentTimeout,
+                        'namespace': namespace,
+                        'serviceType': serviceType
                 ]
                 clusterName = 'acs-cluster'
                 serviceName = 'nginx-service'
@@ -179,8 +171,6 @@ project 'acsProj', {
         }
 
         property 'ec_deploy', {
-
-            // Custom properties
             ec_notifierStatus = '0'
         }
     }

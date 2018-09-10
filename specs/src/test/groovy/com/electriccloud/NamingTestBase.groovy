@@ -89,24 +89,7 @@ trait NamingTestBase {
         clusterVersion,
         topologyOutcome,
         description = 'some desc',
-
-    //Docker
-        endpoint,
-        nodeEndpoint,
-        caCert,
-        cert,
-        key,
-        certsPath,
-        artifactsDir,
-        configSwarm,
-        configTls,
-        configCommunity,
-
-    //Artifactory
-        artifactoryUrl,
-        artifactoryConfig,
-        artifactoryUsername,
-        artifactoryPassword
+        endpoint
 
 
     // Parametrized names

@@ -5,7 +5,9 @@ def names = args.names,
     sourceVolume = names.sourceVolume,
     targetVolume = names.targetVolume,
     isCanary = names.isCanary.toString(),
-    serviceType = names.serviceType
+    serviceType = names.serviceType,
+    namespace = names.namespace,
+    deploymentTimeout = names.deploymentTimeout
 
 project 'k8sProj', {
 
@@ -110,11 +112,7 @@ project 'k8sProj', {
                 }
             }
 
-            // Custom properties
-
             property 'ec_deploy', {
-
-                // Custom properties
                 ec_notifierStatus = '0'
             }
         }
@@ -146,8 +144,6 @@ project 'k8sProj', {
                 }
             }
 
-            // Custom properties
-
             property 'ec_deploy', {
 
                 // Custom properties
@@ -165,7 +161,9 @@ project 'k8sProj', {
                 actualParameter = [
                         'canaryDeployment': isCanary,
                         'numberOfCanaryReplicas': replicas.toString(),
-                        'serviceType': serviceType,
+                        'deploymentTimeoutInSec': deploymentTimeout,
+                        'namespace': namespace,
+                        'serviceType': serviceType
                 ]
                 clusterName = 'k8s-cluster'
                 serviceName = 'nginx-service'
@@ -179,8 +177,6 @@ project 'k8sProj', {
         }
 
         property 'ec_deploy', {
-
-            // Custom properties
             ec_notifierStatus = '0'
         }
     }

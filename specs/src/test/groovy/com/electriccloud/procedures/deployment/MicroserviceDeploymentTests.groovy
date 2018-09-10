@@ -9,13 +9,15 @@ import io.qameta.allure.Story
 import io.qameta.allure.TmsLink
 import org.testng.annotations.*
 
+import java.util.concurrent.TimeUnit
+
 import static com.electriccloud.helpers.enums.LogLevels.*
 import static com.electriccloud.helpers.enums.ServiceTypes.*
 import static org.awaitility.Awaitility.await
 
 
 
-@Feature("Deploy")
+@Feature("Deployment")
 class MicroserviceDeploymentTests extends AzureTestBase {
 
 
@@ -36,6 +38,7 @@ class MicroserviceDeploymentTests extends AzureTestBase {
     @AfterMethod
     void tearDownTest(){
         k8sClient.cleanUpCluster(configName, "default")
+        await().atMost(50, TimeUnit.SECONDS).until { k8sApi.getPods().json.items.size() == 0 }
         acsClient.client.deleteProject(projectName)
     }
 
@@ -209,7 +212,6 @@ class MicroserviceDeploymentTests extends AzureTestBase {
         acsClient.undeployService(projectName, serviceName)
         await("Deployment size to be: 0").until {
             k8sApi.getPods().json.items.size() == 0
-            k8sApi.getDeployments().json.items.size() == 0
         }
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
@@ -234,7 +236,6 @@ class MicroserviceDeploymentTests extends AzureTestBase {
         acsClient.deployService(projectName, serviceName)
         acsClient.undeployService(projectName, serviceName)
         await("Pods size to be: 2").until {
-            k8sApi.getDeployments().json.items.size() == 1
             k8sApi.getPods().json.items.size() == 2
         }
         def deployments = k8sApi.getDeployments().json.items

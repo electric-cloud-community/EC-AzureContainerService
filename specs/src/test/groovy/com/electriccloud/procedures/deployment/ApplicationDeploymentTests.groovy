@@ -3,6 +3,7 @@ package com.electriccloud.procedures.deployment
 
 import com.electriccloud.procedures.AzureTestBase
 import io.qameta.allure.Description
+import io.qameta.allure.Feature
 import io.qameta.allure.Flaky
 import io.qameta.allure.Story
 import io.qameta.allure.TmsLink
@@ -12,10 +13,13 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
+import java.util.concurrent.TimeUnit
+
 import static com.electriccloud.helpers.enums.LogLevels.*
 import static org.awaitility.Awaitility.await
 import static com.electriccloud.helpers.enums.ServiceTypes.*
 
+@Feature("Deployment")
 class ApplicationDeploymentTests extends AzureTestBase {
 
 
@@ -36,6 +40,7 @@ class ApplicationDeploymentTests extends AzureTestBase {
     @AfterMethod
     void tearDownTest(){
         k8sClient.cleanUpCluster(configName, "default")
+        await().atMost(50, TimeUnit.SECONDS).until { k8sApi.getPods().json.items.size() == 0 }
         acsClient.client.deleteProject(projectName)
     }
 
@@ -211,9 +216,8 @@ class ApplicationDeploymentTests extends AzureTestBase {
     void undeployApplicationLevelMicroservice() {
         acsClient.deployApplication(projectName, applicationName)
         acsClient.undeployApplication(projectName, applicationName)
-        await("Deployment size to be: 0").until {
+        await("Pods size to be: 0").until {
             k8sApi.getPods().json.items.size() == 0
-            k8sApi.getDeployments().json.items.size() == 0
         }
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
@@ -237,7 +241,6 @@ class ApplicationDeploymentTests extends AzureTestBase {
         acsClient.deployApplication(projectName, applicationName)
         acsClient.undeployApplication(projectName, applicationName)
         await("Pods size to be: 2").until {
-            k8sApi.getDeployments().json.items.size() == 1
             k8sApi.getPods().json.items.size() == 2
         }
         def deployments = k8sApi.getDeployments().json.items

@@ -38,7 +38,7 @@ class ProvisionTests extends AzureTestBase {
 
 
 
-    @Test(testName = "Provision new cluster")
+    @Test(testName = "Provision new cluster", enabled = false)
     @TmsLink("")
     @Story("Environment Provisioning")
     @Description("Provision New Azure cluster")
@@ -52,7 +52,7 @@ class ProvisionTests extends AzureTestBase {
                 "agentflowqe2",
                 "flowqe2",
                 "masterflowqe2")
-        def resp = acsClient.provisionEnvironment(projectName, environmentName, clusterName, 750).json
+        def resp = acsClient.provisionEnvironment(projectName, environmentName, clusterName, 900).json
         def jobStatus = acsClient.client.getJobStatus(resp.jobId)
         def jobLogs = acsClient.client.getJobLogs(resp.jobId)
         def resGroups = acsApi.azure.resourceGroups()

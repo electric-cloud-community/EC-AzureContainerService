@@ -9,6 +9,10 @@ trait TopologyMatcher extends NamingTestBase {
 
     public static Logger log = Logger.getLogger("appLogger")
 
+
+
+
+
     def _link(Map fields) {
 
         log.info """
@@ -39,6 +43,11 @@ $fields
         }
         xn
     }
+
+
+
+
+
 
     def _attribute(Map fields) {
 
@@ -88,6 +97,12 @@ $fields
         xn
     }
 
+
+
+
+
+
+
     def _node(Map fields) {
 
         log.info """
@@ -128,6 +143,12 @@ $fields
         xn
     }
 
+
+
+
+
+
+
     def _action(Map fields) {
 
         log.info """
@@ -150,4 +171,14 @@ $fields
         }
         xn
     }
+
+
+
+
+
+
+
+
+
+
 }

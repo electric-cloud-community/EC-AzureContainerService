@@ -56,36 +56,55 @@ class KubernetesClient extends CommanderClient {
     }
 
     @Step
-    def createService(replicaNum, volumes = [source: null, target: null ], canaryDeploy, ServiceType serviceType = ServiceType.LOAD_BALANCER) {
+    def createService(replicaNum,
+                      volumes = [source: null, target: null ],
+                      canaryDeploy,
+                      ServiceType serviceType = ServiceType.LOAD_BALANCER, namespace = "default",
+                      deploymentTimeout = 120) {
         message("service creation")
-        def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue())
+        def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue(), namespace, deploymentTimeout.toString())
         def response = client.dslFile dslPath(plugin, 'service'), client.encode(json.toString())
         client.log.info("Service for project: ${response.json.project.projectName} is created successfully.")
         return response
     }
 
     @Step
-    def createApplication(replicaNum, volumes = [source: null, target: null ], canaryDeploy, ServiceType serviceType = ServiceType.LOAD_BALANCER) {
+    def createApplication(replicaNum,
+                          volumes = [source: null, target: null ],
+                          canaryDeploy,
+                          ServiceType serviceType = ServiceType.LOAD_BALANCER,
+                          namespace = "default",
+                          deploymentTimeout = 120) {
         message("application creation")
-        def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue())
+        def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue(), namespace, deploymentTimeout.toString())
         def response = client.dslFile dslPath(plugin, 'application'), client.encode(json.toString())
         client.log.info("Service for project: ${response.json.project.projectName} is created successfully.")
         return response
     }
 
     @Step
-    def updateService(replicaNum, volumes = [source: null, target: null ], canaryDeploy, ServiceType serviceType = ServiceType.LOAD_BALANCER) {
+    def updateService(replicaNum,
+                      volumes = [source: null, target: null ],
+                      canaryDeploy,
+                      ServiceType serviceType = ServiceType.LOAD_BALANCER,
+                      namespace = "default",
+                      deploymentTimeout = 120) {
         message("service update")
-        def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue())
+        def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue(), namespace, deploymentTimeout.toString())
         def response = client.dslFile dslPath(plugin, 'service'), client.encode(json.toString())
         client.log.info("Service for project: ${response.json.project.projectName} is updated successfully.")
         return response
     }
 
     @Step
-    def updateApplication(replicaNum, volumes = [source: null, target: null ], canaryDeploy, ServiceType serviceType = ServiceType.LOAD_BALANCER) {
+    def updateApplication(replicaNum,
+                          volumes = [source: null, target: null ],
+                          canaryDeploy,
+                          ServiceType serviceType = ServiceType.LOAD_BALANCER,
+                          namespace = "default",
+                          deploymentTimeout = 120) {
         message("service update")
-        def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue())
+        def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue(), namespace, deploymentTimeout.toString())
         def response = client.dslFile dslPath(plugin, 'application'), client.encode(json.toString())
         client.log.info("Service for project: ${response.json.project.projectName} is updated successfully.")
         return response

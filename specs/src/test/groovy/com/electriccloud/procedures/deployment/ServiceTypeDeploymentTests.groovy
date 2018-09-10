@@ -2,6 +2,7 @@ package com.electriccloud.procedures.deployment
 
 import com.electriccloud.procedures.AzureTestBase
 import io.qameta.allure.Description
+import io.qameta.allure.Feature
 import io.qameta.allure.Story
 import io.qameta.allure.TmsLink
 import org.testng.annotations.AfterClass
@@ -10,10 +11,14 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
+import java.util.concurrent.TimeUnit
+
 import static com.electriccloud.helpers.enums.LogLevels.*
 import static com.electriccloud.helpers.enums.ServiceTypes.*
+import static org.awaitility.Awaitility.*
 
 
+@Feature("Deployment")
 class ServiceTypeDeploymentTests extends AzureTestBase {
 
 
@@ -31,11 +36,12 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
         acsClient.createEnvironment(configName, adminAccount, acsClusterName, resourceGroup, 2)
     }
 
-    /*@AfterMethod
+    @AfterMethod
     void tearDownTest(){
         k8sClient.cleanUpCluster(configName, "default")
+        await().atMost(50, TimeUnit.SECONDS).until { k8sApi.getPods().json.items.size() == 0 }
         acsClient.client.deleteProject(projectName)
-    }*/
+    }
 
 
     @Test(testName = "Deploy Microservice with LoadBalancer")

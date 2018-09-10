@@ -174,13 +174,15 @@ class JsonHelper {
     }
 
 
-    def serviceJson = { replicaNum, volumes = [source: null, target: null ], canaryDeploy, serviceType ->
+    def serviceJson = { replicaNum, volumes = [source: null, target: null ], canaryDeploy, servicesType, deploymentNamespace, deploymentTimeoutInSec ->
         json.names {
             replicas replicaNum
             sourceVolume volumes.source
             targetVolume volumes.target
             isCanary canaryDeploy
-            servType serviceType
+            serviceType servicesType
+            namespace deploymentNamespace
+            deploymentTimeout deploymentTimeoutInSec
         }
         json
     }
@@ -223,6 +225,26 @@ class JsonHelper {
         json
     }
 
+    def gatherClusterInfo = { clusterName, envProjectName, environmentName, credentialPrivateKey, privKey ->
+        json.names {
+            cluster clusterName
+            envProject envProjectName
+            environment environmentName
+            credPrivateKey credentialPrivateKey
+            privateKey privKey
+        }
+        json
+    }
+
+    def azureCleanUpJson = { configurationName, clusterName, resourceGroupName, namespace ->
+        json.names {
+            configName configurationName
+            cluster clusterName
+            resourceGroup resourceGroupName
+            projectNamespace namespace
+        }
+        json
+    }
 
 
 

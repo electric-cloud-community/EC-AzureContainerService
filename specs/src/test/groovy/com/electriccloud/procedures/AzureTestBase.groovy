@@ -1,6 +1,7 @@
 package com.electriccloud.procedures
 
 import com.electriccloud.NamingTestBase
+import com.electriccloud.TopologyMatcher
 import com.electriccloud.client.api.AzureContainerServiceApi
 import com.electriccloud.client.api.KubernetesApi
 import com.electriccloud.client.ectool.EctoolApi
@@ -8,17 +9,21 @@ import com.electriccloud.client.plugin.AzureContainerServiceClient
 import com.electriccloud.client.plugin.KubernetesClient
 import com.electriccloud.listeners.TestListener
 import io.qameta.allure.Epic
+import org.awaitility.Awaitility
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Listeners
 import java.util.concurrent.TimeUnit
 import static io.restassured.RestAssured.given
+import static org.awaitility.Awaitility.await
+import static org.awaitility.Awaitility.setDefaultPollInterval
 import static org.awaitility.Awaitility.setDefaultTimeout
-import static com.electriccloud.client.HttpClient.pluginsConf
+import static com.electriccloud.helpers.enums.LogLevels.*
+import static com.electriccloud.helpers.enums.ServiceTypes.*
 
 @Epic('EC-AzureContainerService')
 @Listeners(TestListener.class)
-class AzureTestBase implements NamingTestBase {
+class AzureTestBase implements TopologyMatcher {
 
 
 
@@ -36,7 +41,10 @@ class AzureTestBase implements NamingTestBase {
 
     @BeforeClass
     void setUpData(){
+        /** Awaitility settings */
         setDefaultTimeout(70, TimeUnit.SECONDS)
+        setDefaultPollInterval(1, TimeUnit.SECONDS)
+
         configName          = 'acsConfig'
         projectName         = 'acsProj'
         environmentProjectName = 'acsProj'
@@ -69,6 +77,53 @@ class AzureTestBase implements NamingTestBase {
 
         ectoolApi.ectoolLogin()
     }
+
+
+
+
+
+    def createAndDeployService(appLevel = false){
+        pluginProjectName = "${pluginName}-${pluginVersion}"
+
+        k8sClient.deleteConfiguration(configName)
+        acsClient.deleteConfiguration(configName)
+        k8sClient.createConfiguration(configName, clusterEndpoint, adminAccount, clusterToken, "1.8", true, '/api/v1/namespaces')
+        acsClient.createConfiguration(configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, true, LogLevel.DEBUG)
+
+        acsClient.createEnvironment(configName, adminAccount, acsClusterName, resourceGroup, 2)
+        if (appLevel){
+            acsClient.createApplication(2, volumes, false, ServiceType.LOAD_BALANCER)
+            acsClient.deployApplication(projectName, applicationName)
+        } else {
+            acsClient.createService(2, volumes, false, ServiceType.LOAD_BALANCER)
+            acsClient.deployService(projectName, serviceName)
+        }
+        await().until { k8sApi.getPods().json.items.last().status.phase == 'Running' }
+    }
+
+    def setTopology(appLevel = false) {
+        ecpPodName = k8sApi.getPods().json.items.last().metadata.name
+        environmentId = acsClient.client.getEnvironment(projectName, environmentName).json.environment.environmentId
+        clusterId = acsClient.client.getEnvCluster(projectName, environmentName, clusterName).json.cluster.clusterId
+
+        ecpNamespaceId   = "$clusterEndpoint::$ecpNamespaceName"
+        ecpClusterId     = clusterEndpoint
+        ecpClusterName   = clusterEndpoint
+        ecpServiceId     = "$ecpNamespaceId::$serviceName"
+        ecpServiceName   = "$ecpNamespaceName::$serviceName"
+        ecpPodId         = "$clusterEndpoint::$ecpNamespaceName::$ecpPodName"
+        ecpContainerId   = "$ecpPodId::$containerName"
+        ecpContainerName = "$ecpNamespaceName::$ecpPodName::$containerName"
+
+        if(appLevel) {
+            applicationId = acsClient.client.getApplication(projectName, applicationName).json.application.applicationId
+            serviceId = acsClient.client.getApplicationService(projectName, applicationName, serviceName).json.service.serviceId
+            appServiceId = serviceId
+        } else {
+            serviceId = acsClient.client.getService(projectName, serviceName).json.service.serviceId
+        }
+    }
+
 
 
 

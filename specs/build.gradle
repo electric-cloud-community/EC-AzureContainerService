@@ -60,8 +60,6 @@ dependencies {
     // Kubernetes
     compile 'io.kubernetes:client-java:1.0.0'
     // Helper Libraries
-    testCompile group: 'org.assertj', name: 'assertj-core', version: '1.0.0'
-    compile group: 'org.awaitility', name: 'awaitility', version: '3.1.0'
     compile group: 'org.awaitility', name: 'awaitility-groovy', version: '3.1.0'
     // Rest-Assured
     compile "io.rest-assured:rest-assured:$restAssuredVersion"

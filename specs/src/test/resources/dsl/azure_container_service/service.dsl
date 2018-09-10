@@ -5,7 +5,9 @@ def names = args.names,
     sourceVolume = names.sourceVolume,
     targetVolume = names.targetVolume,
     isCanary = names.isCanary.toString(),
-    servType = names.servType
+    serviceType = names.serviceType,
+    namespace = names.namespace,
+    deploymentTimeout = names.deploymentTimeout
 
 
 project 'acsProj', {
@@ -24,7 +26,6 @@ project 'acsProj', {
             imageVersion = 'latest'
             memoryLimit = '256'
             memorySize = '128'
-            registryUri = null
             serviceName = 'nginx-service'
             volumeMount = targetVolume
             environmentVariable 'NGINX_PORT', {
@@ -50,12 +51,9 @@ project 'acsProj', {
                 actualParameter = [
                         'canaryDeployment': isCanary,
                         'numberOfCanaryReplicas': replicas.toString(),
-                        'createOrUpdateResource': '0',
-                        'deploymentTimeoutInSec': '120',
-                        'namespace': 'default',
-                        'requestType': 'create',
-                        'sessionAffinity': 'None',
-                        'serviceType': servType
+                        'deploymentTimeoutInSec': deploymentTimeout,
+                        'namespace': namespace,
+                        'serviceType': serviceType
                 ]
                 clusterName = 'acs-cluster'
                 environmentMapName = 'nginxMappings'
@@ -69,7 +67,6 @@ project 'acsProj', {
         }
 
         port '_servicehttpnginx-container01525961833676', {
-            applicationName = null
             listenerPort = '81'
             projectName = 'acsProj'
             serviceName = 'nginx-service'
@@ -78,7 +75,6 @@ project 'acsProj', {
         }
 
         process 'Deploy', {
-            applicationName = null
             processType = 'DEPLOY'
             serviceName = 'nginx-service'
             smartUndeployEnabled = null
@@ -132,7 +128,6 @@ project 'acsProj', {
         }
 
         process 'Undeploy', {
-            applicationName = null
             processType = 'UNDEPLOY'
             serviceName = 'nginx-service'
             smartUndeployEnabled = null
@@ -192,4 +187,3 @@ project 'acsProj', {
         }
     }
 }
-

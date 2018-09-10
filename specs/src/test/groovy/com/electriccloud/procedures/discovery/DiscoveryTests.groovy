@@ -6,6 +6,7 @@ import org.testng.annotations.*
 
 import static com.electriccloud.helpers.enums.LogLevels.*
 import static com.electriccloud.helpers.enums.ServiceTypes.*
+import static org.awaitility.Awaitility.*
 
 @Feature("Discovery")
 class DiscoveryTests extends AzureTestBase {
@@ -326,6 +327,7 @@ class DiscoveryTests extends AzureTestBase {
                     clusterName)
         } catch (e) {
             def jobId = e.cause.message
+            await('Job to be completed').until { acsClient.client.getJobStatus(jobId).json.status == "completed" }
             String errorLog = acsClient.client.getJobLogs(jobId)
             def jobStatus = acsClient.client.getJobStatus(jobId).json
             assert errorLog.contains("Service ${serviceName} already exists")
@@ -375,6 +377,7 @@ class DiscoveryTests extends AzureTestBase {
                     true, applicationName)
         } catch (e) {
             def jobId = e.cause.message
+            await('Job to be completed').until { acsClient.client.getJobStatus(jobId).json.status == "completed" }
             String errorLog = acsClient.client.getJobLogs(jobId)
             def jobStatus = acsClient.client.getJobStatus(jobId).json
             assert errorLog.contains("Application ${applicationName} already exists in project ${projectName}")
@@ -396,6 +399,7 @@ class DiscoveryTests extends AzureTestBase {
                 environmentName,
                 clusterName,
                 "my-namespace").json
+        await('Job to be completed').until { acsClient.client.getJobStatus(resp.jobId).json.status == "completed" }
         def jobStatus = acsClient.client.getJobStatus(resp.jobId).json
         String jobLog = acsClient.client.getJobLogs(resp.jobId)
         assert jobStatus.outcome == "warning"
@@ -420,6 +424,9 @@ class DiscoveryTests extends AzureTestBase {
                     clusterName)
         } catch (e) {
             def jobId = e.cause.message
+            await('Job to be completed').until {
+                acsClient.client.getJobStatus(jobId).json.status == "completed"
+            }
             String errorLog = acsClient.client.getJobLogs(jobId)
             def jobStatus = acsClient.client.getJobStatus(jobId).json
             assert errorLog.contains("Configuration ${configName} does not exist!")
@@ -464,6 +471,7 @@ class DiscoveryTests extends AzureTestBase {
                     false, null)
         } catch (e){
             def jobId = e.cause.message
+            await('Job to be completed').until { acsClient.client.getJobStatus(jobId).json.status == "completed" }
             String errorLog = acsClient.client.getJobLogs(jobId)
             println errorLog
             def jobStatus = acsClient.client.getJobStatus(jobId).json

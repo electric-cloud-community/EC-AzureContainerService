@@ -23,41 +23,41 @@ class KubernetesApi extends HttpClient {
     }
 
 
-    def getService(name) {
-        def uri = "api/v1/namespaces/default/services/${name}"
+    def getService(name, namespace = "default") {
+        def uri = "api/v1/namespaces/${namespace}/services/${name}"
         request(baseUri, uri, GET, null, defaultHeaders(), null, false)
     }
 
-    def getDeployment(name) {
-        def uri = "apis/apps/v1beta1/namespaces/default/deployments/${name}"
+    def getDeployment(name, namespace = "default") {
+        def uri = "apis/apps/v1beta1/namespaces/${namespace}/deployments/${name}"
         request(baseUri, uri, GET, null, defaultHeaders(), null, false)
     }
 
-    def getReplicaSets(){
-        def uri = "/apis/apps/v1/namespaces/default/replicasets"
+    def getReplicaSets(namespace = "default"){
+        def uri = "/apis/apps/v1/namespaces/${namespace}/replicasets"
         def resp = request(baseUri, uri, GET, null, defaultHeaders(), null, true)
         resp
     }
 
-    def getServices() {
+    def getServices(namespace = "default") {
         message("getting services")
-        def uri = "api/v1/namespaces/default/services"
+        def uri = "api/v1/namespaces/${namespace}/services"
         def resp = request(baseUri, uri, GET, null, defaultHeaders(), null, false)
         log.info("Got services:")
         resp.json.items.forEach { log.info(" ${it.metadata.name} | type: ${it.spec.type} | clusterIP: ${it.spec.clusterIP} | externalIP: ${it.status.loadBalancer} | exposePort: ${it.spec.ports.port}") }
         resp
     }
 
-    def getDeployments() {
-        def uri = "apis/apps/v1beta1/namespaces/default/deployments"
+    def getDeployments(namespace = "default") {
+        def uri = "apis/apps/v1beta1/namespaces/${namespace}/deployments"
         def resp = request(baseUri, uri, GET, null, defaultHeaders(), null, false)
         log.info("Got deployments:")
         resp.json.items.forEach { log.info(" ${it.metadata.name} | pods: ${it.spec.replicas} | Available: ${it.status.availableReplicas}") }
         resp
     }
 
-    def getPods() {
-        def uri = "api/v1/namespaces/default/pods"
+    def getPods(namespace = 'default') {
+        def uri = "api/v1/namespaces/${namespace}/pods"
         def resp = request(baseUri, uri, GET, null, defaultHeaders(), null, false)
         log.info("Got pods:")
         resp.json.items.forEach { log.info("Pod Name: ${it.metadata.name} | Pod IP: ${it.status.podIP} | Host IP: ${it.status.hostIP}") }
@@ -65,43 +65,43 @@ class KubernetesApi extends HttpClient {
     }
 
 
-    def deleteDeployments() {
-        def uri = "/apis/apps/v1beta1/namespaces/default/deployments"
+    def deleteDeployments(namespace = 'default') {
+        def uri = "/apis/apps/v1beta1/namespaces/${namespace}/deployments"
         request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
     }
 
-    def deleteDeployment(name) {
-        def uri = "/apis/apps/v1beta1/namespaces/default/deployments/${name}"
+    def deleteDeployment(name, namespace='default') {
+        def uri = "/apis/apps/v1beta1/namespaces/${namespace}/deployments/${name}"
         request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
     }
 
-    def deletePods(){
-        def uri = "api/v1/namespaces/default/pods"
+    def deletePods(namespace='default'){
+        def uri = "api/v1/namespaces/${namespace}/pods"
         def resp = request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
         resp
     }
 
-    def deletePod(name){
-        def uri = "api/v1/namespaces/default/pods/${name}"
+    def deletePod(name, namespace='default'){
+        def uri = "api/v1/namespaces/${namespace}/pods/${name}"
         def resp = request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
         resp
     }
 
-    def deleteReplicaSets(){
-        def uri ="/apis/apps/v1/namespaces/default/replicasets"
+    def deleteReplicaSets(namespace = 'default'){
+        def uri ="/apis/apps/v1/namespaces/${namespace}/replicasets"
         def resp = request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
         resp
     }
 
-    def deleteReplicaSet(name){
-        def uri ="/apis/apps/v1/namespaces/default/replicasets/${name}"
+    def deleteReplicaSet(name, namespace='default'){
+        def uri ="/apis/apps/v1/namespaces/${namespace}/replicasets/${name}"
         def resp = request(baseUri, uri, DELETE, null, defaultHeaders(), null, false)
         resp
     }
 
 
-    def deleteService(name) {
-        def uri = "api/v1/namespaces/default/services/${name}"
+    def deleteService(name, namespace='default') {
+        def uri = "api/v1/namespaces/${namespace}/services/${name}"
         request(baseUri, uri, DELETE, null, defaultHeaders(), null, true)
     }
 

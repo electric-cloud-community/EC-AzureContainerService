@@ -20,7 +20,6 @@
             <class name="com.electriccloud.procedures.deployment.MicroserviceDeploymentTests"/>
             <class name="com.electriccloud.procedures.deployment.ApplicationDeploymentTests"/>
             <class name="com.electriccloud.procedures.deployment.ServiceTypeDeploymentTests"/>
-            <!--<class name="com.electriccloud.procedures.deployment.PluginUpdateDeploymentTests"/>-->
         </classes>
     </test>
     <test name="Import Tests">
@@ -33,6 +32,14 @@
             <class name="com.electriccloud.procedures.discovery.DiscoveryTests"/>
         </classes>
     </test>
-
+    <test name="Topology Tests">
+        <classes>
+            <class name="com.electriccloud.procedures.topology.DoActionOnRealtimeCluster"/>
+            <class name="com.electriccloud.procedures.topology.GetDeployTopology"/>
+            <class name="com.electriccloud.procedures.topology.GetRealtimeClusterDetails"/>
+            <class name="com.electriccloud.procedures.topology.GetRealtimeClusterTopology"/>
+            <class name="com.electriccloud.procedures.topology.GetRealtimeClusterTopologyValidation"/>
+        </classes>
+    </test>
 
 </suite>

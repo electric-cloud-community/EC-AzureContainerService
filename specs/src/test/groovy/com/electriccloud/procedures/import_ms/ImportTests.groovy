@@ -33,7 +33,7 @@ class ImportTests extends AzureTestBase {
     }
 
 
-    @AfterMethod
+   @AfterMethod
     void tearDownTest() {
         acsClient.client.deleteApplication(projectName, applicationName)
         acsClient.client.deleteService(projectName, serviceName)
