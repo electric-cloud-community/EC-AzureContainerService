@@ -13,13 +13,18 @@
 <div class="help">
     <h1>@PLUGIN_KEY@</h1>
     <p>Plugin version @PLUGIN_VERSION@</p>
+    
+    <p>Revised on September 11, 2018</p>
+    
     <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade"/>
     <h3>Overview</h3>
-    <p>Plugin overview EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using Kubernetes.</p>
-    <p>Revised on June 29, 2018</p>
+    <p><p>Plugin overview EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using Kubernetes.</p>
+</p>
+    
     <h1>Contents</h1>
     <ul>
     <li><a href="#overview">Overview</a></li>
+    
     
     <li><a href="#CreateConfiguration">Plugin Configuration</a></li>
     
@@ -35,11 +40,19 @@
 
         <li><a href="#UndeployService">Undeploy Service</a></li>
         
+
+        <li><a href="#Discover">Discover</a></li>
+        
+
+        <li><a href="#GatherClusterInfo">Gather Cluster Info</a></li>
+        
     </ul>
     
     
     <li><a href="#releaseNotes">Release Notes</a></li>
 </ul>
+    
+
     
     <div id="CreateConfiguration">
         <a name='CreateConfiguration' id="CreateConfiguration"> </a>
@@ -540,23 +553,260 @@
     </div>
 
     
+    <div id="Discover">
+        <h2>Discover</h2>
+        Automatically create microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.
+<div>
+    <ol>
+        <li><b>Select your method of discovery from a Kubernetes Cluster</b>  There are two options for connecting to Kubernetes for discovery
+            <ul>
+                <li><b>Existing ElectricFlow Environment and Cluster</b>  Use the Cluster configuration details in an existing ElectricFlow environment to connect to Kubernetes. Enter details for the existing environment and cluster in the following parameters:
+                    <ul>
+                        <li>Environment Project Name: The project containing the existing environment</li>
+                        <li>Environment Name:  the name of an existing environment that contains the Kubernetes backend cluster to be discovered</li>
+                        <li>Cluster Name: The name of the ElectricFlow cluster in the environment above that represents the Kubernetes cluster</li>
+                    </ul></li>
+                <li><b>Kubernetes Connection Details</b>  Enter Kubernetes endpoint and Account details to directly connect to the endpoint and discover the clusters and pods.  Enter the endpoint and account details in the following parameters:
+                    <ul>
+                        <li>Kubernetes Endpoint: The endpoint where the Kubernetes endpoint will be reachable</li>
+                        <li>Service Account API Token</li>
+                        <li><i>If selecting this connection option, you can optionally enter a new values for Environment Name and Cluster Name parameters, to create a new environment and cluster in ElectricFlow based on the discovered services and pods.</i></li>
+                    </ul>
+                </li>
+            </ul></li>
+        <li><b>Determine how the discovered microservices will be created in ElectricFlow</b>
+            <ul>
+                <li><b>Create the microservices individually at the top-level within the project.</b> All discovered microservices will be created at the top-level.  Enter the following parameters:
+                    <ul>
+                        <li>Project Name: Enter the name of the project where the microservices will be created</li>
+                    </ul>
+                </li>
+                <li><b>Create the Microservices within an application in ElectricFlow.</b> All discovered microservices will be created as services within a new application. Enter the following parameters:
+                    <ul>
+                        <li>Project Name: Enter the name of the project where the new application will be created</li>
+                        <li>Create Microservices within and Application:  Select the checkbox</li>
+                        <li>Application Name:  The name of a new application which will be created in ElectricFlow containing the discovered services</li>
+                    </ul>
+                </li></ul>
+        </li>
+    </ol>
+</div>
+
+        
+            <p>Procedure looks for services and deployments on Kubernetes
+cluster and transfers data into ElectricFlow. Services found
+in cluster will be mapped to Services objects in ElectricFlow,
+then associated deployments will be found and containers
+definitions retrieved from there.</p>
+<p>If the object with the provided name already exists in the ElectricFlow, this object will be skipped and a warning message will be emitted to logs.</p>
+
+        
+        <h3>Discover Parameters</h3>
+        <table class="grid">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <td class="required">Environment Project Name</td>
+                <td>The project containing the existing environment, or where the new environment will be created.</td>
+            </tr>
+            
+            <tr>
+                <td class="required">Environment Name</td>
+                <td>Provide the name of an existing environment that contains the Azure Container Service-backend cluster to be discovered. If the environment does not already exist, provide the Azure Container Service connection details below for discovery, and a new environment will be created.</td>
+            </tr>
+            
+            <tr>
+                <td class="required">Cluster Name</td>
+                <td>In an existing environment, provide the name of the ElectricFlow cluster representing the Azure Container Service cluster whose deployed services are to be discovered. If the environment does not already exist, provide the name of the cluster to be created in the new environment.</td>
+            </tr>
+            
+            <tr>
+                <td class="required">Azure Container Service Namespace</td>
+                <td>The name of the Azure Container Service namespace within which the deployed services should be discovered. Default to 'default' namespace.</td>
+            </tr>
+            
+            <tr>
+                <td class="required">Project Name</td>
+                <td>The name of project in which the discovered microservices will be created.</td>
+            </tr>
+            
+            <tr>
+                <td >Create Microservices within an Application</td>
+                <td>(Optional) Select to create all discovered services in the Azure Container Service namespace within one application in ElectricFlow. If selected, then the application name must be provided. If unselected, microservices will be created at the top-level in the project.</td>
+            </tr>
+            
+            <tr>
+                <td >Application Name</td>
+                <td>The name of the new application that will contain the microservices. Required only if 'Create Microservices within an Application' is selected.</td>
+            </tr>
+            
+            <tr>
+                <td >Tenant ID</td>
+                <td>Tenant ID of the Azure Account. Required if the cluster does not exist in EF.</td>
+            </tr>
+            
+            <tr>
+                <td >Subscription ID</td>
+                <td>Subscription ID of the Azure Account. Required if the cluster does not exist in EF.</td>
+            </tr>
+            
+            <tr>
+                <td >Client ID</td>
+                <td>The Client ID of the Service principal created in Azure. Required if the cluster does not exist in EF.</td>
+            </tr>
+            
+            <tr>
+                <td >Azure Secret Key</td>
+                <td>The Key of the Service principal created in Azure. Required if the cluster does not exist in EF.</td>
+            </tr>
+            
+            <tr>
+                <td >Public Key</td>
+                <td>The public key that should be used for cluster creation and communication.</td>
+            </tr>
+            
+            <tr>
+                <td >Private Key</td>
+                <td>The private key that should be used for cluster creation and communication. Required if the cluster does not exist in EF.</td>
+            </tr>
+            
+            <tr>
+                <td >Container Cluster Name</td>
+                <td>The name of the cluster that needs to be provisioned.</td>
+            </tr>
+            
+            <tr>
+                <td >Resource Group Name</td>
+                <td>All cluster resources will be created under this resource group name.</td>
+            </tr>
+            
+            <tr>
+                <td >Master Zone</td>
+                <td>The primary zone for the cluster. The master zone for a cluster is set at creation time and cannot be updated so this parameter will be ignored if the cluster already exists.</td>
+            </tr>
+            
+            <tr>
+                <td >Admin User Name</td>
+                <td>The name of Administrator user for VMs</td>
+            </tr>
+            
+            <tr>
+                <td >Number Of Master VMs</td>
+                <td>The number of masters to be created in the cluster. Values allowed are 1, 3 or 5 with 1 as default.</td>
+            </tr>
+            
+            <tr>
+                <td >Master DNS Prefix</td>
+                <td>The DNS prefix to be used to create the FQDN of the master</td>
+            </tr>
+            
+            <tr>
+                <td >Master FQDN</td>
+                <td>FQDN of the master</td>
+            </tr>
+            
+            <tr>
+                <td >Agent Pool Name</td>
+                <td>The name of agent pool in which agents will be created</td>
+            </tr>
+            
+            <tr>
+                <td >Agent Pool Count</td>
+                <td>Number of agents that should be created in the pool</td>
+            </tr>
+            
+            <tr>
+                <td >Agent Pool VM Size</td>
+                <td>Size of the Agent VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes</td>
+            </tr>
+            
+            <tr>
+                <td >Agent DNS Prefix</td>
+                <td>DNS prefix to be used to create the FQDN of agent pool</td>
+            </tr>
+            
+            <tr>
+                <td >The wait time for cluster creation (In minutes)</td>
+                <td>Timeout for cluster creation. If the cluster does not get created in this amount of time, the procedure fails.</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+    </div>
+
+    
+    <div id="GatherClusterInfo">
+        <h2>Gather Cluster Info</h2>
+        <p>Retrieves token and endpoint for Smart Map.</p>
+        
+        <h3>Gather Cluster Info Parameters</h3>
+        <table class="grid">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <td class="required">Cluster Name</td>
+                <td>The name of the cluster in ElectricFlow that encapsulates the Azure Container Service.</td>
+            </tr>
+            
+            <tr>
+                <td class="required">Cluster Or Environment Project Name</td>
+                <td>The name of the project that the cluster belongs to if it is a top-level project cluster. Or the name of the project that the environment belongs to if it is an environment-scoped cluster.</td>
+            </tr>
+            
+            <tr>
+                <td >Environment Name</td>
+                <td>The name of the environment that the cluster belongs to. Not applicable for a top-level project cluster.</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+    </div>
+
+    
 
     
 
     
 
     <h1 id="releaseNotes">Release Notes</h1>
+    
+    <h3>@PLUGIN_KEY@ 1.1.0</h3>
+    <ul>
+        
+        <li>Added "Discover" procedure for automatically creating microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.</li>
+        
+        <li>Added "Gather Cluster Info" procedure which retrieves token and endpoint for Smart Map.</li>
+        
+    </ul>
+    
     <h3>@PLUGIN_KEY@ 1.0.4</h3>
     <ul>
+        
         <li>Configured the plugin to allow the ElectricFlow UI to create configs inline of procedure form.</li>
+        
     </ul>
+    
     <h3>@PLUGIN_KEY@ 1.0.3</h3>
     <ul>
         
         <li>Fixed the invalid credential name error in the <i>Undeploy Service</i> procedure.</li>
         
         <li>Configured the 'setup' procedure step that retrieves groovy dependency jars to run all subsequent procedure steps on the same resource.</li>
-
+        
         <li>Added support for retrieving and creating the plugin configurations through the "Configurations" option on the application process step and the pipeline stage task editors.</li>
         
     </ul>
