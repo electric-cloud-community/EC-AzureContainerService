@@ -48,7 +48,8 @@ class MicroserviceDeploymentTests extends AzureTestBase {
     @Story("Deploy Microservcice")
     @Description("Deploy Project-Level Microservice")
     void deployProjectLevelMicroservice(){
-        acsClient.deployService(projectName, serviceName)
+        def jobId = acsClient.deployService(projectName, serviceName).json.jobId
+        def deploymentLog = acsClient.client.getJobLogs(jobId)
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
@@ -76,6 +77,7 @@ class MicroserviceDeploymentTests extends AzureTestBase {
         assert pods.first().status.phase == "Running"
         assert resp.statusCode() == 200
         assert resp.body().asString() == "Hello World!\n"
+        assert !deploymentLog.contains(clusterToken)
     }
 
 
@@ -86,7 +88,8 @@ class MicroserviceDeploymentTests extends AzureTestBase {
     void updateProjectLevelMicroserviceWithSameData(){
         acsClient.deployService(projectName, serviceName)
         acsClient.createService(2, volumes, false, ServiceType.LOAD_BALANCER)
-        acsClient.deployService(projectName, serviceName)
+        def jobId = acsClient.deployService(projectName, serviceName).json.jobId
+        def deploymentLog = acsClient.client.getJobLogs(jobId)
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
@@ -114,6 +117,7 @@ class MicroserviceDeploymentTests extends AzureTestBase {
         assert pods.first().status.phase == "Running"
         assert resp.statusCode() == 200
         assert resp.body().asString() == "Hello World!\n"
+        assert !deploymentLog.contains(clusterToken)
     }
 
 
@@ -125,7 +129,8 @@ class MicroserviceDeploymentTests extends AzureTestBase {
     void updateProjectLevelMicroservice(){
         acsClient.deployService(projectName, serviceName)
         acsClient.updateService(3, volumes, false, ServiceType.LOAD_BALANCER)
-        acsClient.deployService(projectName, serviceName)
+        def jobId = acsClient.deployService(projectName, serviceName).json.jobId
+        def deploymentLog = acsClient.client.getJobLogs(jobId)
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
@@ -153,6 +158,7 @@ class MicroserviceDeploymentTests extends AzureTestBase {
         assert pods.first().status.phase == "Running"
         assert resp.statusCode() == 200
         assert resp.body().asString() == "Hello World!\n"
+        assert !deploymentLog.contains(clusterToken)
     }
 
 
@@ -163,7 +169,8 @@ class MicroserviceDeploymentTests extends AzureTestBase {
     void preformCanaryDeploymentForProjectLevelMicroservice() {
         acsClient.deployService(projectName, serviceName)
         acsClient.updateService(2, volumes, true, ServiceType.LOAD_BALANCER)
-        acsClient.deployService(projectName, serviceName)
+        def jobId = acsClient.deployService(projectName, serviceName).json.jobId
+        def deploymentLog = acsClient.client.getJobLogs(jobId)
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
@@ -199,6 +206,7 @@ class MicroserviceDeploymentTests extends AzureTestBase {
         }
         assert resp.statusCode() == 200
         assert resp.body().asString() == "Hello World!\n"
+        assert !deploymentLog.contains(clusterToken)
     }
 
 
@@ -209,7 +217,8 @@ class MicroserviceDeploymentTests extends AzureTestBase {
     @Description("Undeploy Project-level Microservice")
     void undeployMicroservice() {
         acsClient.deployService(projectName, serviceName)
-        acsClient.undeployService(projectName, serviceName)
+        def jobId = acsClient.undeployService(projectName, serviceName).json.jobId
+        def deploymentLog = acsClient.client.getJobLogs(jobId)
         await("Deployment size to be: 0").until {
             k8sApi.getPods().json.items.size() == 0
         }
@@ -220,6 +229,7 @@ class MicroserviceDeploymentTests extends AzureTestBase {
         assert services.size() == 1
         assert pods.size() == 0
         assert services[0].metadata.name == "kubernetes"
+        assert !deploymentLog.contains(clusterToken)
     }
 
 
@@ -234,7 +244,8 @@ class MicroserviceDeploymentTests extends AzureTestBase {
         acsClient.deployService(projectName, serviceName)
         acsClient.updateService(2, volumes, true, ServiceType.LOAD_BALANCER)
         acsClient.deployService(projectName, serviceName)
-        acsClient.undeployService(projectName, serviceName)
+        def jobId = acsClient.undeployService(projectName, serviceName).json.jobId
+        def deploymentLog = acsClient.client.getJobLogs(jobId)
         await("Pods size to be: 2").until {
             k8sApi.getPods().json.items.size() == 2
         }
@@ -264,6 +275,7 @@ class MicroserviceDeploymentTests extends AzureTestBase {
         assert pods.first().status.phase == "Running"
         assert resp.statusCode() == 200
         assert resp.body().asString() == "Hello World!\n"
+        assert !deploymentLog.contains(clusterToken)
     }
 
 

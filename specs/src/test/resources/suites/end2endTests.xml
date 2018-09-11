@@ -32,6 +32,11 @@
             <class name="com.electriccloud.procedures.discovery.DiscoveryTests"/>
         </classes>
     </test>
+    <test name="Gather Cluster Info For Topology">
+        <classes>
+            <class name="com.electriccloud.procedures.gather_cluster_info.GatherClusterInfoTests"/>
+        </classes>
+    </test>
     <test name="Topology Tests">
         <classes>
             <class name="com.electriccloud.procedures.topology.DoActionOnRealtimeCluster"/>

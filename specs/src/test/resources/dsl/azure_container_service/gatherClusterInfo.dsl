@@ -5,8 +5,6 @@ def names = args.names,
         envProject = names.envProject,
         environment = names.environment
 
-
-
 runProcedure(
         projectName: '/plugins/EC-AzureContainerService/project',
         procedureName: 'Gather Cluster Info',

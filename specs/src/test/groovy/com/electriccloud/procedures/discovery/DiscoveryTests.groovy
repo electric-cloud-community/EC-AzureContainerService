@@ -49,10 +49,11 @@ class DiscoveryTests extends AzureTestBase {
     @Story("Microservice discovery")
     @Description("Discover Project-level Microservice")
     void discoverProjectLevelMicroservice(){
-        acsClient.discoverService(projectName,
+        def jobId = acsClient.discoverService(projectName,
                 environmentProjectName,
                 environmentName,
-                clusterName)
+                clusterName).json.jobId
+        def jobLog = acsClient.client.getJobLogs(jobId)
         def services = acsClient.client.getServices(projectName).json.service
         def service = acsClient.client.getService(projectName, serviceName).json.service
         def container = acsClient.client.getServiceContainer(projectName, serviceName, containerName).json.container
@@ -71,6 +72,7 @@ class DiscoveryTests extends AzureTestBase {
         assert container.environmentVariable.first().value == "8080"
         assert mapping.actualParameters.parameterDetail[0].parameterName == "serviceType"
         assert mapping.actualParameters.parameterDetail[0].parameterValue == ServiceType.LOAD_BALANCER.value
+        assert !jobLog.contains(clusterToken)
     }
 
 
@@ -79,7 +81,7 @@ class DiscoveryTests extends AzureTestBase {
     @Story("Microservice discovery")
     @Description("Discover Project-level Microservice with environment generation")
     void discoverProjectLevelMicroserviceWithEnvironmentGeneration(){
-        acsClient.discoverService(projectName,
+        def jobId = acsClient.discoverService(projectName,
                 environmentProjectName,
                 "my-environment",
                 clusterName,
@@ -93,7 +95,8 @@ class DiscoveryTests extends AzureTestBase {
                 publicKey,
                 subscriptionId,
                 tenantId,
-                false, null)
+                false, null).json.jobId
+        def jobLog = acsClient.client.getJobLogs(jobId)
         def services = acsClient.client.getServices(projectName).json.service
         def service = acsClient.client.getService(projectName, serviceName).json.service
         def environment = acsClient.client.getEnvironment(projectName, "my-environment").json.environment
@@ -120,6 +123,7 @@ class DiscoveryTests extends AzureTestBase {
         assert mappings[0].environmentName == "my-environment"
         assert mapping.actualParameters.parameterDetail[0].parameterName == "serviceType"
         assert mapping.actualParameters.parameterDetail[0].parameterValue == ServiceType.LOAD_BALANCER.value
+        assert !jobLog.contains(clusterToken)
     }
 
 
@@ -129,7 +133,7 @@ class DiscoveryTests extends AzureTestBase {
     @Story("Microservice discovery")
     @Description("Discover Project-level Microservice with project generation ")
     void discoverProjectLevelMicroserviceWithProjectGeneration(){
-        acsClient.discoverService(projectName,
+        def jobId = acsClient.discoverService(projectName,
                 "MyProject",
                 environmentName,
                 clusterName,
@@ -141,7 +145,8 @@ class DiscoveryTests extends AzureTestBase {
                 credPrivateKey,
                 privateKey,
                 publicKey,
-                subscriptionId, tenantId)
+                subscriptionId, tenantId).json.jobId
+        def jobLog = acsClient.client.getJobLogs(jobId)
         def services = acsClient.client.getServices(projectName).json.service
         def service = acsClient.client.getService(projectName, serviceName).json.service
         def environment = acsClient.client.getEnvironment("MyProject", environmentName).json.environment
@@ -168,6 +173,7 @@ class DiscoveryTests extends AzureTestBase {
         assert mappings[0].environmentName == environmentName
         assert mapping.actualParameters.parameterDetail[0].parameterName == "serviceType"
         assert mapping.actualParameters.parameterDetail[0].parameterValue == ServiceType.LOAD_BALANCER.value
+        assert !jobLog.contains(clusterToken)
     }
 
 
@@ -177,7 +183,7 @@ class DiscoveryTests extends AzureTestBase {
     @Story("Application discovery")
     @Description("Discover Application-level Microservice")
     void discoverApplicationLevelMicroservice(){
-        acsClient.discoverService(projectName,
+        def jobId = acsClient.discoverService(projectName,
                 environmentProjectName,
                 environmentName,
                 clusterName,
@@ -191,7 +197,8 @@ class DiscoveryTests extends AzureTestBase {
                 "",
                 null,
                 null,
-                true, applicationName)
+                true, applicationName).json.jobId
+        def jobLog = acsClient.client.getJobLogs(jobId)
         def applications = acsClient.client.getApplications(projectName).json.application
         def application = acsClient.client.getApplication(projectName, applicationName).json.application
         def container = acsClient.client.getApplicationContainer(projectName, applicationName, serviceName, containerName).json.container
@@ -210,6 +217,7 @@ class DiscoveryTests extends AzureTestBase {
         assert container.environmentVariable.first().value == "8080"
         assert mapping.actualParameters.parameterDetail[0].parameterName == "serviceType"
         assert mapping.actualParameters.parameterDetail[0].parameterValue == ServiceType.LOAD_BALANCER.value
+        assert !jobLog.contains(clusterToken)
     }
 
 
@@ -218,7 +226,7 @@ class DiscoveryTests extends AzureTestBase {
     @Story("Application discovery")
     @Description("Discover Application-level Microservice with environment generation")
     void discoverApplicationLevelMicroserviceWithEnvironmentGeneration(){
-        acsClient.discoverService(projectName,
+        def jobId = acsClient.discoverService(projectName,
                 environmentProjectName,
                 "my-environment",
                 clusterName,
@@ -232,7 +240,8 @@ class DiscoveryTests extends AzureTestBase {
                 publicKey,
                 subscriptionId,
                 tenantId,
-                true, applicationName)
+                true, applicationName).json.jobId
+        def jobLog = acsClient.client.getJobLogs(jobId)
         def applications = acsClient.client.getApplications(projectName).json.application
         def application = acsClient.client.getApplication(projectName, applicationName).json.application
         def environment = acsClient.client.getEnvironment(projectName, "my-environment").json.environment
@@ -258,6 +267,7 @@ class DiscoveryTests extends AzureTestBase {
         assert mappings[0].environmentName == "my-environment"
         assert mapping.actualParameters.parameterDetail[0].parameterName == "serviceType"
         assert mapping.actualParameters.parameterDetail[0].parameterValue == ServiceType.LOAD_BALANCER.value
+        assert !jobLog.contains(clusterToken)
     }
 
 
@@ -266,7 +276,7 @@ class DiscoveryTests extends AzureTestBase {
     @Story("Microservice discovery")
     @Description(" Discover Application-level Microservice with project generation")
     void discoverApplicationLevelMicroserviceWithProjectGeneration(){
-        acsClient.discoverService(projectName,
+        def jobId = acsClient.discoverService(projectName,
                 "MyProject",
                 environmentName,
                 clusterName,
@@ -280,7 +290,8 @@ class DiscoveryTests extends AzureTestBase {
                 publicKey,
                 subscriptionId,
                 tenantId,
-                true, applicationName)
+                true, applicationName).json.jobId
+        def jobLog = acsClient.client.getJobLogs(jobId)
         def applications = acsClient.client.getApplications(projectName).json.application
         def application = acsClient.client.getApplication(projectName, applicationName).json.application
         def environment = acsClient.client.getEnvironment("MyProject", environmentName).json.environment
@@ -306,6 +317,7 @@ class DiscoveryTests extends AzureTestBase {
         assert mappings[0].environmentName == environmentName
         assert mapping.actualParameters.parameterDetail[0].parameterName == "serviceType"
         assert mapping.actualParameters.parameterDetail[0].parameterValue == ServiceType.LOAD_BALANCER.value
+        assert !jobLog.contains(clusterToken)
     }
 
 
@@ -328,12 +340,13 @@ class DiscoveryTests extends AzureTestBase {
         } catch (e) {
             def jobId = e.cause.message
             await('Job to be completed').until { acsClient.client.getJobStatus(jobId).json.status == "completed" }
-            String errorLog = acsClient.client.getJobLogs(jobId)
+            String jobLog = acsClient.client.getJobLogs(jobId)
             def jobStatus = acsClient.client.getJobStatus(jobId).json
-            assert errorLog.contains("Service ${serviceName} already exists")
-            assert errorLog.contains("Container ${containerName} already exists")
+            assert jobLog.contains("Service ${serviceName} already exists")
+            assert jobLog.contains("Container ${containerName} already exists")
             assert jobStatus.outcome == "error"
             assert jobStatus.status == "completed"
+            assert !jobLog.contains(clusterToken)
         }
     }
 
@@ -378,12 +391,13 @@ class DiscoveryTests extends AzureTestBase {
         } catch (e) {
             def jobId = e.cause.message
             await('Job to be completed').until { acsClient.client.getJobStatus(jobId).json.status == "completed" }
-            String errorLog = acsClient.client.getJobLogs(jobId)
+            String jobLog = acsClient.client.getJobLogs(jobId)
             def jobStatus = acsClient.client.getJobStatus(jobId).json
-            assert errorLog.contains("Application ${applicationName} already exists in project ${projectName}")
-            assert errorLog.contains("Process \'Deploy\' already exists in application \'${applicationName}\'")
+            assert jobLog.contains("Application ${applicationName} already exists in project ${projectName}")
+            assert jobLog.contains("Process \'Deploy\' already exists in application \'${applicationName}\'")
             assert jobStatus.outcome == "error"
             assert jobStatus.status == "completed"
+            assert !jobLog.contains(clusterToken)
         }
     }
 
@@ -406,6 +420,7 @@ class DiscoveryTests extends AzureTestBase {
         assert jobStatus.status == "completed"
         assert jobLog.contains("No services found on the cluster https://flowqe.eastus.cloudapp.azure.com")
         assert jobLog.contains("Discovered services: 0")
+        assert !jobLog.contains(clusterToken)
     }
 
 
@@ -427,11 +442,12 @@ class DiscoveryTests extends AzureTestBase {
             await('Job to be completed').until {
                 acsClient.client.getJobStatus(jobId).json.status == "completed"
             }
-            String errorLog = acsClient.client.getJobLogs(jobId)
+            String jobLog = acsClient.client.getJobLogs(jobId)
             def jobStatus = acsClient.client.getJobStatus(jobId).json
-            assert errorLog.contains("Configuration ${configName} does not exist!")
+            assert jobLog.contains("Configuration ${configName} does not exist!")
             assert jobStatus.outcome == "error"
             assert jobStatus.status == "completed"
+            assert !jobLog.contains(clusterToken)
         }
     }
 
@@ -472,12 +488,13 @@ class DiscoveryTests extends AzureTestBase {
         } catch (e){
             def jobId = e.cause.message
             await('Job to be completed').until { acsClient.client.getJobStatus(jobId).json.status == "completed" }
-            String errorLog = acsClient.client.getJobLogs(jobId)
+            String jobLog = acsClient.client.getJobLogs(jobId)
             println errorLog
             def jobStatus = acsClient.client.getJobStatus(jobId).json
-            assert errorLog.contains(errorMessage)
+            assert jobLog.contains(errorMessage)
             assert jobStatus.outcome == "error"
             assert jobStatus.status == "completed"
+            assert !jobLog.contains(clusterToken)
         }
     }
 

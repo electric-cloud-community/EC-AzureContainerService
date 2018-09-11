@@ -50,9 +50,10 @@ class APIClient extends HttpClient {
         dsl(dslText, null)
     }
 
+    // Switch DEBUG = true to show the logs of REST response
     def dsl(dslText, params) {
         def _params = params ? "&parameters=$params" : ''
-        request(baseUri,"server/dsl?dsl=${encode(dslText)}$_params", POST, null, defaultHeaders(), null, true)
+        request(baseUri,"server/dsl?dsl=${encode(dslText)}$_params", POST, null, defaultHeaders(), null, false)
     }
 
     def dslFile(dslFilePath) {
@@ -77,7 +78,7 @@ class APIClient extends HttpClient {
         request(baseUri,"jobs/$jobId?request=getJobSummary", GET, null , defaultHeaders(), null, false)
     }
 
-    def waitForJobToComplete(jobId, seconds = 10, periodSec = 1, message = "Job status: COMPLETED.") {
+    def waitForJobToComplete(jobId, seconds = 10, periodSec = 1, message = "Job status: COMPLETED.") throws RuntimeException {
         def step = 0
         def periodTime = periodSec
         while (getJobStatus(jobId).json.status != "completed") {
@@ -87,7 +88,9 @@ class APIClient extends HttpClient {
             log.info("Job status: pending; waiting for: ${periodTime * (step)} sec.")
 
             if (getJobStatus(jobId).json.outcome == "error") {
-                throw new RuntimeException("Job status: FAILED: \n ${getJobStatus(jobId).json} \n JOB ERROR LOG: \n${getJobLogs(jobId)}",
+                log.info("\n${".".multiply(80)} \nJOB LOG: \n${getJobLogs(jobId)}${".".multiply(80)}")
+                log.info("JOB STATUS: FAILED!")
+                throw new RuntimeException("JOB STATUS: FAILED: \n ${new JsonBuilder(getJobStatus(jobId).json).toPrettyString()}\n\nJOB ERROR LOG: \n${getJobLogs(jobId)}",
                         new Throwable("${getJobStatus(jobId).json.jobId}"))
             }
 
@@ -98,6 +101,7 @@ class APIClient extends HttpClient {
 
         }
         sleep(periodTime * 1000)
+        log.info("\n${".".multiply(80)} \nJOB LOG: \n${getJobLogs(jobId)}${".".multiply(80)}")
         log.info(message)
     }
 

@@ -225,13 +225,11 @@ class JsonHelper {
         json
     }
 
-    def gatherClusterInfo = { clusterName, envProjectName, environmentName, credentialPrivateKey, privKey ->
+    def gatherClusterInfo = { clusterName, envProjectName, environmentName ->
         json.names {
             cluster clusterName
             envProject envProjectName
             environment environmentName
-            credPrivateKey credentialPrivateKey
-            privateKey privKey
         }
         json
     }

@@ -132,7 +132,7 @@ class AzureContainerServiceClient extends CommanderClient {
     }
 
     @Step("Gather Cluster Info")
-    def gatherClusterInfo(envProjectName, environmentName, clusterName){
+    def gatherClusterInfo(envProjectName, environmentName, clusterName) {
         message("getting cluster info")
         def json = jsonHelper.gatherClusterInfo(clusterName, envProjectName, environmentName)
         def response = client.dslFile dslPath(plugin, 'gatherClusterInfo'), client.encode(json.toString())

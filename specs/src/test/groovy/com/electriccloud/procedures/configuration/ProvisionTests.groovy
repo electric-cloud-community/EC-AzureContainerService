@@ -38,7 +38,7 @@ class ProvisionTests extends AzureTestBase {
 
 
 
-    @Test(testName = "Provision new cluster", enabled = false)
+    @Test(testName = "Provision new cluster", enabled = true)
     @TmsLink("")
     @Story("Environment Provisioning")
     @Description("Provision New Azure cluster")
@@ -123,46 +123,6 @@ class ProvisionTests extends AzureTestBase {
         ]
         return data as Object[][]
     }
-
-
-
-
-
-
-    /*@Test
-    void testCluster(){
-        ResourceGroup resGroup = acsApi.azure.resourceGroups().getByName(resourceGroup)
-        println    resGroup.name()
-        println  resGroup.type()
-        println resGroup.inner()
-        println resGroup.key()
-        println resGroup.region()
-        ContainerService cs = acsApi.azure.containerServices().getByResourceGroup(resourceGroup, acsClusterName)
-
-
-        println "------------------"
-        println cs.name()
-        println cs.region()
-        println cs.orchestratorType()
-        println cs.masterFqdn()
-        println cs.masterDnsPrefix()
-        println cs.masterNodeCount()
-        println cs.inner().agentPoolProfiles()
-        VirtualMachine vm = acsApi.azure.virtualMachines().getByResourceGroup(resourceGroup, 'k8s-agent-E6A2B3B5-0')
-        println '-----------'
-        println vm.name()
-        println vm.region()
-        println vm.primaryPublicIPAddress
-        println vm.size()
-
-        acsApi.azure.virtualMachines().list().findAll {
-            it.resourceGroupName() == resourceGroup
-        }.each {
-            println it.name()
-        }
-
-    }*/
-
 
 
 }

@@ -50,7 +50,8 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
     @Description(" Deploy Project-level Microservice with LoadBalancer service type")
     void deployMicroserviceWithLoadBalancer(){
         acsClient.createService(2, volumes, false, ServiceType.LOAD_BALANCER)
-        acsClient.deployService(projectName, serviceName)
+        def jobId = acsClient.deployService(projectName, serviceName).json.jobId
+        def deploymentLog = acsClient.client.getJobLogs(jobId)
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
@@ -80,6 +81,7 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
         assert pods.first().status.phase == "Running"
         assert endpoint.statusCode() == 200
         assert endpoint.body().asString() == "Hello World!\n"
+        assert !deploymentLog.contains(clusterToken)
     }
 
 
@@ -89,7 +91,8 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
     @Description("Deploy Project-level Microservice with ClusterIP service type")
     void deployMicroserviceWithClusterIP(){
         acsClient.createService(2, volumes, false, ServiceType.CLUSTER_IP)
-        acsClient.deployService(projectName, serviceName)
+        def jobId = acsClient.deployService(projectName, serviceName).json.jobId
+        def deploymentLog = acsClient.client.getJobLogs(jobId)
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
@@ -116,6 +119,7 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
         assert pods.first().spec.containers.first().env.first().value == "8080"
         assert pods.first().spec.containers.first().env.first().name == "NGINX_PORT"
         assert pods.first().status.phase == "Running"
+        assert !deploymentLog.contains(clusterToken)
     }
 
 
@@ -125,7 +129,8 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
     @Description("Deploy Project-level Microservice with NodePort service type")
     void deployMicroserviceWithNodePort(){
         acsClient.createService(2, volumes, false, ServiceType.NODE_PORT)
-        acsClient.deployService(projectName, serviceName)
+        def jobId = acsClient.deployService(projectName, serviceName).json.jobId
+        def deploymentLog = acsClient.client.getJobLogs(jobId)
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
@@ -152,6 +157,7 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
         assert pods.first().spec.containers.first().env.first().value == "8080"
         assert pods.first().spec.containers.first().env.first().name == "NGINX_PORT"
         assert pods.first().status.phase == "Running"
+        assert !deploymentLog.contains(clusterToken)
     }
 
 
