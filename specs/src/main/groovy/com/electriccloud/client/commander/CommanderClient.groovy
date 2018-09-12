@@ -125,14 +125,14 @@ class CommanderClient {
 
 
     def getServiceMappings(project, service) {
-        message("got service mappings")
+        //message("got service mappings")
         def map = client.dslFile(dslPath(plugin, 'envMaps'), client.encode(jsonHelper.mapingJson(project, service).toString())).json.environmentMap
         // returns the collection of mappings
         map
     }
 
     def getAppMappings(project, application) {
-        message("got application mappings")
+        //message("got application mappings")
         def map = client.tierMappings(project, application).json.tierMap
         // returns the collection of mappings
         map
