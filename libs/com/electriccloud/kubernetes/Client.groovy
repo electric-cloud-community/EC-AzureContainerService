@@ -155,7 +155,7 @@ class Client {
         http.request(GET, TEXT) { req ->
             uri.path = "/api/v1/namespaces/${namespace}/pods/${pod}/log"
             uri.query = [container: container, tailLines: 500]
-            headers.Authorization = "Bearer ${this.accessToken}"
+            headers.Authorization = "${this.accessToken}"
             headers.Accept = "application/json"
 
             req.getParams().setParameter("http.connection.timeout", CONNECTION_TIMEOUT)
@@ -184,7 +184,7 @@ class Client {
         http.request(GET, TEXT) { req ->
             uri.path = "/api/v1/namespaces/${namespace}/pods/${pod}/log"
             uri.query = [tailLines: 500]
-            headers.Authorization = "Bearer ${this.accessToken}"
+            headers.Authorization = "${this.accessToken}"
             headers.Accept = "application/json"
 
             req.getParams().setParameter("http.connection.timeout", CONNECTION_TIMEOUT)
