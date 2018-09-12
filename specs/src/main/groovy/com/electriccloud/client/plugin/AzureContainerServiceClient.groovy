@@ -24,7 +24,7 @@ class AzureContainerServiceClient extends CommanderClient {
     }
 
 
-    @Step("Create configuration: {configurationName}, {clusterEndpoint}")
+    @Step("Create configuration: {configName}")
     def createConfiguration(configName, publicKey,
                             privateKey,
                             credPrivateKey,
@@ -121,7 +121,7 @@ class AzureContainerServiceClient extends CommanderClient {
     }
 
 
-    @Step("Discover {cluster} on {endpoint}")
+    @Step("Discover {clusterName} on namespace {namespace}")
     def discoverService(projectName, envProjectName, environmentName, clusterName, namespace = 'default', azClusterName = null, azResourceGroupName = null, agentPoolCount = '1', clientId = null, azureSecretKey = null, privateKey = "", publicKey = "", subscriptionId = null, tenantId = null, importApp = false, appName = null) {
         message("service discovery")
         def privKey = privateKey.readLines().join('\\n')
