@@ -44,6 +44,7 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
     }
 
 
+
     @Test(testName = "Deploy Microservice with LoadBalancer")
     @TmsLink("")
     @Story("Deploy service using LoadBalancer service type")
@@ -85,6 +86,7 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
     }
 
 
+
     @Test(testName = "Deploy Microservice with ClusterIP")
     @TmsLink("")
     @Story("Deploy service using ClusterIP service type")
@@ -121,6 +123,7 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
         assert pods.first().status.phase == "Running"
         assert !deploymentLog.contains(clusterToken)
     }
+
 
 
     @Test(testName = "Deploy Microservice with NodePort")

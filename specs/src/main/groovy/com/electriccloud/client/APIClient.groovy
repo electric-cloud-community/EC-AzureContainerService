@@ -113,7 +113,7 @@ class APIClient extends HttpClient {
 
     def deleteProject(projectName) {
         message('removing project')
-        request(baseUri, "projects/$projectName", DELETE, null, defaultHeaders(), null, true)
+        request(baseUri, "projects/$projectName", DELETE, null, defaultHeaders(), null, false)
         log.info("Project: ${projectName} is successfully removed!")
         return this
     }
@@ -121,21 +121,21 @@ class APIClient extends HttpClient {
     def createCredential(projectName, Credential cred){
         message('creating credential')
         def uri = "projects/${projectName}/credentials?credentialName=${cred.credName}&description=${cred.description}&password=${cred.password}&passwordRecoveryAllowed=true&userName=${cred.userName}"
-        request(baseUri, uri , POST, null, defaultHeaders(), null , true)
+        request(baseUri, uri , POST, null, defaultHeaders(), null , false)
         log.info("Credential: ${cred.credName} is successfully created!")
     }
 
     def deleteCredential(projectName, credName){
         message('creating credential')
         def uri = "projects/${projectName}/credentials/${credName}"
-        request(baseUri, uri , DELETE, null, defaultHeaders(), null , true)
+        request(baseUri, uri , DELETE, null, defaultHeaders(), null , false)
         log.info("Credential: ${credName} is successfully removed!")
         return this
     }
 
     def deleteArtifact(artifactName){
         message('removing artifact')
-        request(baseUri, "artifacts/${artifactName}", DELETE, null, defaultHeaders(), null, true)
+        request(baseUri, "artifacts/${artifactName}", DELETE, null, defaultHeaders(), null, false)
         log.info("Artifact: ${artifactName} is successfully removed!")
         return this
     }
@@ -149,7 +149,7 @@ class APIClient extends HttpClient {
 
     def deleteService(projectName, serviceName) {
         message('removing service')
-        request(baseUri, "projects/${projectName}/services/${serviceName}", DELETE, null, defaultHeaders(), null, true)
+        request(baseUri, "projects/${projectName}/services/${serviceName}", DELETE, null, defaultHeaders(), null, false)
         log.info("Service: ${serviceName} is successfully removed!")
         return this
     }
@@ -198,7 +198,7 @@ class APIClient extends HttpClient {
 
     def deleteApplication(projectName, applicationName) {
         message('removing application')
-        request(baseUri, "projects/${projectName}/applications/${applicationName}", DELETE, null, defaultHeaders(), null, true)
+        request(baseUri, "projects/${projectName}/applications/${applicationName}", DELETE, null, defaultHeaders(), null, false)
         log.info("Service: ${applicationName} is successfully removed!")
         return this
     }
@@ -252,7 +252,7 @@ class APIClient extends HttpClient {
 
     def deleteEnvironment(projectName, environmentName) {
         message('removing environment')
-        def response = request(baseUri, "projects/${projectName}/environments/${environmentName}", DELETE, null, defaultHeaders(), null, true)
+        def response = request(baseUri, "projects/${projectName}/environments/${environmentName}", DELETE, null, defaultHeaders(), null, false)
         log.info("Service: ${environmentName} is successfully removed!")
         response
     }

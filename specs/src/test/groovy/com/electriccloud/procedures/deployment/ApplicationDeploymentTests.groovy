@@ -31,11 +31,13 @@ class ApplicationDeploymentTests extends AzureTestBase {
         acsClient.createConfiguration(configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, true, LogLevel.DEBUG)
     }
 
+
     @BeforeMethod
     void setUpTest(){
         acsClient.createEnvironment(configName, adminAccount, acsClusterName, resourceGroup, 2)
         acsClient.createApplication(2, volumes, false, ServiceType.LOAD_BALANCER)
     }
+
 
     @AfterMethod
     void tearDownTest(){
@@ -43,6 +45,7 @@ class ApplicationDeploymentTests extends AzureTestBase {
         await().atMost(50, TimeUnit.SECONDS).until { k8sApi.getPods().json.items.size() == 0 }
         acsClient.client.deleteProject(projectName)
     }
+
 
 
     @Test(testName = "Deploy Application-Level Microservice")
