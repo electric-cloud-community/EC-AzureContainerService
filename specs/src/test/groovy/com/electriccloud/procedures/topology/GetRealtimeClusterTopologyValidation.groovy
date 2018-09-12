@@ -2,6 +2,8 @@ package com.electriccloud.procedures.topology
 
 import com.electriccloud.procedures.AzureTestBase
 import io.qameta.allure.*
+import org.testng.annotations.AfterClass
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
@@ -11,11 +13,27 @@ import org.testng.annotations.Test
 @Feature("Topology")
 class GetRealtimeClusterTopologyValidation extends AzureTestBase {
 
+    @BeforeClass
+    void createAndDeployProjectLevelMicroservice() {
+        createAndDeployService(false)
+        setTopology()
+    }
+
     @BeforeMethod
     void setUpTest(){
         ecpPodName = k8sApi.getPods().json.items.last().metadata.name
         ecpPodId = clusterEndpoint
     }
+
+    @AfterClass(alwaysRun = true)
+    void tearDown() {
+        k8sClient.cleanUpCluster(configName)
+        k8sClient.deleteConfiguration(configName)
+        acsClient.deleteConfiguration(configName)
+        acsClient.client.deleteProject(projectName)
+    }
+
+
 
 
     @Test(dataProvider = "projectNames", enabled = true)

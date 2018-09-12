@@ -489,7 +489,6 @@ class DiscoveryTests extends AzureTestBase {
             def jobId = e.cause.message
             await('Job to be completed').until { acsClient.client.getJobStatus(jobId).json.status == "completed" }
             String jobLog = acsClient.client.getJobLogs(jobId)
-            println errorLog
             def jobStatus = acsClient.client.getJobStatus(jobId).json
             assert jobLog.contains(errorMessage)
             assert jobStatus.outcome == "error"

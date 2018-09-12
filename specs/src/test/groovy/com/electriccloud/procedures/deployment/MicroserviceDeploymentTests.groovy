@@ -81,8 +81,7 @@ class MicroserviceDeploymentTests extends AzureTestBase {
     }
 
 
-
-    @Test(testName = "Update Project-Level Microservice")
+    @Test(testName = "Update Project-Level Microservice"/*, invocationCount = 2*/)
     @Story('Update Microservice')
     @Description("Update Project-level Microservice with the same data")
     void updateProjectLevelMicroserviceWithSameData(){

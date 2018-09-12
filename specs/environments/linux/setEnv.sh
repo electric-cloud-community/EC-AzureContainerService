@@ -1,10 +1,11 @@
+#!/usr/bin/env bash
 export COMMANDER_HOST=http://localhost
 export COMMANDER_LOGIN=admin
 export COMMANDER_PASSWORD=changeme
 export COMMANDER_WORKSPACE=/opt/EC/workspace
 export COMMANDER_AGENT_WORKSPACE=/opt/electriccloud/electriccommander/bin
 export PLUGIN_NAME=EC-AzureContainerService
-export PLUGIN_BUILD_VERSION=1.1.0.59
+export PLUGIN_BUILD_VERSION=1.1.0.60
 export PLUGIN_LEGACY_VERSION=1.0.3.48
 export AZURE_ADMIN=ecloudadmin
 export AZURE_SUBSCRIPTION_ID=20ab6f85-801d-4c3a-a0d4-11da3631d29c
