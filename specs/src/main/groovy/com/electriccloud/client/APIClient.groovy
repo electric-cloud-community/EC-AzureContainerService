@@ -78,7 +78,11 @@ class APIClient extends HttpClient {
         request(baseUri,"jobs/$jobId?request=getJobSummary", GET, null , defaultHeaders(), null, false)
     }
 
+
+    def writeJobLog = { job -> log.info("\n${".".multiply(80)} \nJOB LOG: \n${getJobLogs(job)}${".".multiply(80)}") }
+
     def waitForJobToComplete(jobId, seconds = 10, periodSec = 1, message = "Job status: COMPLETED.") throws RuntimeException {
+
         def step = 0
         def periodTime = periodSec
         while (getJobStatus(jobId).json.status != "completed") {
@@ -88,7 +92,7 @@ class APIClient extends HttpClient {
             log.info("Job status: pending; waiting for: ${periodTime * (step)} sec.")
 
             if (getJobStatus(jobId).json.outcome == "error") {
-                log.info("\n${".".multiply(80)} \nJOB LOG: \n${getJobLogs(jobId)}${".".multiply(80)}")
+                writeJobLog(jobId)
                 log.info("JOB STATUS: FAILED!")
                 throw new RuntimeException("JOB STATUS: FAILED: \n ${new JsonBuilder(getJobStatus(jobId).json).toPrettyString()}\n\nJOB ERROR LOG: \n${getJobLogs(jobId)}",
                         new Throwable("${getJobStatus(jobId).json.jobId}"))
@@ -101,7 +105,7 @@ class APIClient extends HttpClient {
 
         }
         sleep(periodTime * 1000)
-        log.info("\n${".".multiply(80)} \nJOB LOG: \n${getJobLogs(jobId)}${".".multiply(80)}")
+        writeJobLog(jobId)
         log.info(message)
     }
 
