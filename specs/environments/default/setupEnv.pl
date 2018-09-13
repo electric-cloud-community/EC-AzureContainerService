@@ -1,10 +1,12 @@
 use strict;
 use warnings;
 use ElectricCommander;
-
+use Cwd qw(getcwd);
 
 my $jobId = $ENV{COMMANDER_JOBID};
 my $jobStepId = $ENV{COMMANDER_JOBSTEPID};
+
+my $chronic = ElectricCommander->new();
 
 print "Job Step ID: $jobStepId\n";
 for (keys %ENV) {
@@ -16,24 +18,13 @@ for (keys %ENV) {
 my $efServer = 'localhost';
 my $ec = ElectricCommander->new({server => $efServer, debug => 1});
 $ec->login('admin', 'changeme');
-my $plugins = $ec->getPlugins();
-my @dependencies = qw(EC-Kubernetes);
-my @pluginNames = ();
-for my $plugin ($plugins->findnodes('//plugin')) {
-    my $name = $plugin->findvalue('pluginName');
-    my $key = $plugin->findvalue('pluginKey');
-    if (grep { $_ eq $key } @dependencies) {
-        push @pluginNames, "$name";
-        print "$name\n";
-    }
-}
 
-for my $plugin (@pluginNames) {
-    print "Promoting plugin $plugin\n";
-    my $start = time;
-    $ec->promotePlugin({pluginName => $plugin, promoted => 0});
-    $ec->promotePlugin($plugin);
-    my $end = time;
-    my $eta = $end - $start;
-    print "Done with plugin $plugin in $eta seconds\n";
-}
+my $xpath = $chronic->retrieveArtifactVersions({
+    artifactVersionName => 'com.electriccloud:EC-Kubernetes:1.1.2.189',
+    toDirectory => getcwd(),
+});
+my $path = getcwd() . "/EC-Kubernetes.jar";
+my $xpath = $ec->installPlugin($path);
+
+$ec->promotePlugin({pluginName => 'EC-Kubernetes-1.1.2.189'});
+
