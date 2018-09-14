@@ -150,7 +150,7 @@ class CreateConfigurationTests extends AzureTestBase {
     def getLogLevels(){
         return [
                 [LogLevel.DEBUG, "logger DEBUG", "[DEBUG]", "[ERROR]"],
-                [LogLevel.INFO, "logger INFO", "[INFO]", "[DEBUG]"],
+                //[LogLevel.INFO, "logger INFO", "[INFO]", "[DEBUG]"],
                 [LogLevel.WARNING, "logger WARNING", "[INFO]", "[ERROR]"],
                 [LogLevel.ERROR, "logger ERROR", "[INFO]", "[WARNING]"],
         ] as Object[][]
