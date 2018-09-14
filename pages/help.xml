@@ -14,7 +14,7 @@
     <h1>@PLUGIN_KEY@</h1>
     <p>Plugin version @PLUGIN_VERSION@</p>
     
-    <p>Revised on September 11, 2018</p>
+    <p>Revised on September 14, 2018</p>
     
     <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade"/>
     <h3>Overview</h3>
@@ -788,6 +788,8 @@ definitions retrieved from there.</p>
     <ul>
         
         <li>Added "Discover" procedure for automatically creating microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.</li>
+        
+        <li>Added support for "Smart Map Topology View" functionality.</li>
         
         <li>Added "Gather Cluster Info" procedure which retrieves token and endpoint for Smart Map.</li>
         
