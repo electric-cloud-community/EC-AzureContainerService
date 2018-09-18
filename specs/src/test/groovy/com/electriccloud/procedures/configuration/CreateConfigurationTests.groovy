@@ -17,7 +17,6 @@ import static com.electriccloud.helpers.enums.LogLevels.*
 @Feature('Configuration')
 class CreateConfigurationTests extends AzureTestBase {
 
-
     @BeforeClass
     void setUpTests(){
         acsClient.deleteConfiguration(configName)
@@ -28,6 +27,7 @@ class CreateConfigurationTests extends AzureTestBase {
         acsClient.deleteConfiguration(configName)
         acsClient.client.deleteProject(projectName)
     }
+
 
 
     @Test(testName = "Create config with test connection")

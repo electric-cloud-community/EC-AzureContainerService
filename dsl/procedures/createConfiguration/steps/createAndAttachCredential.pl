@@ -115,11 +115,6 @@ $xpath = $ec->attachCredential($projName, $credName,
 $errors .= $ec->checkAllErrors($xpath);
 
 $xpath = $ec->attachCredential($projName, $keypairCred,
-    {procedureName => "Cleanup Cluster - Experimental",
-     stepName => "cleanup"});
-$errors .= $ec->checkAllErrors($xpath);
-
-$xpath = $ec->attachCredential($projName, $keypairCred,
     {procedureName => "Undeploy Service",
      stepName => "undeployService"});
 $errors .= $ec->checkAllErrors($xpath);
@@ -134,15 +129,6 @@ $xpath = $ec->attachCredential($projName, $keypairCred,
      stepName => "discover"});
 $errors .= $ec->checkAllErrors($xpath);
 
-$xpath = $ec->attachCredential($projName, $credName,
-    {procedureName => "Gather Cluster Info",
-        stepName => "gatherClusterInfo"});
-$errors .= $ec->checkAllErrors($xpath);
-
-$xpath = $ec->attachCredential($projName, $keypairCred,
-    {procedureName => "Gather Cluster Info",
-        stepName => "gatherClusterInfo"});
-$errors .= $ec->checkAllErrors($xpath);
 
 if ("$errors" ne "") {
     # Cleanup the partially created configuration we just created

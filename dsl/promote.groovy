@@ -182,10 +182,7 @@ upgrade(upgradeAction, pluginName, otherPluginName,
 		 ],[
 			 procedureName: 'Discover',
 			 stepName: 'discover'
-		], [
-			procedureName: 'Gather Cluster Info',
-			stepName: 'gatherClusterInfo'
-		]])
+		 ]])
 	
 
     		

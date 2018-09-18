@@ -4,9 +4,6 @@ $[/myProject/scripts/preamble]
 $[/myProject/scripts/Discovery]
 $[/myProject/scripts/DiscoveryClusterHandler]
 
-$[/myProject/scripts/ClusterInfoCrypter]
-$[/myProject/scripts/ClusterInfoStorer]
-
 // Input parameters
 def envProjectName = '$[envProjectName]'
 def environmentName = '$[envName]'
@@ -162,15 +159,3 @@ try {
 } catch (PluginException e) {
     efClient.handleProcedureError(e.getMessage())
 }
-
-ClusterInfoCrypter clusterInfoCrypter = new ClusterInfoCrypter()
-ClusterInfoStorer.storeClusterInfo(
-        clusterEndpoint,
-        accessToken,
-        pluginConfig,
-        efClient,
-        clusterInfoCrypter,
-        envProjectName,
-        environmentName,
-        clusterName
-)

@@ -19,14 +19,13 @@ String azToken = client.retrieveAccessToken(pluginConfig)
 def masterFqdn = client.getMasterFqdn(pluginConfig.subscriptionId, resourceGroupName, clusterName, azToken)
 def clusterEndPoint = "https://${masterFqdn}"
 
-def privateKey = efClient.getCredentials("${configName}_keypair")
+// TODO To validate if all parameters to this method are avialble here
 String kubeToken = client.retrieveOrchestratorAccessToken(pluginConfig,
                                                       resourceGroupName,
                                                       clusterName,
                                                       azToken,
                                                       adminUsername,
-                                                      masterFqdn,
-                                                      privateKey.password)
+                                                      masterFqdn)
 
 efClient.logger WARNING, "Deleting all services, and deployments in the cluster '$clusterName'!"
 def serviceList = client.doHttpGet(clusterEndPoint,
