@@ -39,6 +39,7 @@ class AzureTestBase implements TopologyMatcher {
     def volumes = [ source: '[{"name": "html-content","hostPath": "/var/html"}]',
                     target: '[{"name": "html-content","mountPath": "/usr/share/nginx/html"}]' ]
 
+
     @BeforeSuite
     void installPlugins(){
         ectoolApi = new EctoolApi(true)
