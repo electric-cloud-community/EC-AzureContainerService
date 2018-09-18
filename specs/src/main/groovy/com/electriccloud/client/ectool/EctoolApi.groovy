@@ -151,9 +151,9 @@ Timed Out:
     }
 
     @Step
-    def installPlugin(fileName){
+    def installPlugin(filePath, fileName){
         message("installing ${fileName} plugin")
-        ConfigHelper.xml(run('ectool', 'installPlugin', "${pluginsConf.pathToPlugins}/${fileName}.jar", '--force', 'true'))
+        ConfigHelper.xml(run('ectool', 'installPlugin', "${filePath}/${fileName}.jar", '--force', 'true'))
     }
 
     @Step
