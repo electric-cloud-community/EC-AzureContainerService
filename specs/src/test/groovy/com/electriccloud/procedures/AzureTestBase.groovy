@@ -33,7 +33,7 @@ class AzureTestBase implements TopologyMatcher {
     def tenantId
     def credClientId
     def credPrivateKey
-    def pluginPath = '/src/main/resources'
+    def pluginPath = './src/main/resources'
     def getHost = { hostValue -> new URL(hostValue).host }
     def req = given().relaxedHTTPSValidation().when()
     def volumes = [ source: '[{"name": "html-content","hostPath": "/var/html"}]',

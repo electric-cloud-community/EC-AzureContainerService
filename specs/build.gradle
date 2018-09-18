@@ -117,4 +117,5 @@ test {
 test.finalizedBy allureAggregatedReport
 
 
+
 def destination = findProperty('reportDestination') ?: "${rootDir}/allure-report"

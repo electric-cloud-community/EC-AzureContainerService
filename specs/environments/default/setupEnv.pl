@@ -1,9 +1,13 @@
+
 use strict;
 use warnings;
 use ElectricCommander;
 use Cwd qw(getcwd);
 use Data::Dumper;
 
+print "Hello!";
+
+/*
 my $jobId = $ENV{COMMANDER_JOBID};
 my $jobStepId = $ENV{COMMANDER_JOBSTEPID};
 
@@ -16,7 +20,6 @@ for (keys %ENV) {
     }
 }
 
-/*
 my $efServer = 'localhost';
 my $ec = ElectricCommander->new({server => $efServer, debug => 1});
 $ec->login('admin', 'changeme');
