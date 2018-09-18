@@ -15,10 +15,12 @@ for (keys %ENV) {
     }
 }
 
+
 my $efServer = 'localhost';
 my $ec = ElectricCommander->new({server => $efServer, debug => 1});
 $ec->login('admin', 'changeme');
 
+/*
 my $xpath = $chronic->retrieveArtifactVersions({
     artifactVersionName => 'com.electriccloud:EC-Kubernetes:1.1.2.189',
     toDirectory => getcwd(),
@@ -28,3 +30,4 @@ my $xpath = $ec->installPlugin($path);
 
 $ec->promotePlugin({pluginName => 'EC-Kubernetes-1.1.2.189'});
 
+*/

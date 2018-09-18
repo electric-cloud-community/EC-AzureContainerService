@@ -33,6 +33,7 @@ class AzureTestBase implements TopologyMatcher {
     def tenantId
     def credClientId
     def credPrivateKey
+    def pluginPath = "./src/main/resources/"
     def getHost = { hostValue -> new URL(hostValue).host }
     def req = given().relaxedHTTPSValidation().when()
     def volumes = [ source: '[{"name": "html-content","hostPath": "/var/html"}]',
@@ -77,6 +78,17 @@ class AzureTestBase implements TopologyMatcher {
 
         ectoolApi.ectoolLogin()
     }
+
+
+    @BeforeSuite
+    void installPlugin(){
+        ectoolApi = new EctoolApi(true)
+        ectoolApi.ectoolLogin()
+        ectoolApi.installPlugin()
+        ectoolApi.installPlugin(pluginPath, 'EC-Kubernetes.jar')
+        ectoolApi.promotePlugin('EC-Kubernetes-1.1.2.189')
+    }
+
 
 
 
