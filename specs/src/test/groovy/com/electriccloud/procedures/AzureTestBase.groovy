@@ -40,6 +40,15 @@ class AzureTestBase implements TopologyMatcher {
                     target: '[{"name": "html-content","mountPath": "/usr/share/nginx/html"}]' ]
 
 
+    @BeforeSuite
+    void installPlugin(){
+        ectoolApi = new EctoolApi(true)
+        ectoolApi.ectoolLogin()
+        ectoolApi.installPlugin(pluginPath, 'EC-Kubernetes.jar')
+        ectoolApi.promotePlugin('EC-Kubernetes-1.1.2.189')
+    }
+
+
     @BeforeClass
     void setUpData(){
         /** Awaitility settings */
@@ -78,17 +87,6 @@ class AzureTestBase implements TopologyMatcher {
 
         ectoolApi.ectoolLogin()
     }
-
-
-    @BeforeSuite
-    void installPlugin(){
-        ectoolApi = new EctoolApi(true)
-        ectoolApi.ectoolLogin()
-        ectoolApi.installPlugin()
-        ectoolApi.installPlugin(pluginPath, 'EC-Kubernetes.jar')
-        ectoolApi.promotePlugin('EC-Kubernetes-1.1.2.189')
-    }
-
 
 
 
