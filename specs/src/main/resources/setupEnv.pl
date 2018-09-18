@@ -5,9 +5,6 @@ use ElectricCommander;
 use Cwd qw(getcwd);
 use Data::Dumper;
 
-print "Hello!";
-
-/*
 my $jobId = $ENV{COMMANDER_JOBID};
 my $jobStepId = $ENV{COMMANDER_JOBSTEPID};
 
@@ -40,4 +37,3 @@ print $xpath->{_xml};
 
 $xpath = $ec->promotePlugin({pluginName => 'EC-Kubernetes-1.1.2.189'});
 print $xpath->{_xml};
-*/
