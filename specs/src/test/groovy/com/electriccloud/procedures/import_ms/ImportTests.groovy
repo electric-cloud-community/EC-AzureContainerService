@@ -250,11 +250,7 @@ class ImportTests extends AzureTestBase {
     }
 
 
-    /** Unable to import Microservice with invalid data */
-
-
-    @Test(dataProvider = 'importData',
-            testName = "Import with invalid data")
+    @Test(dataProvider = 'importData', testName = "Import with invalid data")
     @TmsLinks([ @TmsLink("363509"),
             @TmsLink("363508"),
             @TmsLink("363507"),

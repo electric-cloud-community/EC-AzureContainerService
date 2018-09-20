@@ -26,13 +26,6 @@ import static com.electriccloud.helpers.enums.ServiceTypes.*
 class AzureTestBase implements TopologyMatcher {
 
 
-
-    def privateKey
-    def publicKey
-    def subscriptionId
-    def tenantId
-    def credClientId
-    def credPrivateKey
     def pluginPath = './src/main/resources'
     def getHost = { hostValue -> new URL(hostValue).host }
     def req = given().relaxedHTTPSValidation().when()

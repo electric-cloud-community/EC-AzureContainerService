@@ -31,6 +31,13 @@ trait NamingTestBase {
     def pluginVersion
     def pluginLegacyVersion
 
+    def privateKey
+    def publicKey
+    def subscriptionId
+    def tenantId
+    def credClientId
+    def credPrivateKey
+
     //API
     EctoolApi ectoolApi
     AzureContainerServiceApi acsApi
