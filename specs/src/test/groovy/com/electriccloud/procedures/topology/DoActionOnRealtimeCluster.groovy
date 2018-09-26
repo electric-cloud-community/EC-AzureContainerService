@@ -27,6 +27,7 @@ class DoActionOnRealtimeCluster extends AzureTestBase {
         setTopology()
     }
 
+
     @AfterClass(alwaysRun = true)
     void tearDown() {
         k8sClient.cleanUpCluster(configName)
