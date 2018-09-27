@@ -69,7 +69,7 @@ class AzureContainerServiceClient extends CommanderClient {
                       canaryDeploy,
                       ServiceType serviceType = ServiceType.LOAD_BALANCER,
                       namespace = 'default',
-                      deploymentTimeout = 120) {
+                      deploymentTimeout = timeout) {
         message("service creation")
         def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue(), namespace, deploymentTimeout.toString())
         def response = client.dslFile dslPath(plugin, 'service'), client.encode(json.toString())
@@ -84,7 +84,7 @@ class AzureContainerServiceClient extends CommanderClient {
                           canaryDeploy,
                           ServiceType serviceType = ServiceType.LOAD_BALANCER,
                           namespace = "default",
-                          deploymentTimeout = 120) {
+                          deploymentTimeout = timeout) {
         message("application creation")
         def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue(), namespace, deploymentTimeout.toString())
         def response = client.dslFile dslPath(plugin, 'application'), client.encode(json.toString())
@@ -98,7 +98,7 @@ class AzureContainerServiceClient extends CommanderClient {
                       canaryDeploy,
                       ServiceType serviceType = ServiceType.LOAD_BALANCER,
                       namespace = "default",
-                      deploymentTimeout = 120) {
+                      deploymentTimeout = timeout) {
         message("service update")
         def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue(), namespace, deploymentTimeout.toString())
         def response = client.dslFile dslPath(plugin, 'service'), client.encode(json.toString())
@@ -112,7 +112,7 @@ class AzureContainerServiceClient extends CommanderClient {
                           canaryDeploy,
                           ServiceType serviceType = ServiceType.LOAD_BALANCER,
                           namespace = "default",
-                          deploymentTimeout = 120) {
+                          deploymentTimeout = timeout) {
         message("service update")
         def json = jsonHelper.serviceJson(replicaNum, volumes, canaryDeploy.toString(), serviceType.getValue(), namespace, deploymentTimeout.toString())
         def response = client.dslFile dslPath(plugin, 'application'), client.encode(json.toString())

@@ -1,6 +1,5 @@
 package com.electriccloud.procedures
 
-import com.electriccloud.NamingTestBase
 import com.electriccloud.TopologyMatcher
 import com.electriccloud.client.api.AzureContainerServiceApi
 import com.electriccloud.client.api.KubernetesApi
@@ -9,7 +8,6 @@ import com.electriccloud.client.plugin.AzureContainerServiceClient
 import com.electriccloud.client.plugin.KubernetesClient
 import com.electriccloud.listeners.TestListener
 import io.qameta.allure.Epic
-import org.awaitility.Awaitility
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Listeners
@@ -28,7 +26,7 @@ class AzureTestBase implements TopologyMatcher {
 
     def pluginPath = './src/main/resources'
     def getHost = { hostValue -> new URL(hostValue).host }
-    def req = given().relaxedHTTPSValidation().when()
+    def req = given().relaxedHTTPSValidation().log().all().when()
     def volumes = [ source: '[{"name": "html-content","hostPath": "/var/html"}]',
                     target: '[{"name": "html-content","mountPath": "/usr/share/nginx/html"}]' ]
 

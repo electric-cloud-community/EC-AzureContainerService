@@ -97,13 +97,11 @@ class DiscoveryTests extends AzureTestBase {
                 tenantId,
                 false, null).json.jobId
         def jobLog = acsClient.client.getJobLogs(jobId)
-        def services = acsClient.client.getServices(projectName).json.service
         def service = acsClient.client.getService(projectName, serviceName).json.service
         def environment = acsClient.client.getEnvironment(projectName, "my-environment").json.environment
         def container = acsClient.client.getServiceContainer(projectName, serviceName, containerName).json.container
         def mappings = acsClient.getServiceMappings(projectName, serviceName)
         def mapping = mappings[0].serviceClusterMappings.serviceClusterMapping[0]
-        assert services.size() == 1
         assert service.serviceName == serviceName
         assert service.containerCount == '1'
         assert service.environmentMapCount == '1'
@@ -292,13 +290,11 @@ class DiscoveryTests extends AzureTestBase {
                 tenantId,
                 true, applicationName).json.jobId
         def jobLog = acsClient.client.getJobLogs(jobId)
-        def applications = acsClient.client.getApplications(projectName).json.application
         def application = acsClient.client.getApplication(projectName, applicationName).json.application
         def environment = acsClient.client.getEnvironment("MyProject", environmentName).json.environment
         def container = acsClient.client.getApplicationContainer(projectName, applicationName, serviceName, containerName).json.container
         def mappings = acsClient.getAppMappings(projectName, applicationName)
         def mapping = mappings[0].serviceClusterMappings.serviceClusterMapping[0]
-        assert applications.size() == 1
         assert application.applicationName == applicationName
         assert application.containerCount == '1'
         assert application.description == 'Created by EF Discovery'
