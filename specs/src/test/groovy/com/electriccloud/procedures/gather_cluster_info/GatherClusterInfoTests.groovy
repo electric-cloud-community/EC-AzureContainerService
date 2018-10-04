@@ -77,39 +77,27 @@ class GatherClusterInfoTests extends AzureTestBase {
     def invalidData(){
         def data = [
                 [
-                        "",
-                        environmentName,
-                        clusterName,
+                        "", environmentName, clusterName,
                         "'projectName' is required and must be between 1 and 255 characters"
                 ],
                 [
-                        environmentProjectName,
-                        "",
-                        clusterName,
+                        environmentProjectName, "", clusterName,
                         "Cluster 'acs-cluster' does not exist in project 'acsProj'"
                 ],
                 [
-                        environmentProjectName,
-                        environmentName,
-                        "",
+                        environmentProjectName, environmentName, "",
                         "[ERROR] Response: [error:[where:, message:, details:, code:NotImplemented]]"
                 ],
                 [
-                        "test",
-                        environmentName,
-                        clusterName,
+                        "test", environmentName, clusterName,
                         "Project \'test\' does not exist"
                 ],
                 [
-                        environmentProjectName,
-                        "test",
-                        clusterName,
+                        environmentProjectName, "test", clusterName,
                         "Environment \'test\' does not exist in project \'${environmentProjectName}\'"
                 ],
                 [
-                        environmentProjectName,
-                        environmentName,
-                        "test",
+                        environmentProjectName, environmentName, "test",
                         "Cluster \'test\' does not exist in environment \'${environmentName}\'"
                 ],
 

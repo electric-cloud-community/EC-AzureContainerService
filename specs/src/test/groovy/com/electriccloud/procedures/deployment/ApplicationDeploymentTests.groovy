@@ -25,9 +25,7 @@ class ApplicationDeploymentTests extends AzureTestBase {
 
     @BeforeClass
     void setUpTests(){
-        k8sClient.deleteConfiguration(configName)
         acsClient.deleteConfiguration(configName)
-        k8sClient.createConfiguration(configName, clusterEndpoint, adminAccount, clusterToken, "1.8", true, '/api/v1/namespaces')
         acsClient.createConfiguration(configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, true, LogLevel.DEBUG)
     }
 
@@ -41,7 +39,7 @@ class ApplicationDeploymentTests extends AzureTestBase {
 
     @AfterMethod
     void tearDownTest(){
-        k8sClient.cleanUpCluster(configName, "default")
+        acsClient.cleanUpCluster(configName, acsClusterName, resourceGroup, 'default')
         await().atMost(50, TimeUnit.SECONDS).until { k8sApi.getPods().json.items.size() == 0 }
         acsClient.client.deleteProject(projectName)
     }
