@@ -14,9 +14,7 @@ class DiscoveryTests extends AzureTestBase {
 
     @BeforeClass
     void setUpTests(){
-        k8sClient.deleteConfiguration(configName)
         acsClient.deleteConfiguration(configName)
-        k8sClient.createConfiguration(configName, clusterEndpoint, adminAccount, clusterToken, "1.8", true, '/api/v1/namespaces')
         acsClient.createConfiguration(configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, true, LogLevel.DEBUG)
         acsClient.createEnvironment(configName, adminAccount, acsClusterName, resourceGroup, 2)
         acsClient.createService(2, volumes, false, ServiceType.LOAD_BALANCER)
@@ -38,7 +36,7 @@ class DiscoveryTests extends AzureTestBase {
 
     @AfterClass
     void tearDownTests(){
-        k8sClient.cleanUpCluster(configName, "default")
+        acsClient.cleanUpCluster(configName, acsClusterName, resourceGroup, 'default')
         acsClient.client.deleteProject(projectName)
     }
 
@@ -81,9 +79,7 @@ class DiscoveryTests extends AzureTestBase {
     @Story("Microservice discovery")
     @Description("Discover Project-level Microservice with environment generation")
     void discoverProjectLevelMicroserviceWithEnvironmentGeneration(){
-        def jobId = acsClient.discoverService(projectName,
-                environmentProjectName,
-                "my-environment",
+        def jobId = acsClient.discoverService(projectName, environmentProjectName, "my-environment",
                 clusterName,
                 'default',
                 acsClusterName,

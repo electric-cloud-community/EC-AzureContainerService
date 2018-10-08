@@ -54,8 +54,7 @@ class ImportTests extends AzureTestBase {
     @Story('Import microservice')
     @Description("Import Project-level Microservice")
     void importProjectLevelMicroservice() {
-        k8sClient.importService(serviceName,
-                projectName,
+        k8sClient.importService(serviceName, projectName,
                 environmentProjectName,
                 environmentName,
                 clusterName,
@@ -85,8 +84,7 @@ class ImportTests extends AzureTestBase {
     @Story('Import microservice')
     @Description("Import Project-level Microservice without environment mapping")
     void importProjectLevelMicroserviceWithoutEnvironmentMapping() {
-        k8sClient.importService(serviceName,
-                projectName,
+        k8sClient.importService(serviceName, projectName,
                 null,
                 null,
                 null,
@@ -118,8 +116,7 @@ class ImportTests extends AzureTestBase {
     @Story('Import microservice')
     @Description("Import Application-level Microservice")
     void importApplicationLeveleMicroservice(){
-        k8sClient.importService(serviceName,
-                projectName,
+        k8sClient.importService(serviceName, projectName,
                 environmentProjectName,
                 environmentName,
                 clusterName,
@@ -147,8 +144,7 @@ class ImportTests extends AzureTestBase {
     @Story('Import microservice')
     @Description("Import Application-level Microservice without environment mapping")
     void importApplicationLevelMicroserviceWithoutEnvironmentMapping(){
-        k8sClient.importService(serviceName,
-                projectName,
+        k8sClient.importService(serviceName, projectName,
                 null,
                 null,
                 null,
@@ -177,18 +173,12 @@ class ImportTests extends AzureTestBase {
     @Story('Import with invalid data')
     @Description("Unable to import Project-level Microservice that already exist")
     void importExistingProjectLevelMicroservice(){
-        k8sClient.importService(serviceName,
-                projectName,
+        k8sClient.importService(serviceName, projectName,
                 environmentProjectName,
                 environmentName,
                 clusterName,
                 false, null)
-        def jobId = k8sClient.importService(serviceName,
-                projectName,
-                projectName,
-                environmentName,
-                clusterName,
-                false, null).json.jobId
+        def jobId = k8sClient.importService(serviceName, projectName, projectName, environmentName, clusterName, false, null).json.jobId
         def services = acsClient.client.getServices(projectName).json.service
         def service = acsClient.client.getService(projectName, 'nginx-service').json.service
         def container = acsClient.client.getServiceContainer(projectName, serviceName, containerName).json.container
@@ -217,18 +207,12 @@ class ImportTests extends AzureTestBase {
     @Story('Import with invalid data')
     @Description("Unable to import Application-level Microservice that already exist")
     void importExistingApplicationLevelMicroservice(){
-        k8sClient.importService(serviceName,
-                projectName,
+        k8sClient.importService(serviceName, projectName,
                 environmentProjectName,
                 environmentName,
                 clusterName,
                 true, applicationName)
-        def jobId = k8sClient.importService(serviceName,
-                projectName,
-                projectName,
-                environmentName,
-                clusterName,
-                true, applicationName).json.jobId
+        def jobId = k8sClient.importService(serviceName, projectName, projectName, environmentName, clusterName, true, applicationName).json.jobId
         def services = acsClient.client.getApplicationServices(projectName, applicationName).json.service
         def service = acsClient.client.getApplicationService(projectName, applicationName, serviceName).json.service
         def container = acsClient.client.getApplicationContainer(projectName, applicationName, serviceName, containerName).json.container
@@ -250,20 +234,19 @@ class ImportTests extends AzureTestBase {
     }
 
 
+
     @Test(dataProvider = 'importData', testName = "Import with invalid data")
-    @TmsLinks([ @TmsLink("363509"),
-            @TmsLink("363508"),
-            @TmsLink("363507"),
-            @TmsLink("363474"),
-            @TmsLink("363473"),
-            @TmsLink("279011"),
-            @TmsLink("279010"),
-            @TmsLink("279008"), @TmsLink("279013"), @TmsLink("279003")])
+    @TmsLinks([ @TmsLink("363509"), @TmsLink("363508"), @TmsLink("363507"), @TmsLink("363474"), @TmsLink("363473"),
+            @TmsLink("279011"), @TmsLink("279010"), @TmsLink("279008"), @TmsLink("279013"), @TmsLink("279003")])
     @Story('Import with invalid parameter')
     @Description("Unable to import Microservice with invalid data")
     void invalidServiceImport(yamlFile, project, envName, clusterName, isApp, appName, errorMessage){
         try {
-            k8sClient.importService(yamlFile, project, project,  envName, clusterName, isApp, appName)
+            k8sClient.importService(yamlFile, project,
+                    project,
+                    envName,
+                    clusterName,
+                    isApp, appName)
         } catch (e){
             def jobId = e.cause.message
             String errorLog = k8sClient.client.getJobLogs(jobId)
@@ -275,22 +258,65 @@ class ImportTests extends AzureTestBase {
     }
 
 
+
+
+
+
     @DataProvider(name = "importData")
     Object[][] getImportData(){
         def data = [
-                [serviceName, projectName, environmentName, "", false, null, "Either specify all the parameters required to identify the Kubernetes-backed ElectricFlow cluster"],
-                [serviceName, projectName, environmentName, "my-cluster", false, null, "Cluster \'my-cluster\' does not exist in \'${environmentName}\' environment!"],
-                [serviceName, projectName, "", clusterName, false, null,  "Either specify all the parameters required to identify the Kubernetes-backed ElectricFlow cluster"],
-                [serviceName, projectName, "my-environment", clusterName, false, null, "Environment \'my-environment\' does not exist in project \'${projectName}\'"],
-                [serviceName, "Default", environmentName, clusterName,  false, null,  "Environment \'${environmentName}\' does not exist in project \'Default\'"],
-                ["nginx-service-invalid", projectName, environmentName, clusterName, false, null,  "ERROR: Failed to read the Docker Compose file contents"],
-                [applicationName,projectName, environmentName, "",  true, applicationName,  "Either specify all the parameters required to identify the Kubernetes-backed ElectricFlow cluster"],
-                [applicationName,projectName, environmentName, "my-cluster",  true, applicationName,  "Cluster \'my-cluster\' does not exist in \'${environmentName}\' environment!"],
-                [applicationName, projectName, "", clusterName,  true, applicationName,  "Either specify all the parameters required to identify the Kubernetes-backed ElectricFlow cluster"],
-                [applicationName, projectName, "my-environment", clusterName, true, applicationName,  "Environment \'my-environment\' does not exist in project \'${projectName}\'"],
-                [applicationName, "Default", environmentName, clusterName, true, applicationName,  "Environment \'${environmentName}\' does not exist in project \'Default\'"],
-                ["nginx-service-invalid", projectName, environmentName, clusterName, true, applicationName,  "ERROR: Failed to read the Docker Compose file contents"],
-                [applicationName, projectName, environmentName, clusterName, true, "", "Application name is required for creating application-scoped microservices"]
+                [
+                        serviceName, projectName, environmentName, "", false, null,
+                 "Either specify all the parameters required to identify the Kubernetes-backed ElectricFlow cluster"
+                ],
+                [
+                        serviceName, projectName, environmentName, "my-cluster", false, null,
+                        "Cluster \'my-cluster\' does not exist in \'${environmentName}\' environment!"
+                ],
+                [
+                        serviceName, projectName, "", clusterName, false, null,
+                        "Either specify all the parameters required to identify the Kubernetes-backed ElectricFlow cluster"
+                ],
+                [
+                        serviceName, projectName, "my-environment", clusterName, false, null,
+                        "Environment \'my-environment\' does not exist in project \'${projectName}\'"
+                ],
+                [
+                        serviceName, "Default", environmentName, clusterName,  false, null,
+                        "Environment \'${environmentName}\' does not exist in project \'Default\'"
+                ],
+                [
+                        "nginx-service-invalid", projectName, environmentName, clusterName, false, null,
+                        "ERROR: Failed to read the Docker Compose file contents"
+                ],
+                [
+                        applicationName,projectName, environmentName, "",  true, applicationName,
+                        "Either specify all the parameters required to identify the Kubernetes-backed ElectricFlow cluster"
+                ],
+                [
+                        applicationName,projectName, environmentName, "my-cluster",  true, applicationName,
+                        "Cluster \'my-cluster\' does not exist in \'${environmentName}\' environment!"
+                ],
+                [
+                        applicationName, projectName, "", clusterName,  true, applicationName,
+                        "Either specify all the parameters required to identify the Kubernetes-backed ElectricFlow cluster"
+                ],
+                [
+                        applicationName, projectName, "my-environment", clusterName, true, applicationName,
+                        "Environment \'my-environment\' does not exist in project \'${projectName}\'"
+                ],
+                [
+                        applicationName, "Default", environmentName, clusterName, true, applicationName,
+                        "Environment \'${environmentName}\' does not exist in project \'Default\'"
+                ],
+                [
+                        "nginx-service-invalid", projectName, environmentName, clusterName, true, applicationName,
+                        "ERROR: Failed to read the Docker Compose file contents"
+                ],
+                [
+                        applicationName, projectName, environmentName, clusterName, true, "",
+                        "Application name is required for creating application-scoped microservices"
+                ]
         ]
         return data as Object[][]
     }
