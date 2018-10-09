@@ -19,6 +19,7 @@ class ConfigHelper {
         config = conf(fileName)
     }
 
+
     // Logging
 
     static def delimeter = "=".multiply(70)
