@@ -1,18 +1,18 @@
 package com.electriccloud.procedures.configuration
 
+
 import com.electriccloud.procedures.AzureTestBase
 import io.qameta.allure.Description
 import io.qameta.allure.Feature
 import io.qameta.allure.Issue
 import io.qameta.allure.Story
 import io.qameta.allure.TmsLink
-import org.junit.jupiter.api.DisplayName
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
-
 import static com.electriccloud.helpers.enums.LogLevels.*
+
 
 @Feature('Configuration')
 class CreateConfigurationTests extends AzureTestBase {

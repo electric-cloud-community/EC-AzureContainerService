@@ -8,6 +8,7 @@ import static com.electriccloud.helpers.enums.LogLevels.*
 import static com.electriccloud.helpers.enums.ServiceTypes.*
 import static org.awaitility.Awaitility.*
 
+
 @Feature("Discovery")
 class DiscoveryTests extends AzureTestBase {
 
@@ -494,22 +495,25 @@ class DiscoveryTests extends AzureTestBase {
     def getDiscoveryData() {
         def data = [
                [
-                       '',
-                       environmentProjectName,
-                       environmentName,
-                       clusterName,
-                       "default",
-                       acsClusterName, resourceGroup,
-                       1,
-                       credClientId, credPrivateKey,
-                       privateKey, publicKey,
-                       subscriptionId, tenantId,
+                       '', environmentProjectName, environmentName, clusterName, "default", acsClusterName, resourceGroup, 1, credClientId, credPrivateKey, privateKey, publicKey, subscriptionId, tenantId,
                        'One or more arguments are missing. Please provide the following arguments: projectName'
                ],
-               [ projectName, '', environmentName, clusterName, "default", null, null, 1, null, null, "", "", null, null, 'One or more arguments are missing. Please provide the following arguments: projectName' ],
-               [ projectName, environmentProjectName, '', clusterName, "default", null, null, 1, null, null, "", "", null, null, '\'environmentName\' must be between 1 and 255 characters' ],
-               [ projectName, environmentProjectName, environmentName, '', "default", null, null, 1, null, null, "", "", null, null, 'Please provide the following arguments: clusterName' ],
-               [ 'MyTestProject', environmentProjectName, environmentName, clusterName, "default", null, null, 1, null, null, "", "", null, null, 'Project \'MyTestProject\' does not exist' ]
+               [
+                       projectName, '', environmentName, clusterName, "default", null, null, 1, null, null, "", "", null, null,
+                        'One or more arguments are missing. Please provide the following arguments: projectName'
+               ],
+               [
+                       projectName, environmentProjectName, '', clusterName, "default", null, null, 1, null, null, "", "", null, null,
+                       '\'environmentName\' must be between 1 and 255 characters'
+               ],
+               [
+                       projectName, environmentProjectName, environmentName, '', "default", null, null, 1, null, null, "", "", null, null,
+                       'Please provide the following arguments: clusterName'
+               ],
+               [
+                       'MyTestProject', environmentProjectName, environmentName, clusterName, "default", null, null, 1, null, null, "", "", null, null,
+                       'Project \'MyTestProject\' does not exist'
+               ]
 
         ]
         return data as Object[][]
