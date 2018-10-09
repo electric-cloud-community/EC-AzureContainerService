@@ -35,8 +35,11 @@ class DiscoveryTests extends AzureTestBase {
         acsClient.client.deleteProject('MyProject')
     }
 
+
     @AfterClass
     void tearDownTests(){
+        acsClient.deleteConfiguration(configName)
+        acsClient.createConfiguration(configName, publicKey, privateKey, credPrivateKey, credClientId, tenantId, subscriptionId, true, LogLevel.DEBUG)
         acsClient.cleanUpCluster(configName, acsClusterName, resourceGroup, 'default')
         acsClient.client.deleteProject(projectName)
     }
