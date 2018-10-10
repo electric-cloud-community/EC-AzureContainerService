@@ -34,6 +34,11 @@ class DoActionOnRealtimeCluster extends AzureTestBase {
         await().atMost(50, TimeUnit.SECONDS).until { k8sApi.getPods().json.items.size() == 0 }
         acsClient.client.deleteProject(projectName)
     }
+    
+    @BeforeMethod
+    void setUpTest(){
+        ectoolApi.ectoolLogin()
+    }
 
 
     @Test
