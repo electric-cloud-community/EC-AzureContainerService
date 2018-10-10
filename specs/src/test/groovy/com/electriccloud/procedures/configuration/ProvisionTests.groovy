@@ -52,7 +52,7 @@ class ProvisionTests extends AzureTestBase {
                 "agentflowqe2",
                 "flowqe2",
                 "masterflowqe2")
-        def resp = acsClient.provisionEnvironment(projectName, environmentName, clusterName, 900).json
+        def resp = acsClient.provisionEnvironment(projectName, environmentName, clusterName, 950).json
         def jobStatus = acsClient.client.getJobStatus(resp.jobId)
         def jobLogs = acsClient.client.getJobLogs(resp.jobId)
         def resGroups = acsApi.azure.resourceGroups()

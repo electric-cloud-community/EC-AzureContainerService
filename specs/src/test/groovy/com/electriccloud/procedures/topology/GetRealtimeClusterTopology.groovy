@@ -17,6 +17,7 @@ class GetRealtimeClusterTopology extends AzureTestBase {
 
     @BeforeClass
     void createAndDeployProjectLevelMicroservice() {
+        ectoolApi.ectoolLogin()
         createAndDeployService(false)
         setTopology()
     }
@@ -28,12 +29,7 @@ class GetRealtimeClusterTopology extends AzureTestBase {
         acsClient.deleteConfiguration(configName)
         acsClient.client.deleteProject(projectName)
     }
-    
-    @BeforeMethod
-    void setUpTest(){
-        ectoolApi.ectoolLogin()
-    }
-    
+
 
 
     @Test

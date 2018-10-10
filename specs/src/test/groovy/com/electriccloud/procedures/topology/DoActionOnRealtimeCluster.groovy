@@ -24,6 +24,7 @@ class DoActionOnRealtimeCluster extends AzureTestBase {
 
     @BeforeClass
     void createAndDeployProjectLevelMicroservice() {
+        ectoolApi.ectoolLogin()
         createAndDeployService(false)
         setTopology()
     }
@@ -34,11 +35,6 @@ class DoActionOnRealtimeCluster extends AzureTestBase {
         k8sClient.cleanUpCluster(configName)
         await().atMost(50, TimeUnit.SECONDS).until { k8sApi.getPods().json.items.size() == 0 }
         acsClient.client.deleteProject(projectName)
-    }
-    
-    @BeforeMethod
-    void setUpTest(){
-        ectoolApi.ectoolLogin()
     }
 
 
