@@ -12,7 +12,11 @@ import static com.electriccloud.helpers.enums.LogLevels.*
 
 @Feature("Topology")
 class GetDeployTopology extends AzureTestBase {
-
+    
+    @BeforeMethod
+    void setUpTest(){
+        ectoolApi.ectoolLogin()
+    }
 
     @AfterMethod
     void tearDownTests() {
