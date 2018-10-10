@@ -21,6 +21,7 @@ class GetRealtimeClusterTopologyValidation extends AzureTestBase {
 
     @BeforeMethod
     void setUpTest(){
+        ectoolApi.ectoolLogin()
         ecpPodName = k8sApi.getPods().json.items.last().metadata.name
         ecpPodId = clusterEndpoint
     }
