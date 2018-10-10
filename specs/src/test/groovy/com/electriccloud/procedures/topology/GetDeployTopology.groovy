@@ -16,7 +16,7 @@ class GetDeployTopology extends AzureTestBase {
 
 
     @BeforeClass
-    void setUpTests(){
+    void backendAuthorization(){
         ectoolApi.ectoolLogin()
     }
 
