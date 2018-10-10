@@ -13,7 +13,7 @@ import static com.electriccloud.helpers.enums.LogLevels.*
 
 @Story("Topology")
 class GetRealtimeClusterDetails extends AzureTestBase {
-
+    
 
     @BeforeClass
     void createAndDeployProjectLevelMicroservice() {
@@ -29,7 +29,13 @@ class GetRealtimeClusterDetails extends AzureTestBase {
         acsClient.deleteConfiguration(configName)
         acsClient.client.deleteProject(projectName)
     }
-
+    
+    @BeforeMethod
+    void setUpTest(){
+        ectoolApi.ectoolLogin()
+    }
+    
+    
 
     @Test
     @TmsLink("")
