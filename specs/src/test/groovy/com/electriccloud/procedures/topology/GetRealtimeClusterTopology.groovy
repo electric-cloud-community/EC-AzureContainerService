@@ -1,6 +1,5 @@
 package com.electriccloud.procedures.topology
 
-import com.electriccloud.helpers.enums.LogLevels
 import com.electriccloud.procedures.AzureTestBase
 import io.qameta.allure.*
 import org.testng.annotations.AfterClass
@@ -108,9 +107,7 @@ class GetRealtimeClusterTopology extends AzureTestBase {
     @Story("Get Realtime Cluster Topology negative")
     @Description("Unable to Get Realtime Cluster Topology for non-existing Configuration")
     void getTopologyWithoutPluginConfiguration() {
-
         acsClient.deleteConfiguration(configName)
-
         topologyOutcome = ectoolApi.run "ectool", "getRealtimeClusterTopology", projectName, clusterName,
                 "--environmentName", environmentName
 
