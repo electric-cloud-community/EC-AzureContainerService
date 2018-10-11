@@ -15,7 +15,7 @@ import static com.electriccloud.helpers.enums.LogLevels.*
 class GetDeployTopology extends AzureTestBase {
 
 
-    @BeforeClass
+    @BeforeMethod
     void backendAuthorization(){
         ectoolApi.ectoolLogin()
     }

@@ -24,9 +24,13 @@ class DoActionOnRealtimeCluster extends AzureTestBase {
 
     @BeforeClass
     void createAndDeployProjectLevelMicroservice() {
-        ectoolApi.ectoolLogin()
         createAndDeployService(false)
         setTopology()
+    }
+
+    @BeforeMethod
+    void backendAuthorization(){
+        ectoolApi.ectoolLogin()
     }
 
 
