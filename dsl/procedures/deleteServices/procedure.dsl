@@ -16,9 +16,9 @@ procedure 'Cleanup Cluster - Experimental',
       releaseMode: 'none',
       timeLimitUnits: 'minutes', {
 
-        actualParameter 'additionalArtifactVersion', 'com.electriccloud:EC-AzureContainerService-Grapes:1.0.0'
+        actualParameter 'additionalPluginName', '@PLUGIN_KEY@'
     }
-    
+
 	step 'cleanup',
 	  command: new File(pluginDir, 'dsl/procedures/deleteServices/steps/deleteServices.groovy').text,
 	  errorHandling: 'failProcedure',
@@ -28,6 +28,6 @@ procedure 'Cleanup Cluster - Experimental',
 	  resourceName: '$[grabbedResource]',
 	  shell: 'ec-groovy',
 	  timeLimitUnits: 'minutes'
-	  
+
 }
-  
+

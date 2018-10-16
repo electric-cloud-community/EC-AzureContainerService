@@ -13,8 +13,7 @@ procedure 'CreateConfiguration',
       releaseMode: 'none',
       condition: '$[testConnection]',
       timeLimitUnits: 'minutes', {
-
-        actualParameter 'additionalArtifactVersion', 'com.electriccloud:EC-AzureContainerService-Grapes:1.0.0'
+        actualParameter 'additionalPluginName', '@PLUGIN_KEY@'
     }
 
     step 'testConnection',

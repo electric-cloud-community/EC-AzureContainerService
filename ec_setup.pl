@@ -45,6 +45,19 @@ sub upgradeAction { shift->{upgradeAction} }
 sub pluginName { shift->{pluginName} }
 sub otherPluginName { shift->{otherPluginName} }
 
+sub removeArtifact {
+    my ($self, $artifactName, $artifactVersion, $fromDirectory) = @_;
+
+    $artifactName or die 'Artifact name should be provided!';
+    $artifactVersion or die 'Artifact version should be provided!';
+    $fromDirectory or die 'fromDirectory should be provided!';
+
+    # This is here because we cannot do publishArtifactVersion in dsl today
+    # delete artifact if it exists first
+    my $commander = $self->commander;
+    $commander->deleteArtifact("com.electriccloud:$artifactName");
+}
+
 sub publishArtifact {
     my ($self, $artifactName, $artifactVersion, $fromDirectory) = @_;
 
@@ -94,23 +107,19 @@ sub publishArtifact {
     return unless $base64;
 
     my $binary = decode_base64($base64);
-    my ($tempFh, $tempFilename) = tempfile("$artifactName-XXXXX", CLEANUP => 1, SUFFIX => '.zip');
+    my ($tempFh, $tempFilename) = tempfile(CLEANUP => 1);
     binmode($tempFh);
     print $tempFh $binary;
     close $tempFh;
 
-    my $logfile = '';
-
-    $logfile .= "Temp archive: $tempFilename\n";
-
-    my ($tempDir) = tempdir("$artifactName-XXXXX", CLEANUP => 1);
+    my ($tempDir) = tempdir(CLEANUP => 1);
     my $zip = Archive::Zip->new();
     unless($zip->read($tempFilename) == Archive::Zip::AZ_OK()) {
       die "Cannot read .zip dependencies: $!";
     }
     $zip->extractTree("", $tempDir . '/');
 
-
+    my $logfile = '';
     if ( $self->promoteAction eq "promote" ) {
         #publish jars to the repo server if the plugin project was created successfully
         my $am = new ElectricCommander::ArtifactManagement($commander);
@@ -130,8 +139,6 @@ sub publishArtifact {
         if ( $artifactVersion->diagnostics() ) {
             $logfile .= "\nDetails:\n" . $artifactVersion->diagnostics();
         }
-
-        unlink($tempFilename);
     }
 
     return $logfile;
@@ -200,7 +207,7 @@ sub promotePlugin {
     if ( !$errorMessage ) {
         if ($dependencies) {
             for my $dependency (@$dependencies) {
-                $logfile .= $self->publishArtifact($dependency->{artifactName}, $dependency->{artifactVersion}, $dependency->{fromDirectory});
+                $logfile .= $self->removeArtifact($dependency->{artifactName}, $dependency->{artifactVersion}, $dependency->{fromDirectory});
             }
         }
     }

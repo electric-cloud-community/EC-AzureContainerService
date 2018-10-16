@@ -13,7 +13,7 @@ procedure 'Gather Cluster Info',
       releaseMode: 'none',
       timeLimitUnits: 'minutes', {
 
-        actualParameter 'additionalArtifactVersion', 'com.electriccloud:EC-AzureContainerService-Grapes:1.0.0'
+        actualParameter 'additionalPluginName', '@PLUGIN_KEY@'
     }
 
 	step 'gatherClusterInfo',
