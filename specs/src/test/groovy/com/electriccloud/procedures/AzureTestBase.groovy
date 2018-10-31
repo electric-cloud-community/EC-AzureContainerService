@@ -43,7 +43,7 @@ class AzureTestBase implements TopologyMatcher {
         ectoolApi = new EctoolApi(true)
         ectoolApi.ectoolLogin()
         ectoolApi.installPlugin(pluginPath, 'EC-Kubernetes')
-        ectoolApi.promotePlugin('EC-Kubernetes-1.1.2.191')
+        ectoolApi.promotePlugin('EC-Kubernetes-1.1.2.194')
     }
 
 

@@ -54,7 +54,6 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
         def deployments = k8sApi.getDeployments().json.items
         def services = k8sApi.getServices().json.items
         def pods = k8sApi.getPods().json.items
-        def endpoint = req.get("http://${services[1].status.loadBalancer.ingress[0].ip}:81")
         assert services.size() == 2
         assert pods.size() == 2
         assert services[1].metadata.name == serviceName
@@ -78,8 +77,6 @@ class ServiceTypeDeploymentTests extends AzureTestBase {
         assert pods.first().spec.containers.first().env.first().value == "8080"
         assert pods.first().spec.containers.first().env.first().name == "NGINX_PORT"
         assert pods.first().status.phase == "Running"
-        assert endpoint.statusCode() == 200
-        assert endpoint.body().asString() == "Hello World!\n"
         assert !deploymentLog.contains(clusterToken)
     }
 
