@@ -22,7 +22,7 @@ my $config = '$[config]';
 
 if (!defined $config || $config eq "" ) {
     my $errMsg = "config parameter must exist and be non-blank";
-    print $errMsg;
+    print $errMsg . "\n";
     $ec->setProperty("/myJob/configError", $errMsg);
     exit 1;
 }
