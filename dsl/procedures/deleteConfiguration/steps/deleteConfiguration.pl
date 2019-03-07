@@ -16,8 +16,18 @@
 
 use ElectricCommander;
 
-my $ec = new ElectricCommander();
+my $ec = ElectricCommander->new();
 
-$ec->deleteProperty("/myProject/ec_plugin_cfgs/$[config]");
-$ec->deleteCredential("$[/myProject/projectName]", "$[config]");
+my $config = '$[config]';
+
+if (!defined $config || $config eq "" ) {
+    my $errMsg = "config parameter must exist and be non-blank";
+    print $errMsg;
+    $ec->setProperty("/myJob/configError", $errMsg);
+    exit 1;
+}
+
+$ec->deleteProperty("/myProject/ec_plugin_cfgs/$config");
+$ec->deleteCredential('$[/myProject/projectName]', $config);
+
 exit 0;
