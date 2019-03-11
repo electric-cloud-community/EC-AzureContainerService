@@ -24,3 +24,5 @@
   - Added "Gather Cluster Info" procedure which retrieves token and endpoint for Smart Map.
 1.1.1:
   - Updated the plugin icon.
+1.1.2:
+  - Configurations can be created by users with "@" sign in a name.
