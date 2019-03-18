@@ -14,21 +14,28 @@
     <h1>@PLUGIN_KEY@</h1>
     <p>Plugin version @PLUGIN_VERSION@</p>
     
-    <p>Revised on September 14, 2018</p>
+    <p>Revised on March 18, 2019</p>
     
     <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade"/>
-    <h3>Overview</h3>
-    <p><p>Plugin overview EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using Kubernetes.</p>
-</p>
-    
     <h1>Contents</h1>
     <ul>
+    
     <li><a href="#overview">Overview</a></li>
+    
+    
+    
+    
+    
+    
     
     
     <li><a href="#CreateConfiguration">Plugin Configuration</a></li>
     
+
+    
     <li><a href="#procedures">Plugin Procedures</a></li>
+    
+
     <ul>
         
 
@@ -47,16 +54,36 @@
         <li><a href="#GatherClusterInfo">Gather Cluster Info</a></li>
         
     </ul>
+
+    
+
+    
+    
+    
+    
+    
     
     
     <li><a href="#releaseNotes">Release Notes</a></li>
 </ul>
+
     
+    <h1>Overview</h1>
+    <p><p>Plugin overview EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using Kubernetes.</p>
+</p>
+    
+    
+    
+    
+    
+    
+
+    <!--TODO custom blocks-->
 
     
     <div id="CreateConfiguration">
         <a name='CreateConfiguration' id="CreateConfiguration"> </a>
-        <h2>Plugin Configurations</h2>
+        <h1>Plugin Configurations</h1>
 
         <p>
             Plugin configurations are sets of parameters that apply
@@ -76,7 +103,7 @@
         <li>Find the @PLUGIN_NAME@ row.</li>
         <li>Click <b>Configure</b> to open the
              Configurations page.</li>
-        <li>Click <b>Create Configuration</b>.</li>
+        <li>Click <b>Create Configuration</b> as per the description of parameters below.</li>
         
         <h4>Prerequisites</h4>
 <ol>
@@ -321,13 +348,19 @@
     </div>
     
 
+    
+
     <h1 id="procedures">Plugin Procedures</h1>
+    
     
 
     
     <div id="ProvisionCluster">
         <h2>Provision Cluster</h2>
+        
+        
         <p>Provisions a Azure Container Service cluste. Pods, services, and replication controllers all run on top of a cluster.</p>
+        
         
             <p>IMPORTANT: For all parameter descriptions below, required parameters are shown in bold italics. Please note that some of names given in ElectricFlow UI will be modified to comply with the naming conventions of Kubernetes. Specifically characters such as &quot;space , _ &quot; will be converted to &quot;-&quot;. Such parameters are marked with an asterisk (*).</p>
 
@@ -430,7 +463,10 @@
     
     <div id="DeployService">
         <h2>Deploy Service</h2>
+        
+        
         <p>Creates or updates the Kubernetes service and the Deployment configuration for Pods and ReplicaSets on the Kubernetes cluster running on the Azure Container Service platform.</p>
+        
         
         <h3>Deploy Service Parameters</h3>
         <table class="grid">
@@ -495,7 +531,10 @@
     
     <div id="UndeployService">
         <h2>Undeploy Service</h2>
+        
+        
         <p>Undeploys a previously deployed service on the Azure Container Service</p>
+        
         
         <h3>Undeploy Service Parameters</h3>
         <table class="grid">
@@ -555,6 +594,8 @@
     
     <div id="Discover">
         <h2>Discover</h2>
+        
+        
         Automatically create microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.
 <div>
     <ol>
@@ -592,6 +633,7 @@
     </ol>
 </div>
 
+        
         
             <p>Procedure looks for services and deployments on Kubernetes
 cluster and transfers data into ElectricFlow. Services found
@@ -744,7 +786,10 @@ definitions retrieved from there.</p>
     
     <div id="GatherClusterInfo">
         <h2>Gather Cluster Info</h2>
+        
+        
         <p>Retrieves token and endpoint for Smart Map.</p>
+        
         
         <h3>Gather Cluster Info Parameters</h3>
         <table class="grid">
@@ -782,7 +827,21 @@ definitions retrieved from there.</p>
 
     
 
+    
+
+    
+    
+    
+    
+
     <h1 id="releaseNotes">Release Notes</h1>
+    
+    <h3>@PLUGIN_KEY@ 1.2.0</h3>
+    <ul>
+        
+        <li>Plugin promotion time has been improved.</li>
+        
+    </ul>
     
     <h3>@PLUGIN_KEY@ 1.1.0</h3>
     <ul>
