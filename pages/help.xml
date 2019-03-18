@@ -14,20 +14,25 @@
     <h1>@PLUGIN_KEY@</h1>
     <p>Plugin version @PLUGIN_VERSION@</p>
     
-    <p>Revised on March 06, 2019</p>
+    <p>Revised on March 18, 2019</p>
     
     <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade"/>
     <h1>Contents</h1>
     <ul>
+    
     <li><a href="#overview">Overview</a></li>
     
-
     
-
+    
+    
+    
+    
+    
     
     <li><a href="#CreateConfiguration">Plugin Configuration</a></li>
     
 
+    
     <li><a href="#procedures">Plugin Procedures</a></li>
     
 
@@ -51,23 +56,34 @@
     </ul>
 
     
+
+    
+    
+    
+    
+    
     
     
     <li><a href="#releaseNotes">Release Notes</a></li>
 </ul>
-    <h3>Overview</h3>
+
+    
+    <h1>Overview</h1>
     <p><p>Plugin overview EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using Kubernetes.</p>
 </p>
     
     
-
     
+    
+    
+    
+
     <!--TODO custom blocks-->
 
     
     <div id="CreateConfiguration">
         <a name='CreateConfiguration' id="CreateConfiguration"> </a>
-        <h2>Plugin Configurations</h2>
+        <h1>Plugin Configurations</h1>
 
         <p>
             Plugin configurations are sets of parameters that apply
@@ -87,7 +103,7 @@
         <li>Find the @PLUGIN_NAME@ row.</li>
         <li>Click <b>Configure</b> to open the
              Configurations page.</li>
-        <li>Click <b>Create Configuration</b>.</li>
+        <li>Click <b>Create Configuration</b> as per the description of parameters below.</li>
         
         <h4>Prerequisites</h4>
 <ol>
@@ -330,6 +346,8 @@
 
         
     </div>
+    
+
     
 
     <h1 id="procedures">Plugin Procedures</h1>
@@ -809,12 +827,29 @@ definitions retrieved from there.</p>
 
     
 
-    <h1 id="releaseNotes">Release Notes</h1>
+    
 
+    
+    
+    
+    
+
+    <h1 id="releaseNotes">Release Notes</h1>
+    
+    <h3>@PLUGIN_KEY@ 1.2.0</h3>
+    <ul>
+        
+        <li>Plugin promotion time has been improved.</li>
+        
+    </ul>
+    
     <h3>@PLUGIN_KEY@ 1.1.2</h3>
     <ul>
+        
         <li>Configurations can be created by users with "@" sign in a name.</li>
+        
     </ul>
+    
     <h3>@PLUGIN_KEY@ 1.1.1</h3>
     <ul>
         
