@@ -843,6 +843,20 @@ definitions retrieved from there.</p>
         
     </ul>
     
+    <h3>@PLUGIN_KEY@ 1.1.2</h3>
+    <ul>
+        
+        <li>Configurations can be created by users with "@" sign in a name.</li>
+        
+    </ul>
+    
+    <h3>@PLUGIN_KEY@ 1.1.1</h3>
+    <ul>
+        
+        <li>Updated the plugin icon.</li>
+        
+    </ul>
+    
     <h3>@PLUGIN_KEY@ 1.1.0</h3>
     <ul>
         

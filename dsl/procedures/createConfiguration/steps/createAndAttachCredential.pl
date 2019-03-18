@@ -28,7 +28,7 @@ use constant {
 my $ec = new ElectricCommander();
 $ec->abortOnError(0);
 
-my $credName = "$[/myJob/config]";
+my $credName = '$[/myJob/config]';
 my $keypairCred = $credName . "_keypair";
 
 my $xpath = $ec->getFullCredential("credential");
@@ -41,7 +41,7 @@ my $keypairErrors = $ec->checkAllErrors($keypair);
 my $publicKey = $keypair->findvalue("//userName");
 my $privateKey = $keypair->findvalue("//password");
 
-my $projName = "$[/myProject/projectName]";
+my $projName = '$[/myProject/projectName]';
 
 # Create credential
 $ec->deleteCredential($projName, $credName);
@@ -62,7 +62,7 @@ $xpath = $ec->setProperty($configPath . "/keypair", $keypairCred);
 $errors .= $ec->checkAllErrors($xpath);
 
 # Give job launcher full permissions on the credential
-my $user = "$[/myJob/launchedByUser]";
+my $user = '$[/myJob/launchedByUser]';
 
 $xpath = $ec->getAclEntry("user", $user, {projectName => $projName, credentialName => $credName});
 if (!$xpath->findvalue('//aclEntryId')) {

@@ -22,5 +22,9 @@
   - Added "Discover" procedure for automatically creating microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.
   - Added support for "Smart Map Topology View" functionality.
   - Added "Gather Cluster Info" procedure which retrieves token and endpoint for Smart Map.
+1.1.1:
+  - Updated the plugin icon.
+1.1.2:
+  - Configurations can be created by users with "@" sign in a name.
 1.2.0:
   - Plugin promotion time has been improved.
