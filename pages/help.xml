@@ -14,7 +14,7 @@
     <h1>@PLUGIN_KEY@</h1>
     <p>Plugin version @PLUGIN_VERSION@</p>
     
-    <p>Revised on March 18, 2019</p>
+    <p>Revised on May 22, 2019</p>
     
     <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade"/>
     <h1>Contents</h1>
@@ -96,7 +96,7 @@
         </p>
 
         <h3>Creating Plugin Configurations</h3>
-        <p>To create plugin configurations in ElectricFlow,
+        <p>To create plugin configurations in CloudBees Flow,
             do these steps:</p>
 
         <li>Go to <b>Administration</b> &gt; <b>Plugins</b> to open the Plugin Manager.</li>
@@ -362,7 +362,7 @@
         <p>Provisions a Azure Container Service cluste. Pods, services, and replication controllers all run on top of a cluster.</p>
         
         
-            <p>IMPORTANT: For all parameter descriptions below, required parameters are shown in bold italics. Please note that some of names given in ElectricFlow UI will be modified to comply with the naming conventions of Kubernetes. Specifically characters such as &quot;space , _ &quot; will be converted to &quot;-&quot;. Such parameters are marked with an asterisk (*).</p>
+            <p>IMPORTANT: For all parameter descriptions below, required parameters are shown in bold italics. Please note that some of names given in CloudBees Flow UI will be modified to comply with the naming conventions of Kubernetes. Specifically characters such as &quot;space , _ &quot; will be converted to &quot;-&quot;. Such parameters are marked with an asterisk (*).</p>
 
         
         <h3>Provision Cluster Parameters</h3>
@@ -480,12 +480,12 @@
             
             <tr>
                 <td class="required">Service Name</td>
-                <td>The name of the service in ElectricFlow that encapsulates the service to be deployed on the Azure Container Service.</td>
+                <td>The name of the service in CloudBees Flow that encapsulates the service to be deployed on the Azure Container Service.</td>
             </tr>
             
             <tr>
                 <td >Service Revision ID</td>
-                <td>Revision Id of the service in ElectricFlow.</td>
+                <td>Revision Id of the service in CloudBees Flow.</td>
             </tr>
             
             <tr>
@@ -505,7 +505,7 @@
             
             <tr>
                 <td class="required">Cluster Name</td>
-                <td>The name of the cluster in ElectricFlow that encapsulates the Azure Container Service on which the service is to be deployed.</td>
+                <td>The name of the cluster in CloudBees Flow that encapsulates the Azure Container Service on which the service is to be deployed.</td>
             </tr>
             
             <tr>
@@ -548,12 +548,12 @@
             
             <tr>
                 <td class="required">Service Name</td>
-                <td>The name of the service in ElectricFlow that encapsulates the service that was previously deployed on the Azure Container Service.</td>
+                <td>The name of the service in CloudBees Flow that encapsulates the service that was previously deployed on the Azure Container Service.</td>
             </tr>
             
             <tr>
                 <td >Service Revision ID</td>
-                <td>Revision Id of the service in ElectricFlow.</td>
+                <td>Revision Id of the service in CloudBees Flow.</td>
             </tr>
             
             <tr>
@@ -596,37 +596,37 @@
         <h2>Discover</h2>
         
         
-        Automatically create microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.
+        Automatically create microservice models in CloudBees Flow for the services and the pods discovered within a namespace on a Kubernetes cluster.
 <div>
     <ol>
         <li><b>Select your method of discovery from a Kubernetes Cluster</b>  There are two options for connecting to Kubernetes for discovery
             <ul>
-                <li><b>Existing ElectricFlow Environment and Cluster</b>  Use the Cluster configuration details in an existing ElectricFlow environment to connect to Kubernetes. Enter details for the existing environment and cluster in the following parameters:
+                <li><b>Existing CloudBees Flow Environment and Cluster</b>  Use the Cluster configuration details in an existing CloudBees Flow environment to connect to Kubernetes. Enter details for the existing environment and cluster in the following parameters:
                     <ul>
                         <li>Environment Project Name: The project containing the existing environment</li>
                         <li>Environment Name:  the name of an existing environment that contains the Kubernetes backend cluster to be discovered</li>
-                        <li>Cluster Name: The name of the ElectricFlow cluster in the environment above that represents the Kubernetes cluster</li>
+                        <li>Cluster Name: The name of the CloudBees Flow cluster in the environment above that represents the Kubernetes cluster</li>
                     </ul></li>
                 <li><b>Kubernetes Connection Details</b>  Enter Kubernetes endpoint and Account details to directly connect to the endpoint and discover the clusters and pods.  Enter the endpoint and account details in the following parameters:
                     <ul>
                         <li>Kubernetes Endpoint: The endpoint where the Kubernetes endpoint will be reachable</li>
                         <li>Service Account API Token</li>
-                        <li><i>If selecting this connection option, you can optionally enter a new values for Environment Name and Cluster Name parameters, to create a new environment and cluster in ElectricFlow based on the discovered services and pods.</i></li>
+                        <li><i>If selecting this connection option, you can optionally enter a new values for Environment Name and Cluster Name parameters, to create a new environment and cluster in CloudBees Flow based on the discovered services and pods.</i></li>
                     </ul>
                 </li>
             </ul></li>
-        <li><b>Determine how the discovered microservices will be created in ElectricFlow</b>
+        <li><b>Determine how the discovered microservices will be created in CloudBees Flow</b>
             <ul>
                 <li><b>Create the microservices individually at the top-level within the project.</b> All discovered microservices will be created at the top-level.  Enter the following parameters:
                     <ul>
                         <li>Project Name: Enter the name of the project where the microservices will be created</li>
                     </ul>
                 </li>
-                <li><b>Create the Microservices within an application in ElectricFlow.</b> All discovered microservices will be created as services within a new application. Enter the following parameters:
+                <li><b>Create the Microservices within an application in CloudBees Flow.</b> All discovered microservices will be created as services within a new application. Enter the following parameters:
                     <ul>
                         <li>Project Name: Enter the name of the project where the new application will be created</li>
                         <li>Create Microservices within and Application:  Select the checkbox</li>
-                        <li>Application Name:  The name of a new application which will be created in ElectricFlow containing the discovered services</li>
+                        <li>Application Name:  The name of a new application which will be created in CloudBees Flow containing the discovered services</li>
                     </ul>
                 </li></ul>
         </li>
@@ -636,11 +636,11 @@
         
         
             <p>Procedure looks for services and deployments on Kubernetes
-cluster and transfers data into ElectricFlow. Services found
-in cluster will be mapped to Services objects in ElectricFlow,
+cluster and transfers data into CloudBees Flow. Services found
+in cluster will be mapped to Services objects in CloudBees Flow,
 then associated deployments will be found and containers
 definitions retrieved from there.</p>
-<p>If the object with the provided name already exists in the ElectricFlow, this object will be skipped and a warning message will be emitted to logs.</p>
+<p>If the object with the provided name already exists in the CloudBees Flow, this object will be skipped and a warning message will be emitted to logs.</p>
 
         
         <h3>Discover Parameters</h3>
@@ -665,7 +665,7 @@ definitions retrieved from there.</p>
             
             <tr>
                 <td class="required">Cluster Name</td>
-                <td>In an existing environment, provide the name of the ElectricFlow cluster representing the Azure Container Service cluster whose deployed services are to be discovered. If the environment does not already exist, provide the name of the cluster to be created in the new environment.</td>
+                <td>In an existing environment, provide the name of the CloudBees Flow cluster representing the Azure Container Service cluster whose deployed services are to be discovered. If the environment does not already exist, provide the name of the cluster to be created in the new environment.</td>
             </tr>
             
             <tr>
@@ -680,7 +680,7 @@ definitions retrieved from there.</p>
             
             <tr>
                 <td >Create Microservices within an Application</td>
-                <td>(Optional) Select to create all discovered services in the Azure Container Service namespace within one application in ElectricFlow. If selected, then the application name must be provided. If unselected, microservices will be created at the top-level in the project.</td>
+                <td>(Optional) Select to create all discovered services in the Azure Container Service namespace within one application in CloudBees Flow. If selected, then the application name must be provided. If unselected, microservices will be created at the top-level in the project.</td>
             </tr>
             
             <tr>
@@ -803,7 +803,7 @@ definitions retrieved from there.</p>
             
             <tr>
                 <td class="required">Cluster Name</td>
-                <td>The name of the cluster in ElectricFlow that encapsulates the Azure Container Service.</td>
+                <td>The name of the cluster in CloudBees Flow that encapsulates the Azure Container Service.</td>
             </tr>
             
             <tr>
@@ -835,6 +835,10 @@ definitions retrieved from there.</p>
     
 
     <h1 id="releaseNotes">Release Notes</h1>
+
+    <h3 id="1.2.1">@PLUGIN_KEY@ 1.2.1</h3>
+    <p>Renaming from "Electric Cloud" to "CloudBees"</p>
+
     
     <h3>@PLUGIN_KEY@ 1.2.0</h3>
     <ul>
