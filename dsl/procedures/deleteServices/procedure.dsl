@@ -8,7 +8,7 @@ procedure 'Cleanup Cluster - Experimental',
 
     step 'setup',
       subproject: '/plugins/EC-Kubernetes/project',
-      subprocedure: 'Setup',
+      subprocedure: 'flowpdk-setup',
       command: null,
       errorHandling: 'failProcedure',
       exclusiveMode: 'none',

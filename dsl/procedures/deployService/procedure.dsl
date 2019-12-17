@@ -5,7 +5,7 @@ procedure 'Deploy Service',
 
     step 'setup',
       subproject: '/plugins/EC-Kubernetes/project',
-      subprocedure: 'Setup',
+      subprocedure: 'flowpdk-setup',
       command: null,
       errorHandling: 'failProcedure',
       exclusiveMode: 'none',
@@ -13,7 +13,7 @@ procedure 'Deploy Service',
       releaseMode: 'none',
       timeLimitUnits: 'minutes', {
 
-        actualParameter 'additionalArtifactVersion', 'com.electriccloud:EC-AzureContainerService-Grapes:1.0.0'
+        actualParameter 'dependsOnPlugins', 'EC-Kubernetes'
     }
 
 	step 'createOrUpdateDeployment',
@@ -25,6 +25,6 @@ procedure 'Deploy Service',
 	  resourceName: '$[grabbedResource]',
 	  shell: 'ec-groovy',
 	  timeLimitUnits: 'minutes'
-	  
+
 }
-  
+

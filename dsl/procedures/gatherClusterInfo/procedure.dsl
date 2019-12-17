@@ -5,7 +5,7 @@ procedure 'Gather Cluster Info',
 
     step 'setup',
       subproject: '/plugins/EC-Kubernetes/project',
-      subprocedure: 'Setup',
+      subprocedure: 'flowpdk-setup',
       command: null,
       errorHandling: 'failProcedure',
       exclusiveMode: 'none',
@@ -13,7 +13,7 @@ procedure 'Gather Cluster Info',
       releaseMode: 'none',
       timeLimitUnits: 'minutes', {
 
-        actualParameter 'additionalArtifactVersion', 'com.electriccloud:EC-AzureContainerService-Grapes:1.0.0'
+        actualParameter 'dependsOnPlugins', 'EC-Kubernetes'
     }
 
 	step 'gatherClusterInfo',
