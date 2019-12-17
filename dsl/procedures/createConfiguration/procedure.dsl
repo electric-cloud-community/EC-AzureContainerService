@@ -4,7 +4,6 @@ procedure 'CreateConfiguration',
         description: 'Creates a configuration for Azure Container Service', {
 
     step 'setup',
-      subproject: '/plugins/EC-Kubernetes/project',
       subprocedure: 'flowpdk-setup',
       command: null,
       errorHandling: 'failProcedure',

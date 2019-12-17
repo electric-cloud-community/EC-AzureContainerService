@@ -4,7 +4,6 @@ procedure 'Undeploy Service',
 	description: 'Undeploys a previously deployed service on the Azure Container Service', {
 
 	step 'setup',
-      subproject: '/plugins/EC-Kubernetes/project',
       subprocedure: 'flowpdk-setup',
       command: null,
       errorHandling: 'failProcedure',

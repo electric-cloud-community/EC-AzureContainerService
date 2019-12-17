@@ -4,7 +4,6 @@ procedure 'Provision Cluster',
 	description: 'Provisions a Azure Container Service cluste. Pods, services, and replication controllers all run on top of a cluster.', {
 
     step 'setup',
-      subproject: '/plugins/EC-Kubernetes/project',
       subprocedure: 'flowpdk-setup',
       command: null,
       errorHandling: 'failProcedure',

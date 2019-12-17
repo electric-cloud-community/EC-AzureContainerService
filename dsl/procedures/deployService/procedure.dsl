@@ -4,7 +4,6 @@ procedure 'Deploy Service',
 	description: 'Creates or updates the Kubernetes service and the Deployment configuration for Pods and ReplicaSets on the Kubernetes cluster running on the Azure Container Service platform.', {
 
     step 'setup',
-      subproject: '/plugins/EC-Kubernetes/project',
       subprocedure: 'flowpdk-setup',
       command: null,
       errorHandling: 'failProcedure',

@@ -44,7 +44,6 @@ procedure 'Discover',
         value: 'Automatically create microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.'
 
     step 'setup',
-        subproject: '/plugins/EC-Kubernetes/project',
         subprocedure: 'flowpdk-setup',
         command: null,
         errorHandling: 'failProcedure',
