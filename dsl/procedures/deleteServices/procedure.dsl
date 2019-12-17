@@ -7,8 +7,7 @@ procedure 'Cleanup Cluster - Experimental',
     property 'standardStepPicker', value: false
 
     step 'setup',
-      subproject: '/plugins/EC-Kubernetes/project',
-      subprocedure: 'Setup',
+      subprocedure: 'flowpdk-setup',
       command: null,
       errorHandling: 'failProcedure',
       exclusiveMode: 'none',
@@ -16,9 +15,9 @@ procedure 'Cleanup Cluster - Experimental',
       releaseMode: 'none',
       timeLimitUnits: 'minutes', {
 
-        actualParameter 'additionalArtifactVersion', 'com.electriccloud:EC-AzureContainerService-Grapes:1.0.0'
+        actualParameter 'dependsOnPlugins', 'EC-Kubernetes'
     }
-    
+
 	step 'cleanup',
 	  command: new File(pluginDir, 'dsl/procedures/deleteServices/steps/deleteServices.groovy').text,
 	  errorHandling: 'failProcedure',
@@ -28,6 +27,6 @@ procedure 'Cleanup Cluster - Experimental',
 	  resourceName: '$[grabbedResource]',
 	  shell: 'ec-groovy',
 	  timeLimitUnits: 'minutes'
-	  
+
 }
-  
+

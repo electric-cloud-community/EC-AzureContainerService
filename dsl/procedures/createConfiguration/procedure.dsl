@@ -4,8 +4,7 @@ procedure 'CreateConfiguration',
         description: 'Creates a configuration for Azure Container Service', {
 
     step 'setup',
-      subproject: '/plugins/EC-Kubernetes/project',
-      subprocedure: 'Setup',
+      subprocedure: 'flowpdk-setup',
       command: null,
       errorHandling: 'failProcedure',
       exclusiveMode: 'none',
@@ -14,7 +13,7 @@ procedure 'CreateConfiguration',
       condition: '$[testConnection]',
       timeLimitUnits: 'minutes', {
 
-        actualParameter 'additionalArtifactVersion', 'com.electriccloud:EC-AzureContainerService-Grapes:1.0.0'
+        actualParameter 'dependsOnPlugins', 'EC-Kubernetes'
     }
 
     step 'testConnection',

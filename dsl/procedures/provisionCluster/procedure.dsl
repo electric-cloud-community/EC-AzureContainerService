@@ -1,11 +1,10 @@
 import java.io.File
 
-procedure 'Provision Cluster', 
+procedure 'Provision Cluster',
 	description: 'Provisions a Azure Container Service cluste. Pods, services, and replication controllers all run on top of a cluster.', {
 
     step 'setup',
-      subproject: '/plugins/EC-Kubernetes/project',
-      subprocedure: 'Setup',
+      subprocedure: 'flowpdk-setup',
       command: null,
       errorHandling: 'failProcedure',
       exclusiveMode: 'none',
@@ -13,10 +12,10 @@ procedure 'Provision Cluster',
       releaseMode: 'none',
       timeLimitUnits: 'minutes', {
 
-        actualParameter 'additionalArtifactVersion', 'com.electriccloud:EC-AzureContainerService-Grapes:1.0.0'
+        actualParameter 'dependsOnPlugins', 'EC-Kubernetes'
     }
 
-	step 'provisionCluster', 
+	step 'provisionCluster',
 	  command: new File(pluginDir, 'dsl/procedures/provisionCluster/steps/provisionCluster.groovy').text,
 	  errorHandling: 'failProcedure',
 	  exclusiveMode: 'none',
@@ -25,6 +24,6 @@ procedure 'Provision Cluster',
 	  resourceName: '$[grabbedResource]',
 	  shell: 'ec-groovy',
 	  timeLimitUnits: 'minutes'
-	  
+
 }
-  
+
