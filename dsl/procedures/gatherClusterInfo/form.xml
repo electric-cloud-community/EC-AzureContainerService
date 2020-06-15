@@ -21,7 +21,7 @@
         <label>Cluster Name:</label>
         <property>clusterName</property>
         <required>1</required>
-        <documentation>The name of the cluster in CloudBees Flow that encapsulates the Azure Container Service.</documentation>
+        <documentation>The name of the cluster in CloudBees CD that encapsulates the Azure Container Service.</documentation>
     </formElement>
     <formElement>
         <type>entry</type>

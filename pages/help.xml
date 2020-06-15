@@ -13,74 +13,74 @@
 <div class="help">
     <h1>@PLUGIN_KEY@</h1>
     <p>Plugin version @PLUGIN_VERSION@</p>
-
-    <p>Revised on May 27, 2019</p>
-
+    
+    <p>Revised on June 15, 2020</p>
+    
     <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade"/>
     <h1>Contents</h1>
     <ul>
-
+    
     <li><a href="#overview">Overview</a></li>
-
-
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
+    
+    
     <li><a href="#CreateConfiguration">Plugin Configuration</a></li>
+    
 
-
-
+    
     <li><a href="#procedures">Plugin Procedures</a></li>
-
+    
 
     <ul>
-
+        
 
         <li><a href="#ProvisionCluster">Provision Cluster</a></li>
-
+        
 
         <li><a href="#DeployService">Deploy Service</a></li>
-
+        
 
         <li><a href="#UndeployService">Undeploy Service</a></li>
-
+        
 
         <li><a href="#Discover">Discover</a></li>
-
+        
 
         <li><a href="#GatherClusterInfo">Gather Cluster Info</a></li>
-
+        
     </ul>
 
+    
 
-
-
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
+    
     <li><a href="#releaseNotes">Release Notes</a></li>
 </ul>
 
-
+    
     <h1>Overview</h1>
     <p><p>Plugin overview EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using Kubernetes.</p>
 </p>
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
 
     <!--TODO custom blocks-->
 
-
+    
     <div id="CreateConfiguration">
         <a name='CreateConfiguration' id="CreateConfiguration"> </a>
         <h1>Plugin Configurations</h1>
@@ -96,7 +96,7 @@
         </p>
 
         <h3>Creating Plugin Configurations</h3>
-        <p>To create plugin configurations in CloudBees Flow,
+        <p>To create plugin configurations in CloudBees CD,
             do these steps:</p>
 
         <li>Go to <b>Administration</b> &gt; <b>Plugins</b> to open the Plugin Manager.</li>
@@ -104,7 +104,7 @@
         <li>Click <b>Configure</b> to open the
              Configurations page.</li>
         <li>Click <b>Create Configuration</b> as per the description of parameters below.</li>
-
+        
         <h4>Prerequisites</h4>
 <ol>
 <li>EC-Kubernetes plugin version 1.0.5 or higher</li>
@@ -112,7 +112,7 @@
 <a href="https://blogs.msdn.microsoft.com/mschray/2015/05/13/getting-your-azure-guid-subscription-id/" target="_blank">https://blogs.msdn.microsoft.com/mschray/2015/05/13/getting-your-azure-guid-subscription-id/</a>
 )
 <ul>
-<li>Go to:
+<li>Go to:  
 <a href="http://manage.windowsazure.com/" target="_blank">http://manage.windowsazure.com/</a>
 </li>
 <li>Scroll all the way down the left nav</li>
@@ -233,8 +233,9 @@
 </li>
 </ol>
 
+        
 
-        Configuration Parameters
+        <h2>Configuration Procedure Parameters</h2>
         <table class="grid">
             <thead>
             <tr>
@@ -243,55 +244,73 @@
             </tr>
             </thead>
             <tbody>
-
+            
             <tr>
-                <td class="required">Configuration</td>
-                <td>Unique name for the plugin configuration.</td>
+                
+                    <td class="required">Configuration</td>
+                    <td>Unique name for the plugin configuration.</td>
+                
             </tr>
-
+            
             <tr>
-                <td >Description</td>
-                <td>Description for the plugin configuration.</td>
+                
+                    <td >Description</td>
+                    <td>Description for the plugin configuration.</td>
+                
             </tr>
-
+            
             <tr>
-                <td class="required">Tenant ID</td>
-                <td>Tenant ID of the Azure Account</td>
+                
+                    <td class="required">Tenant ID</td>
+                    <td>Tenant ID of the Azure Account</td>
+                
             </tr>
-
+            
             <tr>
-                <td class="required">Subscription ID</td>
-                <td>Subscription ID of the Azure Account</td>
+                
+                    <td class="required">Subscription ID</td>
+                    <td>Subscription ID of the Azure Account</td>
+                
             </tr>
-
+            
             <tr>
-                <td class="required">Service Principal Details</td>
-                <td>The Client ID and the Key of the Service principal created in Azure.</td>
+                
+                    <td class="required">Service Principal Details</td>
+                    <td>The Client ID and the Key of the Service principal created in Azure.</td>
+                
             </tr>
-
+            
             <tr>
-                <td >Public Key</td>
-                <td>The public key that should be used for cluster creation and communication.</td>
+                
+                    <td >Public Key</td>
+                    <td>The public key that should be used for cluster creation and communication.</td>
+                
             </tr>
-
+            
             <tr>
-                <td class="required">Private Key</td>
-                <td>The private key that should be used for cluster creation and communication.</td>
+                
+                    <td class="required">Private Key</td>
+                    <td>The private key that should be used for cluster creation and communication.</td>
+                
             </tr>
-
+            
             <tr>
-                <td >Test Connection?</td>
-                <td>Test that the given service account details can be used to successfully connect to the cluster in Azure Container Service.</td>
+                
+                    <td >Test Connection?</td>
+                    <td>Test that the given service account details can be used to successfully connect to the cluster in Azure Container Service.</td>
+                
             </tr>
-
+            
             <tr>
-                <td >Log Level</td>
-                <td>Log level to use for logging output. Error=4, Warning=3, Info=2, Debug=1.</td>
+                
+                    <td >Log Level</td>
+                    <td>Log level to use for logging output. Error=4, Warning=3, Info=2, Debug=1.</td>
+                
             </tr>
-
+            
             </tbody>
         </table>
-
+        
         <h3>Make a remote connection to a Kubernetes, DC/OS, or Docker Swarm cluster</h3>
 <p>After creating an Azure Container Service cluster, you need to connect to the cluster to deploy and manage workloads. This article describes how to connect to the master VM of the cluster from a remote computer.</p>
 <p>The Kubernetes, DC/OS, and Docker Swarm clusters provide HTTP endpoints locally. For Kubernetes, this endpoint is securely exposed on the internet, and you can access it by running the kubectl command-line tool from any internet-connected machine.</p>
@@ -344,27 +363,27 @@
 <p>The Kubernetes UI is now available at: localhost:8001/ui.</p>
 <p>For more information, see the Kubernetes quick start.</p>
 
-
+        
     </div>
+    
 
-
-
+    
 
     <h1 id="procedures">Plugin Procedures</h1>
+    
+    
 
-
-
-
+    
     <div id="ProvisionCluster">
         <h2>Provision Cluster</h2>
-
-
+        
+        
         <p>Provisions a Azure Container Service cluste. Pods, services, and replication controllers all run on top of a cluster.</p>
+        
+        
+            <p>IMPORTANT: For all parameter descriptions below, required parameters are shown in bold italics. Please note that some of names given in CloudBees CD UI will be modified to comply with the naming conventions of Kubernetes. Specifically characters such as &quot;space , _ &quot; will be converted to &quot;-&quot;. Such parameters are marked with an asterisk (*).</p>
 
-
-            <p>IMPORTANT: For all parameter descriptions below, required parameters are shown in bold italics. Please note that some of names given in CloudBees Flow UI will be modified to comply with the naming conventions of Kubernetes. Specifically characters such as &quot;space , _ &quot; will be converted to &quot;-&quot;. Such parameters are marked with an asterisk (*).</p>
-
-
+        
         <h3>Provision Cluster Parameters</h3>
         <table class="grid">
             <thead>
@@ -374,100 +393,135 @@
             </tr>
             </thead>
             <tbody>
-
+            
             <tr>
+                
                 <td class="required">Configuration</td>
                 <td>The name of an existing configuration which holds all the connection information for Azure Container Service.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Container Cluster Name</td>
                 <td>The name of the cluster that needs to be provisioned.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Resource Group Name</td>
                 <td>All cluster resources will be created under this resource group name.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Orchestrator Type</td>
                 <td>The orchestrator to use for provisioning cluster.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Master Zone</td>
                 <td>The primary zone for the cluster. The master zone for a cluster is set at creation time and cannot be updated so this parameter will be ignored if the cluster already exists.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Admin User Name</td>
                 <td>The name of Administrator user for VMs</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Number Of Master VMs</td>
                 <td>The number of masters to be created in the cluster. Values allowed are 1, 3 or 5 with 1 as default.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Master DNS Prefix</td>
                 <td>The DNS prefix to be used to create the FQDN of the master</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Master FQDN</td>
                 <td>FQDN of the master</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Master VM Size</td>
                 <td>Size of the Master VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Agent Pool Name</td>
                 <td>The name of agent pool in which agents will be created</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Agent Pool Count</td>
                 <td>Number of agents that should be created in the pool</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Agent Pool VM Size</td>
                 <td>Size of the Agent VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Agent DNS Prefix</td>
                 <td>DNS prefix to be used to create the FQDN of agent pool</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">The wait time for cluster creation (In minutes)</td>
                 <td>Timeout for cluster creation. If the cluster does not get created in this amount of time, the procedure fails.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Time for cluster preparation after creation (In Seconds)</td>
                 <td>After the cluster is created it need to create service accounts etc. which can take a few seconds before services can be deployed</td>
+                
             </tr>
-
+            
             </tbody>
         </table>
 
+        
+
+        
     </div>
 
-
+    
     <div id="DeployService">
         <h2>Deploy Service</h2>
-
-
+        
+        
         <p>Creates or updates the Kubernetes service and the Deployment configuration for Pods and ReplicaSets on the Kubernetes cluster running on the Azure Container Service platform.</p>
-
-
+        
+        
         <h3>Deploy Service Parameters</h3>
         <table class="grid">
             <thead>
@@ -477,65 +531,86 @@
             </tr>
             </thead>
             <tbody>
-
+            
             <tr>
+                
                 <td class="required">Service Name</td>
-                <td>The name of the service in CloudBees Flow that encapsulates the service to be deployed on the Azure Container Service.</td>
+                <td>The name of the service in CloudBees CD that encapsulates the service to be deployed on the Azure Container Service.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Service Revision ID</td>
-                <td>Revision Id of the service in CloudBees Flow.</td>
+                <td>Revision Id of the service in CloudBees CD.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Project Name</td>
                 <td>The name of the project that the service belongs to. In case of an application-level service it also owns the application.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Application Name</td>
                 <td>The name of the application that the service belongs to. Not applicable for a top-level service.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Application Revision ID</td>
                 <td>Revision Id of the application version that the service belongs to.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Cluster Name</td>
-                <td>The name of the cluster in CloudBees Flow that encapsulates the Azure Container Service on which the service is to be deployed.</td>
+                <td>The name of the cluster in CloudBees CD that encapsulates the Azure Container Service on which the service is to be deployed.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Cluster Or Environment Project Name</td>
                 <td>The name of the project that the cluster belongs to if it is a top-level project cluster. Or the name of the project that the environment belongs to if it is an environment-scoped cluster.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Environment Name</td>
                 <td>The name of the environment that the cluster belongs to. Not applicable for a top-level project cluster.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Results Property Sheet</td>
                 <td>Name of the property sheet where the output properties for the deployed service will be saved. If not specified, will default to '/myParent/parent'.</td>
+                
             </tr>
-
+            
             </tbody>
         </table>
 
+        
+
+        
     </div>
 
-
+    
     <div id="UndeployService">
         <h2>Undeploy Service</h2>
-
-
+        
+        
         <p>Undeploys a previously deployed service on the Azure Container Service</p>
-
-
+        
+        
         <h3>Undeploy Service Parameters</h3>
         <table class="grid">
             <thead>
@@ -545,104 +620,123 @@
             </tr>
             </thead>
             <tbody>
-
+            
             <tr>
+                
                 <td class="required">Service Name</td>
-                <td>The name of the service in CloudBees Flow that encapsulates the service that was previously deployed on the Azure Container Service.</td>
+                <td>The name of the service in CloudBees CD that encapsulates the service that was previously deployed on the Azure Container Service.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Service Revision ID</td>
-                <td>Revision Id of the service in CloudBees Flow.</td>
+                <td>Revision Id of the service in CloudBees CD.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Project Name</td>
                 <td>The name of the project that the service belongs to. In case of an application-level service it also owns the application.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Application Name</td>
                 <td>The name of the application that the service belongs to. Not applicable for a top-level service.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Application Revision ID</td>
                 <td>Revision Id of the application version that the service belongs to.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Environment Name</td>
                 <td>The name of the environment that the cluster belongs to.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Environment Project Name</td>
                 <td>The name of the project that the environment belongs to. If not specified, the environment is assumed to be in the same project as the service.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Cluster Name</td>
                 <td>The name of the cluster in the environment on which the service was previously deployed. If not specified, the application tier mapping will be used to find the cluster name.</td>
+                
             </tr>
-
+            
             </tbody>
         </table>
 
+        
+
+        
     </div>
 
-
+    
     <div id="Discover">
         <h2>Discover</h2>
-
-
-        Automatically create microservice models in CloudBees Flow for the services and the pods discovered within a namespace on a Kubernetes cluster.
+        
+        
+        Automatically create microservice models in CloudBees CD for the services and the pods discovered within a namespace on a Kubernetes cluster.
 <div>
     <ol>
         <li><b>Select your method of discovery from a Kubernetes Cluster</b>  There are two options for connecting to Kubernetes for discovery
             <ul>
-                <li><b>Existing CloudBees Flow Environment and Cluster</b>  Use the Cluster configuration details in an existing CloudBees Flow environment to connect to Kubernetes. Enter details for the existing environment and cluster in the following parameters:
+                <li><b>Existing CloudBees CD Environment and Cluster</b>  Use the Cluster configuration details in an existing CloudBees CD environment to connect to Kubernetes. Enter details for the existing environment and cluster in the following parameters:
                     <ul>
                         <li>Environment Project Name: The project containing the existing environment</li>
                         <li>Environment Name:  the name of an existing environment that contains the Kubernetes backend cluster to be discovered</li>
-                        <li>Cluster Name: The name of the CloudBees Flow cluster in the environment above that represents the Kubernetes cluster</li>
+                        <li>Cluster Name: The name of the CloudBees CD cluster in the environment above that represents the Kubernetes cluster</li>
                     </ul></li>
                 <li><b>Kubernetes Connection Details</b>  Enter Kubernetes endpoint and Account details to directly connect to the endpoint and discover the clusters and pods.  Enter the endpoint and account details in the following parameters:
                     <ul>
                         <li>Kubernetes Endpoint: The endpoint where the Kubernetes endpoint will be reachable</li>
                         <li>Service Account API Token</li>
-                        <li><i>If selecting this connection option, you can optionally enter a new values for Environment Name and Cluster Name parameters, to create a new environment and cluster in CloudBees Flow based on the discovered services and pods.</i></li>
+                        <li><i>If selecting this connection option, you can optionally enter a new values for Environment Name and Cluster Name parameters, to create a new environment and cluster in CloudBees CD based on the discovered services and pods.</i></li>
                     </ul>
                 </li>
             </ul></li>
-        <li><b>Determine how the discovered microservices will be created in CloudBees Flow</b>
+        <li><b>Determine how the discovered microservices will be created in CloudBees CD</b>
             <ul>
                 <li><b>Create the microservices individually at the top-level within the project.</b> All discovered microservices will be created at the top-level.  Enter the following parameters:
                     <ul>
                         <li>Project Name: Enter the name of the project where the microservices will be created</li>
                     </ul>
                 </li>
-                <li><b>Create the Microservices within an application in CloudBees Flow.</b> All discovered microservices will be created as services within a new application. Enter the following parameters:
+                <li><b>Create the Microservices within an application in CloudBees CD.</b> All discovered microservices will be created as services within a new application. Enter the following parameters:
                     <ul>
                         <li>Project Name: Enter the name of the project where the new application will be created</li>
                         <li>Create Microservices within and Application:  Select the checkbox</li>
-                        <li>Application Name:  The name of a new application which will be created in CloudBees Flow containing the discovered services</li>
+                        <li>Application Name:  The name of a new application which will be created in CloudBees CD containing the discovered services</li>
                     </ul>
                 </li></ul>
         </li>
     </ol>
 </div>
 
-
-
+        
+        
             <p>Procedure looks for services and deployments on Kubernetes
-cluster and transfers data into CloudBees Flow. Services found
-in cluster will be mapped to Services objects in CloudBees Flow,
+cluster and transfers data into CloudBees CD. Services found
+in cluster will be mapped to Services objects in CloudBees CD,
 then associated deployments will be found and containers
 definitions retrieved from there.</p>
-<p>If the object with the provided name already exists in the CloudBees Flow, this object will be skipped and a warning message will be emitted to logs.</p>
+<p>If the object with the provided name already exists in the CloudBees CD, this object will be skipped and a warning message will be emitted to logs.</p>
 
-
+        
         <h3>Discover Parameters</h3>
         <table class="grid">
             <thead>
@@ -652,145 +746,198 @@ definitions retrieved from there.</p>
             </tr>
             </thead>
             <tbody>
-
+            
             <tr>
+                
                 <td class="required">Environment Project Name</td>
                 <td>The project containing the existing environment, or where the new environment will be created.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Environment Name</td>
                 <td>Provide the name of an existing environment that contains the Azure Container Service-backend cluster to be discovered. If the environment does not already exist, provide the Azure Container Service connection details below for discovery, and a new environment will be created.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Cluster Name</td>
-                <td>In an existing environment, provide the name of the CloudBees Flow cluster representing the Azure Container Service cluster whose deployed services are to be discovered. If the environment does not already exist, provide the name of the cluster to be created in the new environment.</td>
+                <td>In an existing environment, provide the name of the CloudBees CD cluster representing the Azure Container Service cluster whose deployed services are to be discovered. If the environment does not already exist, provide the name of the cluster to be created in the new environment.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Azure Container Service Namespace</td>
                 <td>The name of the Azure Container Service namespace within which the deployed services should be discovered. Default to 'default' namespace.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Project Name</td>
                 <td>The name of project in which the discovered microservices will be created.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Create Microservices within an Application</td>
-                <td>(Optional) Select to create all discovered services in the Azure Container Service namespace within one application in CloudBees Flow. If selected, then the application name must be provided. If unselected, microservices will be created at the top-level in the project.</td>
+                <td>(Optional) Select to create all discovered services in the Azure Container Service namespace within one application in CloudBees CD. If selected, then the application name must be provided. If unselected, microservices will be created at the top-level in the project.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Application Name</td>
                 <td>The name of the new application that will contain the microservices. Required only if 'Create Microservices within an Application' is selected.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Tenant ID</td>
                 <td>Tenant ID of the Azure Account. Required if the cluster does not exist in EF.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Subscription ID</td>
                 <td>Subscription ID of the Azure Account. Required if the cluster does not exist in EF.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Client ID</td>
                 <td>The Client ID of the Service principal created in Azure. Required if the cluster does not exist in EF.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Azure Secret Key</td>
                 <td>The Key of the Service principal created in Azure. Required if the cluster does not exist in EF.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Public Key</td>
                 <td>The public key that should be used for cluster creation and communication.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Private Key</td>
                 <td>The private key that should be used for cluster creation and communication. Required if the cluster does not exist in EF.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Container Cluster Name</td>
                 <td>The name of the cluster that needs to be provisioned.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Resource Group Name</td>
                 <td>All cluster resources will be created under this resource group name.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Master Zone</td>
                 <td>The primary zone for the cluster. The master zone for a cluster is set at creation time and cannot be updated so this parameter will be ignored if the cluster already exists.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Admin User Name</td>
                 <td>The name of Administrator user for VMs</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Number Of Master VMs</td>
                 <td>The number of masters to be created in the cluster. Values allowed are 1, 3 or 5 with 1 as default.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Master DNS Prefix</td>
                 <td>The DNS prefix to be used to create the FQDN of the master</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Master FQDN</td>
                 <td>FQDN of the master</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Agent Pool Name</td>
                 <td>The name of agent pool in which agents will be created</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Agent Pool Count</td>
                 <td>Number of agents that should be created in the pool</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Agent Pool VM Size</td>
                 <td>Size of the Agent VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Agent DNS Prefix</td>
                 <td>DNS prefix to be used to create the FQDN of agent pool</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >The wait time for cluster creation (In minutes)</td>
                 <td>Timeout for cluster creation. If the cluster does not get created in this amount of time, the procedure fails.</td>
+                
             </tr>
-
+            
             </tbody>
         </table>
 
+        
+
+        
     </div>
 
-
+    
     <div id="GatherClusterInfo">
         <h2>Gather Cluster Info</h2>
-
-
+        
+        
         <p>Retrieves token and endpoint for Smart Map.</p>
-
-
+        
+        
         <h3>Gather Cluster Info Parameters</h3>
         <table class="grid">
             <thead>
@@ -800,133 +947,159 @@ definitions retrieved from there.</p>
             </tr>
             </thead>
             <tbody>
-
+            
             <tr>
+                
                 <td class="required">Cluster Name</td>
-                <td>The name of the cluster in CloudBees Flow that encapsulates the Azure Container Service.</td>
+                <td>The name of the cluster in CloudBees CD that encapsulates the Azure Container Service.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td class="required">Cluster Or Environment Project Name</td>
                 <td>The name of the project that the cluster belongs to if it is a top-level project cluster. Or the name of the project that the environment belongs to if it is an environment-scoped cluster.</td>
+                
             </tr>
-
+            
             <tr>
+                
                 <td >Environment Name</td>
                 <td>The name of the environment that the cluster belongs to. Not applicable for a top-level project cluster.</td>
+                
             </tr>
-
+            
             </tbody>
         </table>
 
+        
+
+        
     </div>
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-
-
+    
+    
+    
+    
 
     <h1 id="releaseNotes">Release Notes</h1>
-
-    <h3 id="1.2.1">@PLUGIN_KEY@ 1.2.1</h3>
-    <p>Renaming from "Electric Cloud" to "CloudBees"</p>
-
-
+    
+    <h3>@PLUGIN_KEY@ 1.3.1</h3>
+    <ul>
+        
+        <li>Renaming from "CloudBees Flow" to "CloudBees CD".</li>
+        
+    </ul>
+    
+    <h3>@PLUGIN_KEY@ 1.3.0</h3>
+    <ul>
+        
+        <li>Changed dependency delivery procedure.</li>
+        
+    </ul>
+    
+    <h3>@PLUGIN_KEY@ 1.2.1</h3>
+    <ul>
+        
+        <li>Renaming from "Electric Cloud" to "CloudBees"</li>
+        
+    </ul>
+    
     <h3>@PLUGIN_KEY@ 1.2.0</h3>
     <ul>
-
+        
         <li>Plugin promotion time has been improved.</li>
-
+        
     </ul>
-
+    
     <h3>@PLUGIN_KEY@ 1.1.2</h3>
     <ul>
-
+        
         <li>Configurations can be created by users with "@" sign in a name.</li>
-
+        
     </ul>
-
+    
     <h3>@PLUGIN_KEY@ 1.1.1</h3>
     <ul>
-
+        
         <li>Updated the plugin icon.</li>
-
+        
     </ul>
-
+    
     <h3>@PLUGIN_KEY@ 1.1.0</h3>
     <ul>
-
+        
         <li>Added "Discover" procedure for automatically creating microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.</li>
-
+        
         <li>Added support for "Smart Map Topology View" functionality.</li>
-
+        
         <li>Added "Gather Cluster Info" procedure which retrieves token and endpoint for Smart Map.</li>
-
+        
     </ul>
-
+    
     <h3>@PLUGIN_KEY@ 1.0.4</h3>
     <ul>
-
+        
         <li>Configured the plugin to allow the ElectricFlow UI to create configs inline of procedure form.</li>
-
+        
     </ul>
-
+    
     <h3>@PLUGIN_KEY@ 1.0.3</h3>
     <ul>
-
+        
         <li>Fixed the invalid credential name error in the <i>Undeploy Service</i> procedure.</li>
-
+        
         <li>Configured the 'setup' procedure step that retrieves groovy dependency jars to run all subsequent procedure steps on the same resource.</li>
-
+        
         <li>Added support for retrieving and creating the plugin configurations through the "Configurations" option on the application process step and the pipeline stage task editors.</li>
-
+        
     </ul>
-
+    
     <h3>@PLUGIN_KEY@ 1.0.2</h3>
     <ul>
-
+        
         <li>Added procedure <i>Undeploy Service</i> to undeploy a previously deployed service.</li>
-
+        
         <li>EC-AzureContainerService plugin is now able to provision clusters in any specified region.</li>
-
+        
         <li>Added parameter <i>masterVmsize</i> to specify the size for the master VM in the Kubernetes cluster provisioned by Azure Container Service.</li>
-
+        
         <li>Removed unused parameter <i>additionalAttributes</i> from container mapping configuration.</li>
-
+        
         <li>When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the plugin will now monitor the deployment progress in the cluster and cause the step to fail in case the deployment does not complete within the deployment timeout configured as part of the service mapping. The default timeout value is 120 seconds.</li>
-
+        
         <li>When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the service name to use in the cluster can now be overridden through the service mapping.</li>
-
+        
         <li>When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the deployment name to use in the cluster can now be overridden through the service mapping. See section <b>Blue/Green Deployments</b> in the EC-Kubernetes plugin help for details on how this ability can be used to implement a blue/green deployment strategy.</li>
-
+        
         <li>Added support for canary deployments. See section <b>Canary Deployments</b> in the EC-Kubernetes plugin help for details.</li>
-
+        
     </ul>
-
+    
     <h3>@PLUGIN_KEY@ 1.0.1</h3>
     <ul>
-
+        
         <li>Updated the <i>Define Service</i> procedure to include namespace and service type parameters. This procedure is an internal procedure used for specifying cluster specific service mappings in ElectricFlow.</li>
-
+        
         <li>Fixed the <i>Test Connection</i> step in the <i>Create Configuration</i> procedure.</li>
-
+        
     </ul>
-
+    
     <h3>@PLUGIN_KEY@ 1.0.0</h3>
     <ul>
-
+        
         <li>First release.</li>
-
+        
     </ul>
-
+    
 </div>
 </body>
 </html>
