@@ -28,3 +28,5 @@
   - Configurations can be created by users with "@" sign in a name.
 1.2.0:
   - Plugin promotion time has been improved.
+1.2.1:
+  - Renaming from "Electric Cloud" to "CloudBees"
