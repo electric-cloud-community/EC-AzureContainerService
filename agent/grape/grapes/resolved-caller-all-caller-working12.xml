@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0">
+	<info organisation="caller"
+		module="all-caller"
+		revision="working12"
+		status="integration"
+		publication="20200717152859"
+		default="true"
+	/>
+	<configurations>
+		<conf name="default" visibility="public"/>
+	</configurations>
+	<publications>
+	</publications>
+	<dependencies>
+		<dependency org="com.jcraft" name="jsch" rev="0.1.54" force="true" conf="default->default">
+			<artifact name="jsch" type="jar" ext="jar"/>
+		</dependency>
+		<dependency org="com.microsoft.azure" name="adal4j" rev="1.1.3" force="true" conf="default->default">
+			<artifact name="adal4j" type="jar" ext="jar"/>
+		</dependency>
+		<dependency org="org.codehaus.groovy.modules.http-builder" name="http-builder" rev="0.7.1" force="true" conf="default->default">
+			<artifact name="http-builder" type="jar" ext="jar"/>
+		</dependency>
+		<dependency org="net.sf.json-lib" name="json-lib" rev="2.3" force="true" conf="default->default">
+			<artifact name="json-lib" type="jar" ext="jar" classifier="jdk15"/>
+		</dependency>
+	</dependencies>
+</ivy-module>

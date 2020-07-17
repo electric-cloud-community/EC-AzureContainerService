@@ -1,7 +1,9 @@
-@Grab(group='net.sf.json-lib', module='json-lib', version='2.3', classifier = 'jdk15')
+@Grab(group='net.sf.json-lib', module='json-lib', version='2.4', classifier = 'jdk15')
 @Grab('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1' )
 @Grab('com.microsoft.azure:adal4j:1.1.3')
 @Grab('com.jcraft:jsch:0.1.54')
+@GrabExclude('commons-codec:commons-codec')
+@GrabExclude('commons-lang:commons-lang')
 
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
