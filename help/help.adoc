@@ -1,0 +1,655 @@
+Plugin version @PLUGIN_VERSION@
+
+Revised on October 13, 2020
+
+
+
+
+
+== Overview
+
+Plugin overview EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using Kubernetes.
+
+
+
+
+
+
+
+
+
+
+
+== Plugin Configurations
+Plugin configurations are sets of parameters that apply
+across some or all of the plugin procedures. They
+reduce repetition of common values, create
+predefined parameter sets for end users, and
+securely store credentials where needed. Each configuration
+is given a unique name that is entered in designated
+parameters on procedures that use them.
+
+
+=== Creating Plugin Configurations
+To create plugin configurations in {CD}, do these steps:
+
+* Go to **Administration** &gt;**Plugins** to open the Plugin Manager.
+* Find the @PLUGIN_NAME@ row.
+* Click *Configure* to open the
+     Configurations page.
+* Click *Create Configuration* as per the description of parameters below.
+
+
+#### Prerequisites
+ 1. EC-Kubernetes plugin version 1.0.5 or higher
+ 2. Retrieve the "Subscription ID" of the account. (https://blogs.msdn.microsoft.com/mschray/2015/05/13/getting-your-azure-guid-subscription-id/)
+ * Go to: http://manage.windowsazure.com/
+ * Scroll all the way down the left nav
+ * Click settings
+ * Copy you GUID
+ 3. You also need "Client ID", "Tenant ID" and a "Key" (password) for a registered service principal. (https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal)
+ 1. Required permissions
+ * Check Azure Active Directory permissions
+ 1. Select Azure Active Directory.
+ 2. In Azure Active Directory, select User settings.
+ 3. Check the App registrations setting. If set to Yes, non-admin users can register AD apps. This setting means any user in the Azure AD tenant can register an app. You can proceed to Check Azure subscription permissions.
+ 4. If the app registrations setting is set to No, only admin users can register apps. Check whether your account is an admin for the Azure AD tenant. Select Overview and look at your user information. If your account is assigned to the User role, but the app registration setting (from the preceding step) is limited to admin users, ask your administrator to either assign you to an administrator role, or to enable users to register apps.
+ * Check Azure subscription permissions
+ 1. Select your account in the upper right corner, and select My permissions.
+ 2. From the drop-down list, select the subscription. Select Click here to view complete access details for this subscription.
+ 3. View your assigned roles, and determine if you have adequate permissions to assign an AD app to a role. If not, ask your subscription administrator to add you to User Access Administrator role. In the following image, the user is assigned to the Owner role, which means that user has adequate permissions.
+ 2. Create an Azure Active Directory application
+ 1. Log in to your Azure Account through the Azure portal (https://portal.azure.com/).
+ 2. Select Azure Active Directory.
+ 3. Select App registrations.
+ 4. Select New application registration.
+ 5. Provide a name and URL for the application. Select Web app / API for the type of application you want to create. You cannot create credentials for a Native application (https://docs.microsoft.com/en-us/azure/active-directory/active-directory-application-proxy-native-client); therefore, that type does not work for an automated application. After setting the values, select Create.
+ 6. You have created your application.
+ 3. Get application ID and authentication key
+ 1. From App registrations in Azure Active Directory, select your application.
+ 2. Copy the Application ID and store it in your application code. Some sample applications refer to this value as the client ID.
+ 3. To generate an authentication key, select Settings.
+ 4. To generate an authentication key, select Keys.
+ 5. Provide a description of the key, and a duration for the key. When done, select Save.
+ 6. After saving the key, the value of the key is displayed. Copy this value because you are not able to retrieve the key later. You provide the key value with the application ID to log in as the application. Store the key value where your application can retrieve it.
+ 4. Get tenant ID
+ 1. Select Azure Active Directory.
+ 2. To get the tenant ID, select Properties for your Azure AD tenant.
+ 3. Copy the Directory ID. This value is your tenant ID.
+ 5. Assign application to role
+ 1. Navigate to the level of scope you wish to assign the application to. For example, to assign a role at the subscription scope, select Subscriptions. You could instead select a resource group or resource.
+ 2. Select the particular subscription (resource group or resource) to assign the application to.
+ 3. Select Access Control (IAM).
+ 4. Select Add.
+ 5. Select the role you wish to assign to the application. The following image shows the Reader role.
+ 6. By default, Azure Active Directory applications aren't displayed in the available options. To find your application, you must provide the name of it in the search field. Select it.
+ 7. Select Save to finish assigning the role. You see your application in the list of users assigned to a role for that scope.
+
+#### EC - preparatory steps
+ 1. Upload the plugin
+ 2. Create the environment with appropriate configuration values.
+ * Configuration: ec_plugin_cnfgs
+ * Container Cluster Name: test-poc
+ * Resource Group Name: ec-test
+ * Orchestrator Type: kubernetes
+ * Master Zone: westus
+ * Admin User Name: ecloudadmin
+ * Number Of Master VMs: 1
+ * Master DNS Prefix: tmaster
+ * Master FQDN: testmaster
+ * Master VM Size: Standard_D2
+ * Agent Pool Name: agenttest
+ * Agent Pool Count: 3
+ * Agent Pool VM Size: Standard_D2
+ * Agent DNS Prefix: tagent
+ * The wait time for cluster creation (In minutes): 8
+ 2. Create the configuration - you can utilise the information we retrieved from Azure portal in prerequisite steps. You will also need a SSH keypair, the public part of key is placed on VMs that are created and private key is used to communicate with machines via SSH by plugin .This is also a good step to validate that the service principal etc. have been created as needed by "test connection" option available:
+ * Configuration: az_conf
+ * Description: EC-AzureContainerService
+ * Tenant ID: your Tenant ID
+ * Subscription ID: your Subscription ID
+ * Service Principal Details:
+ * Client ID: your Client ID
+ * Private Key: your Private key
+ * Public Key: your Public key
+ * Private Key:
+ * User Name: Service Principal Details -&gt; Private Key
+ * Private Key: RSA private key
+
+
+=== Configuration Procedure Parameters
+[cols=",",options="header",]
+|===
+|Parameter |Description
+
+|__**Configuration**__ | Unique name for the plugin configuration.
+
+
+|Description | Description for the plugin configuration.
+
+
+|__**Tenant ID**__ | Tenant ID of the Azure Account
+
+
+|__**Subscription ID**__ | Subscription ID of the Azure Account
+
+
+|__**Service Principal Details**__ | The Client ID and the Key of the Service principal created in Azure.
+
+
+|Public Key | The public key that should be used for cluster creation and communication.
+
+
+|__**Private Key**__ | The private key that should be used for cluster creation and communication.
+
+
+|Test Connection? | Test that the given service account details can be used to successfully connect to the cluster in Azure Container Service.
+
+
+|Log Level | Log level to use for logging output. Error=4, Warning=3, Info=2, Debug=1.
+
+
+|===
+
+=== Make a remote connection to a Kubernetes, DC/OS, or Docker Swarm cluster
+
+After creating an Azure Container Service cluster, you need to connect to the cluster to deploy and manage workloads. This article describes how to connect to the master VM of the cluster from a remote computer.
+
+The Kubernetes, DC/OS, and Docker Swarm clusters provide HTTP endpoints locally. For Kubernetes, this endpoint is securely exposed on the internet, and you can access it by running the kubectl command-line tool from any internet-connected machine.
+
+For DC/OS and Docker Swarm, we recommend that you create a secure shell (SSH) tunnel from your local computer to the cluster management system. After the tunnel is established, you can run commands which use the HTTP endpoints and view the orchestrator's web interface (if available) from your local system.
+
+==== Prerequisites
+
+* A Kubernetes cluster deployed in Azure Container Service.
+* SSH RSA private key file, corresponding to the public key added to the cluster during deployment. These commands assume that the private SSH key is in $HOME/.ssh/id_rsa on your computer. See these instructions for macOS and Linux or Windows for more information. If the SSH connection isn't working, you may need to reset your SSH keys.
+
+### Connect to a Kubernetes cluster
+ Follow these steps to install and configure kubectl on your computer.
+
+###### Note
+ On Linux or macOS, you might need to run the commands in this section using sudo.
+
+##### Install kubectl
+ One way to install this tool is to use the az acs kubernetes install-cli Azure CLI 2.0 command. To run this command, make sure that you installed the latest Azure CLI 2.0 and logged in to an Azure account (az login).
+
+Linux or macOS
+ * az acs kubernetes install-cli [ install-location=/some/directory/kubectl]
+
+Windows
+ * az acs kubernetes install-cli [ install-location=C:\some\directory\kubectl.exe]
+
+Alternatively, you can download the latest kubectl client directly from the Kubernetes releases page.
+
+##### Download cluster credentials
+ Once you have kubectl installed, you need to copy the cluster credentials to your machine. One way to do get the credentials is with the az acs kubernetes get-credentials command. Pass the name of the resource group and the name of the container service resource:
+
+Azure CLI
+
+* 'az acs kubernetes get-credentials  resource-group=(cluster-resource-group)  name=(cluster-name)'
+
+This command downloads the cluster credentials to $HOME/.kube/config, where kubectl expects it to be located.
+
+Alternatively, you can use scp to securely copy the file from $HOME/.kube/config on the master VM to your local machine. For example:
+
+bash
+
+* mkdir $HOME/.kube
+* scp link:mailto:&#97;z&#117;&#x72;&#x65;&#x75;&#x73;&#101;&#x72;&#x40;(&#109;&#x61;&#115;t&#101;&#114;&#45;d&#110;s&#x2d;&#110;&#x61;&#x6d;&#101;&#41;:&#x2e;&#x6b;u&#98;&#x65;&#x2f;&#99;&#111;&#110;&#102;&#105;&#x67;[&#97;z&#117;&#x72;&#x65;&#x75;&#x73;&#101;&#x72;&#x40;(&#109;&#x61;&#115;t&#101;&#114;&#45;d&#110;s&#x2d;&#110;&#x61;&#x6d;&#101;&#41;:&#x2e;&#x6b;u&#98;&#x65;&#x2f;&#99;&#111;&#110;&#102;&#105;&#x67;] $HOME/.kube/config
+
+If you are on Windows, you can use Bash on Ubuntu on Windows, the PuTTy secure file copy client, or a similar tool.
+
+##### Use kubectl
+ Once you have kubectl configured, test the connection by listing the nodes in your cluster:
+
+bash
+ * kubectl get nodes
+
+You can try other kubectl commands. For example, you can view the Kubernetes Dashboard. First, run a proxy to the Kubernetes API server:
+
+bash
+ * kubectl proxy
+
+The Kubernetes UI is now available at: localhost:8001/ui.
+
+For more information, see the Kubernetes quick start.
+
+
+
+
+
+[[procedures]]
+== Plugin Procedures
+
+
+
+[[ProvisionCluster]]
+=== Provision Cluster
+
+
+Provisions a Azure Container Service cluste. Pods, services, and replication controllers all run on top of a cluster.
+
+
+IMPORTANT: For all parameter descriptions below, required parameters are shown in bold italics. Please note that some of names given in {CD} UI will be modified to comply with the naming conventions of Kubernetes. Specifically characters such as "space , _ " will be converted to "-". Such parameters are marked with an asterisk (*).
+
+
+==== Provision Cluster Parameters
+[cols=",",options="header",]
+|===
+| Parameter | Description
+
+| __**Configuration**__ | The name of an existing configuration which holds all the connection information for Azure Container Service.
+
+
+| __**Container Cluster Name**__ | The name of the cluster that needs to be provisioned.
+
+
+| __**Resource Group Name**__ | All cluster resources will be created under this resource group name.
+
+
+| Orchestrator Type | The orchestrator to use for provisioning cluster.
+
+
+| __**Master Zone**__ | The primary zone for the cluster. The master zone for a cluster is set at creation time and cannot be updated so this parameter will be ignored if the cluster already exists.
+
+
+| Admin User Name | The name of Administrator user for VMs
+
+
+| __**Number Of Master VMs**__ | The number of masters to be created in the cluster. Values allowed are 1, 3 or 5 with 1 as default.
+
+
+| __**Master DNS Prefix**__ | The DNS prefix to be used to create the FQDN of the master
+
+
+| __**Master FQDN**__ | FQDN of the master
+
+
+| Master VM Size | Size of the Master VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes
+
+
+| __**Agent Pool Name**__ | The name of agent pool in which agents will be created
+
+
+| __**Agent Pool Count**__ | Number of agents that should be created in the pool
+
+
+| __**Agent Pool VM Size**__ | Size of the Agent VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes
+
+
+| __**Agent DNS Prefix**__ | DNS prefix to be used to create the FQDN of agent pool
+
+
+| __**The wait time for cluster creation (In minutes)**__ | Timeout for cluster creation. If the cluster does not get created in this amount of time, the procedure fails.
+
+
+| Time for cluster preparation after creation (In Seconds) | After the cluster is created it need to create service accounts etc. which can take a few seconds before services can be deployed
+
+
+|===
+
+
+
+
+
+
+[[DeployService]]
+=== Deploy Service
+
+
+Creates or updates the Kubernetes service and the Deployment configuration for Pods and ReplicaSets on the Kubernetes cluster running on the Azure Container Service platform.
+
+
+
+==== Deploy Service Parameters
+[cols=",",options="header",]
+|===
+| Parameter | Description
+
+| __**Service Name**__ | The name of the service in {CD} that encapsulates the service to be deployed on the Azure Container Service.
+
+
+| Service Revision ID | Revision Id of the service in {CD}.
+
+
+| __**Project Name**__ | The name of the project that the service belongs to. In case of an application-level service it also owns the application.
+
+
+| Application Name | The name of the application that the service belongs to. Not applicable for a top-level service.
+
+
+| Application Revision ID | Revision Id of the application version that the service belongs to.
+
+
+| __**Cluster Name**__ | The name of the cluster in {CD} that encapsulates the Azure Container Service on which the service is to be deployed.
+
+
+| Cluster Or Environment Project Name | The name of the project that the cluster belongs to if it is a top-level project cluster. Or the name of the project that the environment belongs to if it is an environment-scoped cluster.
+
+
+| Environment Name | The name of the environment that the cluster belongs to. Not applicable for a top-level project cluster.
+
+
+| Results Property Sheet | Name of the property sheet where the output properties for the deployed service will be saved. If not specified, will default to '/myParent/parent'.
+
+
+|===
+
+
+
+
+
+
+[[UndeployService]]
+=== Undeploy Service
+
+
+Undeploys a previously deployed service on the Azure Container Service
+
+
+
+==== Undeploy Service Parameters
+[cols=",",options="header",]
+|===
+| Parameter | Description
+
+| __**Service Name**__ | The name of the service in {CD} that encapsulates the service that was previously deployed on the Azure Container Service.
+
+
+| Service Revision ID | Revision Id of the service in {CD}.
+
+
+| __**Project Name**__ | The name of the project that the service belongs to. In case of an application-level service it also owns the application.
+
+
+| Application Name | The name of the application that the service belongs to. Not applicable for a top-level service.
+
+
+| Application Revision ID | Revision Id of the application version that the service belongs to.
+
+
+| __**Environment Name**__ | The name of the environment that the cluster belongs to.
+
+
+| Environment Project Name | The name of the project that the environment belongs to. If not specified, the environment is assumed to be in the same project as the service.
+
+
+| Cluster Name | The name of the cluster in the environment on which the service was previously deployed. If not specified, the application tier mapping will be used to find the cluster name.
+
+
+|===
+
+
+
+
+
+
+[[Discover]]
+=== Discover
+
+
+Automatically create microservice models in {CD} for the services and the pods discovered within a namespace on a Kubernetes cluster.
+
+
+ .  *Select your method of discovery from a Kubernetes Cluster*   There are two options for connecting to Kubernetes for discovery
+            
+
+ **  *Existing {CD} Environment and Cluster*   Use the Cluster configuration details in an existing {CD} environment to connect to Kubernetes. Enter details for the existing environment and cluster in the following parameters:
+                    
+
+ *** Environment Project Name: The project containing the existing environment
+
+ *** Environment Name:  the name of an existing environment that contains the Kubernetes backend cluster to be discovered
+
+ *** Cluster Name: The name of the {CD} cluster in the environment above that represents the Kubernetes cluster
+
+ **  *Kubernetes Connection Details*   Enter Kubernetes endpoint and Account details to directly connect to the endpoint and discover the clusters and pods.  Enter the endpoint and account details in the following parameters:
+                    
+
+ *** Kubernetes Endpoint: The endpoint where the Kubernetes endpoint will be reachable
+
+ *** Service Account API Token
+
+ *** _If selecting this connection option, you can optionally enter a new values for Environment Name and Cluster Name parameters, to create a new environment and cluster in {CD} based on the discovered services and pods._
+ *  *Determine how the discovered microservices will be created in {CD}* 
+ **  *Create the microservices individually at the top-level within the project.*  All discovered microservices will be created at the top-level.  Enter the following parameters:
+                    
+
+ *** Project Name: Enter the name of the project where the microservices will be created
+
+ **  *Create the Microservices within an application in {CD}.*  All discovered microservices will be created as services within a new application. Enter the following parameters:
+                    
+
+ *** Project Name: Enter the name of the project where the new application will be created
+
+ *** Create Microservices within and Application:  Select the checkbox
+
+ *** Application Name:  The name of a new application which will be created in {CD} containing the discovered services
+
+
+
+Procedure looks for services and deployments on Kubernetes
+cluster and transfers data into {CD}. Services found
+in cluster will be mapped to Services objects in {CD},
+then associated deployments will be found and containers
+definitions retrieved from there.
+
+If the object with the provided name already exists in the {CD}, this object will be skipped and a warning message will be emitted to logs.
+
+
+==== Discover Parameters
+[cols=",",options="header",]
+|===
+| Parameter | Description
+
+| __**Environment Project Name**__ | The project containing the existing environment, or where the new environment will be created.
+
+
+| __**Environment Name**__ | Provide the name of an existing environment that contains the Azure Container Service-backend cluster to be discovered. If the environment does not already exist, provide the Azure Container Service connection details below for discovery, and a new environment will be created.
+
+
+| __**Cluster Name**__ | In an existing environment, provide the name of the {CD} cluster representing the Azure Container Service cluster whose deployed services are to be discovered. If the environment does not already exist, provide the name of the cluster to be created in the new environment.
+
+
+| __**Azure Container Service Namespace**__ | The name of the Azure Container Service namespace within which the deployed services should be discovered. Default to 'default' namespace.
+
+
+| __**Project Name**__ | The name of project in which the discovered microservices will be created.
+
+
+| Create Microservices within an Application | (Optional) Select to create all discovered services in the Azure Container Service namespace within one application in {CD}. If selected, then the application name must be provided. If unselected, microservices will be created at the top-level in the project.
+
+
+| Application Name | The name of the new application that will contain the microservices. Required only if 'Create Microservices within an Application' is selected.
+
+
+| Tenant ID | Tenant ID of the Azure Account. Required if the cluster does not exist in EF.
+
+
+| Subscription ID | Subscription ID of the Azure Account. Required if the cluster does not exist in EF.
+
+
+| Client ID | The Client ID of the Service principal created in Azure. Required if the cluster does not exist in EF.
+
+
+| Azure Secret Key | The Key of the Service principal created in Azure. Required if the cluster does not exist in EF.
+
+
+| Public Key | The public key that should be used for cluster creation and communication.
+
+
+| Private Key | The private key that should be used for cluster creation and communication. Required if the cluster does not exist in EF.
+
+
+| Container Cluster Name | The name of the cluster that needs to be provisioned.
+
+
+| Resource Group Name | All cluster resources will be created under this resource group name.
+
+
+| Master Zone | The primary zone for the cluster. The master zone for a cluster is set at creation time and cannot be updated so this parameter will be ignored if the cluster already exists.
+
+
+| Admin User Name | The name of Administrator user for VMs
+
+
+| Number Of Master VMs | The number of masters to be created in the cluster. Values allowed are 1, 3 or 5 with 1 as default.
+
+
+| Master DNS Prefix | The DNS prefix to be used to create the FQDN of the master
+
+
+| Master FQDN | FQDN of the master
+
+
+| Agent Pool Name | The name of agent pool in which agents will be created
+
+
+| Agent Pool Count | Number of agents that should be created in the pool
+
+
+| Agent Pool VM Size | Size of the Agent VM. It has to be one of sizes listed here: https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes
+
+
+| Agent DNS Prefix | DNS prefix to be used to create the FQDN of agent pool
+
+
+| The wait time for cluster creation (In minutes) | Timeout for cluster creation. If the cluster does not get created in this amount of time, the procedure fails.
+
+
+|===
+
+
+
+
+
+
+[[GatherClusterInfo]]
+=== Gather Cluster Info
+
+
+Retrieves token and endpoint for Smart Map.
+
+
+
+==== Gather Cluster Info Parameters
+[cols=",",options="header",]
+|===
+| Parameter | Description
+
+| __**Cluster Name**__ | The name of the cluster in {CD} that encapsulates the Azure Container Service.
+
+
+| __**Cluster Or Environment Project Name**__ | The name of the project that the cluster belongs to if it is a top-level project cluster. Or the name of the project that the environment belongs to if it is an environment-scoped cluster.
+
+
+| Environment Name | The name of the environment that the cluster belongs to. Not applicable for a top-level project cluster.
+
+
+|===
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[[rns]]
+== Release notes
+
+
+=== EC-AzureContainerService 1.3.1
+
+- Renaming from "CloudBees Flow" to "{CD}".
+
+
+=== EC-AzureContainerService 1.3.0
+
+- Changed dependency delivery procedure.
+
+
+=== EC-AzureContainerService 1.2.1
+
+- Renaming from "Electric Cloud" to "CloudBees"
+
+
+=== EC-AzureContainerService 1.2.0
+
+- Plugin promotion time has been improved.
+
+
+=== EC-AzureContainerService 1.1.2
+
+- Configurations can be created by users with "@" sign in a name.
+
+
+=== EC-AzureContainerService 1.1.1
+
+- Updated the plugin icon.
+
+
+=== EC-AzureContainerService 1.1.0
+
+- Added "Discover" procedure for automatically creating microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.
+
+- Added support for "Smart Map Topology View" functionality.
+
+- Added "Gather Cluster Info" procedure which retrieves token and endpoint for Smart Map.
+
+
+=== EC-AzureContainerService 1.0.4
+
+- Configured the plugin to allow the ElectricFlow UI to create configs inline of procedure form.
+
+
+=== EC-AzureContainerService 1.0.3
+
+- Fixed the invalid credential name error in the <i>Undeploy Service</i> procedure.
+
+- Configured the 'setup' procedure step that retrieves groovy dependency jars to run all subsequent procedure steps on the same resource.
+
+- Added support for retrieving and creating the plugin configurations through the "Configurations" option on the application process step and the pipeline stage task editors.
+
+
+=== EC-AzureContainerService 1.0.2
+
+- Added procedure <i>Undeploy Service</i> to undeploy a previously deployed service.
+
+- EC-AzureContainerService plugin is now able to provision clusters in any specified region.
+
+- Added parameter <i>masterVmsize</i> to specify the size for the master VM in the Kubernetes cluster provisioned by Azure Container Service.
+
+- Removed unused parameter <i>additionalAttributes</i> from container mapping configuration.
+
+- When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the plugin will now monitor the deployment progress in the cluster and cause the step to fail in case the deployment does not complete within the deployment timeout configured as part of the service mapping. The default timeout value is 120 seconds.
+
+- When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the service name to use in the cluster can now be overridden through the service mapping.
+
+- When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the deployment name to use in the cluster can now be overridden through the service mapping. See section <b>Blue/Green Deployments</b> in the EC-Kubernetes plugin help for details on how this ability can be used to implement a blue/green deployment strategy.
+
+- Added support for canary deployments. See section <b>Canary Deployments</b> in the EC-Kubernetes plugin help for details.
+
+
+=== EC-AzureContainerService 1.0.1
+
+- Updated the <i>Define Service</i> procedure to include namespace and service type parameters. This procedure is an internal procedure used for specifying cluster specific service mappings in ElectricFlow.
+
+- Fixed the <i>Test Connection</i> step in the <i>Create Configuration</i> procedure.
+
+
+=== EC-AzureContainerService 1.0.0
+
+- First release.
+
+
