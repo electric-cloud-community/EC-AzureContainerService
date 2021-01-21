@@ -1,14 +1,6 @@
 Plugin version @PLUGIN_VERSION@
 
-Revised on October 13, 2020
-
-
-
-
-
-== Overview
-
-Plugin overview EC-AzureContainerService plugin integrates with the Azure Container Service to run Docker containers on the Azure Cloud Platform using Kubernetes.
+Revised on January 21, 2021
 
 
 
@@ -20,7 +12,11 @@ Plugin overview EC-AzureContainerService plugin integrates with the Azure Contai
 
 
 
-== Plugin Configurations
+
+
+
+== Plugin configurations
+
 Plugin configurations are sets of parameters that apply
 across some or all of the plugin procedures. They
 reduce repetition of common values, create
@@ -30,17 +26,18 @@ is given a unique name that is entered in designated
 parameters on procedures that use them.
 
 
-=== Creating Plugin Configurations
+=== Creating plugin configurations
+
 To create plugin configurations in {CD}, do these steps:
 
-* Go to **Administration** &gt;**Plugins** to open the Plugin Manager.
+* Go to menu:Admistration[Plugins] to open the Plugin Manager.
 * Find the @PLUGIN_NAME@ row.
 * Click *Configure* to open the
      Configurations page.
 * Click *Create Configuration* as per the description of parameters below.
 
 
-#### Prerequisites
+==== Prerequisites
  1. EC-Kubernetes plugin version 1.0.5 or higher
  2. Retrieve the "Subscription ID" of the account. (https://blogs.msdn.microsoft.com/mschray/2015/05/13/getting-your-azure-guid-subscription-id/)
  * Go to: http://manage.windowsazure.com/
@@ -85,7 +82,7 @@ To create plugin configurations in {CD}, do these steps:
  6. By default, Azure Active Directory applications aren't displayed in the available options. To find your application, you must provide the name of it in the search field. Select it.
  7. Select Save to finish assigning the role. You see your application in the list of users assigned to a role for that scope.
 
-#### EC - preparatory steps
+==== {CD} - preparatory steps
  1. Upload the plugin
  2. Create the environment with appropriate configuration values.
  * Configuration: ec_plugin_cnfgs
@@ -117,7 +114,8 @@ To create plugin configurations in {CD}, do these steps:
  * Private Key: RSA private key
 
 
-=== Configuration Procedure Parameters
+=== Configuration procedure parameters
+
 [cols=",",options="header",]
 |===
 |Parameter |Description
@@ -159,67 +157,78 @@ The Kubernetes, DC/OS, and Docker Swarm clusters provide HTTP endpoints locally.
 
 For DC/OS and Docker Swarm, we recommend that you create a secure shell (SSH) tunnel from your local computer to the cluster management system. After the tunnel is established, you can run commands which use the HTTP endpoints and view the orchestrator's web interface (if available) from your local system.
 
-==== Prerequisites
+=== Prerequisites
 
-* A Kubernetes cluster deployed in Azure Container Service.
-* SSH RSA private key file, corresponding to the public key added to the cluster during deployment. These commands assume that the private SSH key is in $HOME/.ssh/id_rsa on your computer. See these instructions for macOS and Linux or Windows for more information. If the SSH connection isn't working, you may need to reset your SSH keys.
+ * A Kubernetes cluster deployed in Azure Container Service.
+ * SSH RSA private key file, corresponding to the public key added to the cluster during deployment. These commands assume that the private SSH key is in $HOME/.ssh/id_rsa on your computer. See these instructions for macOS and Linux or Windows for more information. If the SSH connection isn't working, you may need to reset your SSH keys.
+ 
+==== Connect to a Kubernetes cluster
 
-### Connect to a Kubernetes cluster
- Follow these steps to install and configure kubectl on your computer.
+Follow these steps to install and configure kubectl on your computer.
 
-###### Note
- On Linux or macOS, you might need to run the commands in this section using sudo.
+NOTE: On Linux or macOS, you might need to run the commands in this section using sudo.
 
-##### Install kubectl
- One way to install this tool is to use the az acs kubernetes install-cli Azure CLI 2.0 command. To run this command, make sure that you installed the latest Azure CLI 2.0 and logged in to an Azure account (az login).
 
+==== Install kubectl
+
+One way to install this tool is to use the az acs kubernetes install-cli Azure CLI 2.0 command. To run this command, make sure that you installed the latest Azure CLI 2.0 and logged in to an Azure account (az login).
+ 
 Linux or macOS
- * az acs kubernetes install-cli [ install-location=/some/directory/kubectl]
 
+* az acs kubernetes install-cli [--install-location=/some/directory/kubectl]
+ 
 Windows
- * az acs kubernetes install-cli [ install-location=C:\some\directory\kubectl.exe]
 
+*  az acs kubernetes install-cli [--install-location=C:\some\directory\kubectl.exe]
+ 
 Alternatively, you can download the latest kubectl client directly from the Kubernetes releases page.
-
-##### Download cluster credentials
- Once you have kubectl installed, you need to copy the cluster credentials to your machine. One way to do get the credentials is with the az acs kubernetes get-credentials command. Pass the name of the resource group and the name of the container service resource:
-
+ 
+==== Download cluster credentials
+Once you have kubectl installed, you need to copy the cluster credentials to your machine. One way to do get the credentials is with the az acs kubernetes get-credentials command. Pass the name of the resource group and the name of the container service resource:
+ 
 Azure CLI
-
-* 'az acs kubernetes get-credentials  resource-group=(cluster-resource-group)  name=(cluster-name)'
-
+ 
+* 'az acs kubernetes get-credentials --resource-group=(cluster-resource-group) --name=(cluster-name)'
+ 
 This command downloads the cluster credentials to $HOME/.kube/config, where kubectl expects it to be located.
-
+ 
 Alternatively, you can use scp to securely copy the file from $HOME/.kube/config on the master VM to your local machine. For example:
-
+ 
 bash
-
+ 
 * mkdir $HOME/.kube
-* scp link:mailto:&#97;z&#117;&#x72;&#x65;&#x75;&#x73;&#101;&#x72;&#x40;(&#109;&#x61;&#115;t&#101;&#114;&#45;d&#110;s&#x2d;&#110;&#x61;&#x6d;&#101;&#41;:&#x2e;&#x6b;u&#98;&#x65;&#x2f;&#99;&#111;&#110;&#102;&#105;&#x67;[&#97;z&#117;&#x72;&#x65;&#x75;&#x73;&#101;&#x72;&#x40;(&#109;&#x61;&#115;t&#101;&#114;&#45;d&#110;s&#x2d;&#110;&#x61;&#x6d;&#101;&#41;:&#x2e;&#x6b;u&#98;&#x65;&#x2f;&#99;&#111;&#110;&#102;&#105;&#x67;] $HOME/.kube/config
-
+* scp azureuser@(master-dns-name):.kube/config $HOME/.kube/config
+ 
 If you are on Windows, you can use Bash on Ubuntu on Windows, the PuTTy secure file copy client, or a similar tool.
-
+ 
 ##### Use kubectl
- Once you have kubectl configured, test the connection by listing the nodes in your cluster:
 
+Once you have kubectl configured, test the connection by listing the nodes in your cluster:
+ 
 bash
- * kubectl get nodes
 
+* kubectl get nodes
+ 
 You can try other kubectl commands. For example, you can view the Kubernetes Dashboard. First, run a proxy to the Kubernetes API server:
-
+ 
 bash
- * kubectl proxy
 
+* kubectl proxy
+
+ 
 The Kubernetes UI is now available at: localhost:8001/ui.
-
+ 
 For more information, see the Kubernetes quick start.
+ 
+ 
 
 
 
 
 
 [[procedures]]
-== Plugin Procedures
+== Plugin procedures
+
 
 
 
@@ -230,13 +239,16 @@ For more information, see the Kubernetes quick start.
 Provisions a Azure Container Service cluste. Pods, services, and replication controllers all run on top of a cluster.
 
 
-IMPORTANT: For all parameter descriptions below, required parameters are shown in bold italics. Please note that some of names given in {CD} UI will be modified to comply with the naming conventions of Kubernetes. Specifically characters such as "space , _ " will be converted to "-". Such parameters are marked with an asterisk (*).
+IMPORTANT: For all parameter descriptions below, required parameters are shown
+in bold italics. Please note that some of names given in {CD} UI will be modified to comply
+with the naming conventions of Kubernetes. Specifically characters such as "space , _ "
+ will be converted to "-". Such parameters are marked with an asterisk (*).
 
 
-==== Provision Cluster Parameters
+==== Provision Cluster parameters
 [cols=",",options="header",]
 |===
-| Parameter | Description
+|Parameter |Description
 
 | __**Configuration**__ | The name of an existing configuration which holds all the connection information for Azure Container Service.
 
@@ -301,10 +313,10 @@ Creates or updates the Kubernetes service and the Deployment configuration for P
 
 
 
-==== Deploy Service Parameters
+==== Deploy Service parameters
 [cols=",",options="header",]
 |===
-| Parameter | Description
+|Parameter |Description
 
 | __**Service Name**__ | The name of the service in {CD} that encapsulates the service to be deployed on the Azure Container Service.
 
@@ -348,10 +360,10 @@ Undeploys a previously deployed service on the Azure Container Service
 
 
 
-==== Undeploy Service Parameters
+==== Undeploy Service parameters
 [cols=",",options="header",]
 |===
-| Parameter | Description
+|Parameter |Description
 
 | __**Service Name**__ | The name of the service in {CD} that encapsulates the service that was previously deployed on the Azure Container Service.
 
@@ -437,10 +449,10 @@ definitions retrieved from there.
 If the object with the provided name already exists in the {CD}, this object will be skipped and a warning message will be emitted to logs.
 
 
-==== Discover Parameters
+==== Discover parameters
 [cols=",",options="header",]
 |===
-| Parameter | Description
+|Parameter |Description
 
 | __**Environment Project Name**__ | The project containing the existing environment, or where the new environment will be created.
 
@@ -532,10 +544,10 @@ Retrieves token and endpoint for Smart Map.
 
 
 
-==== Gather Cluster Info Parameters
+==== Gather Cluster Info parameters
 [cols=",",options="header",]
 |===
-| Parameter | Description
+|Parameter |Description
 
 | __**Cluster Name**__ | The name of the cluster in {CD} that encapsulates the Azure Container Service.
 
@@ -571,7 +583,7 @@ Retrieves token and endpoint for Smart Map.
 
 === EC-AzureContainerService 1.3.1
 
-- Renaming from "CloudBees Flow" to "{CD}".
+- Renaming to "{CD}".
 
 
 === EC-AzureContainerService 1.3.0
@@ -581,7 +593,7 @@ Retrieves token and endpoint for Smart Map.
 
 === EC-AzureContainerService 1.2.1
 
-- Renaming from "Electric Cloud" to "CloudBees"
+- Renaming to "CloudBees"
 
 
 === EC-AzureContainerService 1.2.0
@@ -601,7 +613,7 @@ Retrieves token and endpoint for Smart Map.
 
 === EC-AzureContainerService 1.1.0
 
-- Added "Discover" procedure for automatically creating microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.
+- Added "Discover" procedure for automatically creating microservice models in {CD} for the services and the pods discovered within a namespace on a Kubernetes cluster.
 
 - Added support for "Smart Map Topology View" functionality.
 
@@ -610,7 +622,7 @@ Retrieves token and endpoint for Smart Map.
 
 === EC-AzureContainerService 1.0.4
 
-- Configured the plugin to allow the ElectricFlow UI to create configs inline of procedure form.
+- Configured the plugin to allow the {CD} UI to create configs inline of procedure form.
 
 
 === EC-AzureContainerService 1.0.3
@@ -632,18 +644,18 @@ Retrieves token and endpoint for Smart Map.
 
 - Removed unused parameter <i>additionalAttributes</i> from container mapping configuration.
 
-- When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the plugin will now monitor the deployment progress in the cluster and cause the step to fail in case the deployment does not complete within the deployment timeout configured as part of the service mapping. The default timeout value is 120 seconds.
+- When deploying a microservice through {CD} on a Kubernetes cluster provisioned by Azure Container Service, the plugin will now monitor the deployment progress in the cluster and cause the step to fail in case the deployment does not complete within the deployment timeout configured as part of the service mapping. The default timeout value is 120 seconds.
 
-- When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the service name to use in the cluster can now be overridden through the service mapping.
+- When deploying a microservice through {CD} on a Kubernetes cluster provisioned by Azure Container Service, the service name to use in the cluster can now be overridden through the service mapping.
 
-- When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the deployment name to use in the cluster can now be overridden through the service mapping. See section <b>Blue/Green Deployments</b> in the EC-Kubernetes plugin help for details on how this ability can be used to implement a blue/green deployment strategy.
+- When deploying a microservice through {CD} on a Kubernetes cluster provisioned by Azure Container Service, the deployment name to use in the cluster can now be overridden through the service mapping. See section <b>Blue/Green Deployments</b> in the EC-Kubernetes plugin help for details on how this ability can be used to implement a blue/green deployment strategy.
 
 - Added support for canary deployments. See section <b>Canary Deployments</b> in the EC-Kubernetes plugin help for details.
 
 
 === EC-AzureContainerService 1.0.1
 
-- Updated the <i>Define Service</i> procedure to include namespace and service type parameters. This procedure is an internal procedure used for specifying cluster specific service mappings in ElectricFlow.
+- Updated the <i>Define Service</i> procedure to include namespace and service type parameters. This procedure is an internal procedure used for specifying cluster specific service mappings in {CD}.
 
 - Fixed the <i>Test Connection</i> step in the <i>Create Configuration</i> procedure.
 

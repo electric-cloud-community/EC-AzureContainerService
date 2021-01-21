@@ -1,4 +1,0 @@
-IMPORTANT: For all parameter descriptions below, required parameters are shown 
-in bold italics. Please note that some of names given in CloudBees CD UI will be modified to comply 
-with the naming conventions of Kubernetes. Specifically characters such as "space , _ "
- will be converted to "-". Such parameters are marked with an asterisk (*).

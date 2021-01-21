@@ -1,25 +1,25 @@
 1.0.0:
   - First release.
 1.0.1:
-  - Updated the <i>Define Service</i> procedure to include namespace and service type parameters. This procedure is an internal procedure used for specifying cluster specific service mappings in ElectricFlow.
+  - Updated the <i>Define Service</i> procedure to include namespace and service type parameters. This procedure is an internal procedure used for specifying cluster specific service mappings in {CD}.
   - Fixed the <i>Test Connection</i> step in the <i>Create Configuration</i> procedure.
 1.0.2:
   - Added procedure <i>Undeploy Service</i> to undeploy a previously deployed service.
   - EC-AzureContainerService plugin is now able to provision clusters in any specified region.
   - Added parameter <i>masterVmsize</i> to specify the size for the master VM in the Kubernetes cluster provisioned by Azure Container Service.
   - Removed unused parameter <i>additionalAttributes</i> from container mapping configuration.
-  - When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the plugin will now monitor the deployment progress in the cluster and cause the step to fail in case the deployment does not complete within the deployment timeout configured as part of the service mapping. The default timeout value is 120 seconds.
-  - When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the service name to use in the cluster can now be overridden through the service mapping.
-  - When deploying a microservice through ElectricFlow on a Kubernetes cluster provisioned by Azure Container Service, the deployment name to use in the cluster can now be overridden through the service mapping. See section <b>Blue/Green Deployments</b> in the EC-Kubernetes plugin help for details on how this ability can be used to implement a blue/green deployment strategy.
+  - When deploying a microservice through {CD} on a Kubernetes cluster provisioned by Azure Container Service, the plugin will now monitor the deployment progress in the cluster and cause the step to fail in case the deployment does not complete within the deployment timeout configured as part of the service mapping. The default timeout value is 120 seconds.
+  - When deploying a microservice through {CD} on a Kubernetes cluster provisioned by Azure Container Service, the service name to use in the cluster can now be overridden through the service mapping.
+  - When deploying a microservice through {CD} on a Kubernetes cluster provisioned by Azure Container Service, the deployment name to use in the cluster can now be overridden through the service mapping. See section <b>Blue/Green Deployments</b> in the EC-Kubernetes plugin help for details on how this ability can be used to implement a blue/green deployment strategy.
   - Added support for canary deployments. See section <b>Canary Deployments</b> in the EC-Kubernetes plugin help for details.
 1.0.3:
   - Fixed the invalid credential name error in the <i>Undeploy Service</i> procedure.
   - Configured the 'setup' procedure step that retrieves groovy dependency jars to run all subsequent procedure steps on the same resource.
   - Added support for retrieving and creating the plugin configurations through the "Configurations" option on the application process step and the pipeline stage task editors.
 1.0.4:
-  - Configured the plugin to allow the ElectricFlow UI to create configs inline of procedure form.
+  - Configured the plugin to allow the {CD} UI to create configs inline of procedure form.
 1.1.0:
-  - Added "Discover" procedure for automatically creating microservice models in ElectricFlow for the services and the pods discovered within a namespace on a Kubernetes cluster.
+  - Added "Discover" procedure for automatically creating microservice models in {CD} for the services and the pods discovered within a namespace on a Kubernetes cluster.
   - Added support for "Smart Map Topology View" functionality.
   - Added "Gather Cluster Info" procedure which retrieves token and endpoint for Smart Map.
 1.1.1:
@@ -29,8 +29,8 @@
 1.2.0:
   - Plugin promotion time has been improved.
 1.2.1:
-  - Renaming from "Electric Cloud" to "CloudBees"
+  - Renaming to "CloudBees"
 1.3.0:
   - Changed dependency delivery procedure.
 1.3.1:
-  - Renaming from "CloudBees Flow" to "CloudBees CD".
+  - Renaming to "CloudBees CD".
