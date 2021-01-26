@@ -1,6 +1,6 @@
 Plugin version @PLUGIN_VERSION@
 
-Revised on October 13, 2020
+Revised on January 26, 2021
 
 == Plugin Configurations
 Plugin configurations are sets of parameters that apply
